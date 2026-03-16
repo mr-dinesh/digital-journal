@@ -1,6 +1,6 @@
 ---
 title: "Vibe-Coding-Day-001"
-date:2026-03-14
+date: 2026-03-14
 tags: ["Writing","Vibecoding"]
 ---
 
