@@ -1,5 +1,5 @@
 ---
-title: "Vibecoding-Day003-Webscraping Podcast ThinkFast, TalkSmart and create a montage" 
+title: "Vibecoding-Day003-Webscraping Podcast ThinkFast, TalkSmart and Create a Montage" 
 date: 2026-03-16
 tags: ["writing", "Vibecoding"]
 ---
@@ -10,7 +10,8 @@ tags: ["writing", "Vibecoding"]
 
  -Second Iteration: Add natural, inspiring music. Also add slow fade out and transitions between slides. Where possible add some washed out imagery to make the text more relevant and appropriate.
 
-### Outcome - Versi🎬 Think Fast, Talk Smart — Episode Montage
+### Outcome - Version1: 
+- 🎬 Think Fast, Talk Smart — Episode Montage
 
 - 5.6 minutes long · 1280×720 HD · 30 FPS
 - 165 key episodes covered, starting from EP 1 all the way to EP 270
@@ -32,7 +33,6 @@ tags: ["writing", "Vibecoding"]
 - Outro card — "Listen. Learn. Communicate."on1
 
 ### Version2 
-
 - ✅ Video v2 is ready — 1280×720 HD · 6.1 minutes · 21.6 MB
 
 - What was improved:
