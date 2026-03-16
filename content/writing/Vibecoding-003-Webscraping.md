@@ -1,7 +1,7 @@
 ---
-title: Vibecoding-003-Webscraping
+title: Vibecoding-003- Webscraping Podcast ThinkFast, TalkSmart and create a montage 
 date: 2026-03-16
-tags: "vibecoding"
+tags: ["writing", "vibecoding"]
 ---
 
 ### Prompt Used
