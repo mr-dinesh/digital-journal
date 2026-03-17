@@ -1,6 +1,6 @@
 ---
 title: "Vibecoding-Day004- CyberPrep — Security Interview Simulator Webapp" 
-date: 2026-03-16
+date: 2026-03-17
 tags: ["writing", "Vibecoding"]
 ---
 
