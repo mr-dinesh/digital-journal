@@ -4,7 +4,7 @@ date: 2026-03-21
 tags: ["writing", "Vibecoding"]
 ---
 
-### Building a Mastodon Bot for Mankutimmana Kagga with Claude
+### Building a Bot to post Mankutimmana Kagga verses to Mastodon
 
 **D.V. Gundappa's** *Mankutimmana Kagga* — 945 verses of timeless Kannada philosophy — deserves a wider audience. So I built a Mastodon bot to post one verse at a time, twice a day, complete with transliteration and English explanation. Here's how it came together.
 
