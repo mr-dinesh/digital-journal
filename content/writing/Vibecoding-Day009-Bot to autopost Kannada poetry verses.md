@@ -12,13 +12,13 @@ Mankuthimmana Kagga — often called the Kannada Gita — is a collection of 945
 
 ### KaggaBot
 
-It's a small automation that does one simple thing: post two verses from the Kagga every day to Mastodon.Social, automatically, without anyone pressing a button.
+It's a small automation that does one simple thing: post two verses from the Kagga every day to Mastodon (an ad-free social media platform), automatically, without anyone pressing a button.
 
 ### What's in the code
 
-The core of KaggaBot is a Python file containing all the verses of the Kagga, individually scraped and stored as structured data. 
+The core of the bot is a Python file containing all the verses of the Kagga, individually scraped and stored as structured data. 
 
-A bot script picks from this collection and formats each verse for posting. GitHub Actions handles the scheduling — no server required, no ongoing cost.
+A script picks from this collection and formats each verse for posting. GitHub Actions handles the scheduling — no server required, no ongoing cost.
 
 Verses in .py file  →  bot script  →  GitHub Actions cron  →  Mastodon post
 
@@ -36,8 +36,8 @@ No cloud bill. No server to maintain. No babysitting.
 ### Why Mastodon?
 Mastodon is open, ad-free, and has a clean API — ideal for a bot that exists purely to share literature, not to game an algorithm. The posts are public and readable by anyone, no account needed.
 
-Why this matters
-At two a day, it takes over a year to work through them all 945 verses.
+### Why this matters
+At two posts a day, it takes over a year to work through all 945 verses of Mankuthimmana Kagga.
 
 That's the right pace for philosophy — slow enough to sit with, regular enough to build a habit. KaggaBot transforms reading a classic Kannada text into a daily practice, entirely on autopilot.
 
