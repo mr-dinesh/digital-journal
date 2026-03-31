@@ -18,9 +18,15 @@ draft: false
 
 **On knowing people**
 
+To be a contact professional you must first, of course, be in contact with yourself.
+
 You have to learn to read people carefully.
 
 If you know yourself and you know the opponent, you can win a hundred percent of the time.
+
+If you're going to work for others and represent them, you must not allow people to push your button or pull your trigger. The question is: how do you build a trigger guard? Know thyself.
+
+Some day you will have enemies. Here's how you handle them: first, always define. Then name them. Then you will own them.
 
 Treat everyone the same — with respect and dignity — but don't talk to everyone the same way. Since each person responds differently, based on their makeup and character, you instinctively learn to communicate uniquely to each one.
 
