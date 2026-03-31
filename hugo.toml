@@ -26,7 +26,32 @@ buildExpired = false
 
   defaultTheme = "auto"
 
+[[params.socialIcons]]
+  name = "github"
+  url = "https://github.com/mr-dinesh"
+
+[[params.socialIcons]]
+  name = "mastodon"
+  url = "https://infosec.exchange/@mrd"
+
+[[params.socialIcons]]
+  name = "twitter"
+  url = "https://x.com/m_r_dinesh"
+
+[[params.socialIcons]]
+  name = "linkedin"
+  url = "https://www.linkedin.com/in/dinesh-mr"
+
+[[params.socialIcons]]
+  name = "rss"
+  url = "/index.xml"
+
 [menu]
+  [[menu.main]]
+    name = "About"
+    url = "/about/"
+    weight = 0
+
   [[menu.main]]
     name = "Notes"
     url = "/curl-notes/"
