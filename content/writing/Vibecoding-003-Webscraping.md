@@ -70,11 +70,17 @@ cover:
 
 ### Takeaways
 
- - Narrative needs to be added, to stitch together all of the advice. Would be more "consumable", instead of just staring at bullet points on the 200+ slides
+ - Narrative needs to be added, to stitch together all of the advice. Would be more "consumable", instead of just staring at bullet points on the 200+ slides.
  
- - The music sucks. Tried to improve it, but need something more bespoke and relevant to the content.
+ - The music sucks. The Karplus-Strong synthesis in V2 is technically impressive but emotionally wrong for the content. A podcast about communication deserves something warmer.
  
- - A human voice reading it out, would probably improve the product. 
+ - A human voice reading the advice would transform this from a slideshow into something worth watching twice.
 
-### Montage  is here [Version1](https://github.com/mr-dinesh/Vibecoding_003_Webscraping-Podcast-/blob/main/ThinkFastTalkSmart_Montage.mp4), [Version2](https://github.com/mr-dinesh/Vibecoding_003_Webscraping-Podcast-/blob/main/ThinkFastTalkSmart_Montage_v2.mp4)
+### The Security Angle
+
+Extracting structured insight from unstructured text across 165 podcast episodes is, at its core, the same pipeline used in threat intelligence processing — taking raw text (blog posts, threat reports, OSINT feeds) and extracting specific signals from it. The difference is the signal type: guest advice instead of indicators of compromise.
+
+The technique is identical. If you can prompt an LLM to extract "the advice each guest shares in 7 words or less," you can prompt it to extract "the malware family, affected platforms, and recommended mitigations" from a threat report. Same pattern, different domain. This project was a useful reminder that the automation skills transfer directly.
+
+### Montage is here: [Version1](https://github.com/mr-dinesh/Vibecoding_003_Webscraping-Podcast-/blob/main/ThinkFastTalkSmart_Montage.mp4) · [Version2](https://github.com/mr-dinesh/Vibecoding_003_Webscraping-Podcast-/blob/main/ThinkFastTalkSmart_Montage_v2.mp4)
 
