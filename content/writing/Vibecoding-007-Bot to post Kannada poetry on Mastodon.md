@@ -26,9 +26,15 @@ The project started with a simple ask to Claude: *"Create a Mastodon bot to post
 - **Theme filtering** — post verses by theme (Wisdom, Death, Love, etc.)
 - **Dry-run mode** for testing without posting
 
-### Challenges
+### What Broke
 
-The biggest debugging headaches were unexpected. The scraped `kagga_verses.py` contained **literal newlines inside string literals** — causing Python `SyntaxError` on load. Several verses needed surgical `sed` fixes. Mastodon's **500 character limit** required multiple iterations of the trimming logic, especially since Kannada Unicode characters count as multiple bytes. The **Kannada hashtag `#ಕಗ್ಗ`** rendered incorrectly on Mastodon — the virama joining character was silently stripped. And PythonAnywhere's **free tier proxy blocked** outbound connections to `ioc.exchange`, requiring to move to 'mastodon.social' instead.
+**Literal newlines in the verse data.** The scraper pulled all 945 verses from a public repository and generated `kagga_verses.py` automatically. What it didn't handle was multi-line verse text — the strings had literal newline characters embedded inside them, which Python reads as a syntax error. The file wouldn't even load. Fix: a `sed` pass to replace literal newlines inside strings with `\n` escape sequences before import.
+
+**The 500-character limit is stricter than it looks.** Mastodon's limit is 500 characters, but Kannada Unicode characters consume multiple bytes each. A verse that *looks* short can blow past the limit. The first trimming logic counted characters naively. The fix required counting bytes, not characters, and building a cascade: try the full post → fall back to a shortened version with just the Kannada text and a note → post as a thread if it still won't fit.
+
+**The Kannada hashtag silently broke.** `#ಕಗ್ಗ` uses a virama (the joining character that combines consonants in Kannada script). Mastodon's hashtag parser stripped it, turning the hashtag into something unrecognisable. The workaround was switching to a transliterated hashtag `#Kagga` alongside the Kannada version — less authentic, but actually clickable.
+
+**PythonAnywhere's free tier blocked the Mastodon instance.** The original plan was to host the bot on PythonAnywhere and post to `ioc.exchange` (the infosec Mastodon instance). PythonAnywhere's free tier uses a proxy that blocks outbound connections to many smaller Mastodon instances. The fix was switching to `mastodon.social`, which is large enough to be on PythonAnywhere's allowlist.
 
 ### What I Learned
 
