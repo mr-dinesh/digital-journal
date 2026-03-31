@@ -28,7 +28,10 @@ It won't replace reading the code yourself — and it's honest about that. Every
 
 Built with React, Groq (Llama 3.3 70B), and real curl source from github.com/curl/curl.
 
-### Prompt Used:
+### Prompt Used
 
+> *Build a browser-based learning app for the curl source code. The app should let a user select a module — DNS resolver, TLS handshake, cookie engine, HTTP redirect logic — and step through its key functions one by one. For each function, show the actual source code alongside an AI-generated explanation tuned to the user's experience level. Beginners should get plain-English analogies. Experienced C programmers should get architecture notes, edge cases, and implementation tradeoffs. The app should track progress: users mark concepts as understood or flagged for review, add notes, and quiz themselves. Everything should persist across sessions. Use React and the Groq API (Llama 3.3 70B). Every code snippet must link directly to the live file on GitHub, with a disclaimer that the embedded code is a snapshot.*
 
-### GitHub Repo Link
+### GitHub Repo
+
+[github.com/mr-dinesh/Curl-Source-Code-Explorer](https://github.com/mr-dinesh/Curl-Source-Code-Explorer)

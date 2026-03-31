@@ -54,14 +54,28 @@ The whole thing is one `.html` file. Open it in a browser, paste a Groq API key,
 
 ---
 
-### Get The Code
+### What Broke
 
-The full source is on GitHub:
+CORS. RSS feeds don't serve with the headers browsers need for cross-origin fetches. The first version used a single CORS proxy — which worked for about a day before the free tier started rate-limiting requests.
+
+The final implementation uses a three-proxy fallback chain: `allorigins.win` → `corsproxy.io` → a third fallback. If all three fail, the feed degrades gracefully and shows whatever was cached from the last successful fetch. Getting this right took longer than building the entire rest of the dashboard. It's always CORS.
+
+The other problem was JSON reliability. Groq returns JSON most of the time. "Most of the time" is not good enough when your UI depends on parsing it. The fix was wrapping every parse in a try/catch with a fallback to a safe default object — so a malformed response shows a placeholder summary rather than crashing the whole refresh.
+
+### What I Learned
+
+The "dept." line was an afterthought in the prompt — added because Slashdot had it and it seemed fun. It turned out to be the most useful part of the output.
+
+A 3–5 word distillation forces compression that a 3–4 sentence summary doesn't. *supply-chain-never-sleeps dept* tells you the story before you read the headline. *patch-tuesday-forever dept* sets the tone immediately. Good prompt design often comes from constraints you didn't plan for. The lesson: include something playful in your prompt. It surfaces structure you didn't know you needed.
+
+Also: `sessionStorage` for API keys is the right call. `localStorage` persists across tabs and sessions, which is more convenient but widens the exposure window. A key that disappears when the tab closes can't be exfiltrated by a script that runs later. Small decision, correct decision.
+
+### Get The Code
 
 **[github.com/mr-dinesh/SlashSec_style-Infosec-RSS-Dashboard](https://github.com/mr-dinesh/SlashSec_style-Infosec-RSS-Dashboard)**
 
-Includes the dashboard, a README, and this write-up. The only requirement is a free Groq account at [console.groq.com](https://console.groq.com).
+One `.html` file. Free Groq account at [console.groq.com](https://console.groq.com). Open in browser, paste key, click Fetch Stories.
 
 ---
 
-*Built iteratively with Claude Sonnet as a coding assistant. The final file is about 1,100 lines of vanilla HTML, CSS, and JavaScript.*
+*Built iteratively with Claude Sonnet. The final file is about 1,100 lines of vanilla HTML, CSS, and JavaScript.*
