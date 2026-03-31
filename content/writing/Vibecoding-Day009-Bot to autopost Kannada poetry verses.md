@@ -41,6 +41,16 @@ No cloud bill. No server to maintain. No babysitting.
 ### Why Mastodon?
 Mastodon is open, ad-free, and has a clean API — ideal for a bot that exists purely to share literature, not to game an algorithm. The posts are public and readable by anyone, no account needed.
 
+### What Broke
+
+**GitHub Actions cron doesn't mean "exactly at this time."** The workflow is scheduled for 6am and 6pm, but GitHub runs scheduled workflows when capacity is available — which during busy periods can mean a delay of 15–30 minutes. For a poetry bot, that's fine. For anything time-sensitive, it would be a problem worth knowing about upfront.
+
+**The ephemeral environment forgets everything.** GitHub Actions spins up a clean runner for each job. There's no persistent file system between runs. This matters for state tracking — knowing which verse was posted last. The solution is committing the current verse index back to the repository after each run. If you forget this, the bot picks a verse randomly (or always posts verse #1) on every run. First version did exactly that.
+
+**GitHub disables scheduled workflows on inactive repos.** If a repository has no activity for 60 days, GitHub automatically disables scheduled workflows. The bot will simply stop posting with no notification. The fix is either a periodic commit to keep the repo active, or enabling the workflow manually when it gets disabled. Worth knowing before you rely on it as a daily habit.
+
+**The Mastodon API token in GitHub Secrets.** Storing the token as a repository secret works, but if the secret is misconfigured (wrong variable name in the workflow YAML) the bot fails silently — no post, no obvious error in the logs unless you know to look at the environment variable step. Naming the secret `MASTODON_ACCESS_TOKEN` and double-checking the `${{ secrets.MASTODON_ACCESS_TOKEN }}` reference in the YAML saved a lot of confusion.
+
 ### Why this matters
 At two posts a day, it takes over a year to work through all 945 verses of Mankuthimmana Kagga.
 

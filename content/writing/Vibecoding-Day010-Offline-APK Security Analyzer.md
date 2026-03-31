@@ -187,6 +187,18 @@ An app with no critical or high findings gets an A regardless of score. The grad
 
 ---
 
+### What Broke
+
+**androguard v4 broke every tutorial on the internet.** The first version of the DEX extractor was written against androguard v3, which is what every Stack Overflow answer and blog post references. In v4, the import paths moved, `APK()` became `AnalyzeAPK()`, and class iteration changed entirely. The code would import without errors but return empty results — no SDKs detected, no crypto findings, nothing. Took a while to realise the API had changed underneath.
+
+**The SDK fingerprinter silently returned zero results.** Early versions of the fingerprinter swallowed all exceptions quietly. If DEX parsing failed for any reason, `dex_classes` came back empty and the report showed zero SDKs — no error, no warning, no indication anything had gone wrong. A clean-looking report on a real banking app was the first sign something was wrong. Fix: explicit logging on every exception path so failures are immediately visible.
+
+**Binary AXML parsing failed on unsigned APKs.** The AndroidManifest.xml inside an APK is compiled binary XML (AXML), not plain text. androguard parses it correctly — but only on properly signed APKs. Test APKs built locally without signing caused the parser to throw and fall through to a regex fallback that only caught basic package names. The fix was adding a clear fallback path and flagging in the report when full manifest parsing wasn't available.
+
+**Flask couldn't find its templates.** `render_template('report.html')` looks for a `templates/` folder relative to where `python3 app.py` was run from — not where `app.py` lives. Running the script from a parent directory broke template discovery without any useful error message. The fix was setting `template_folder` explicitly in the Flask app constructor.
+
+**APK deletion in the `finally` block wasn't enough.** The original cleanup code ran `os.remove(apk_path)` after analysis. What it didn't account for: androguard holds a file handle open during analysis. On Windows, this causes a `PermissionError`. On Linux it's fine. The fix was adding `try/except` around the deletion, which handles both platforms and any analysis that leaves open handles.
+
 ### What I Learned Building This
 
 **androguard's API changed significantly between v3 and v4.** Most tutorials and Stack Overflow answers reference the v3 API (`APK`, `DalvikVMFormat`, `Analysis`). In v4, the import paths moved and the class iteration API changed. The v4 way is `AnalyzeAPK()` returning a tuple of `(APK, list[DEX], Analysis)`.
