@@ -5,10 +5,7 @@ date: 2026-03-25
 tags: ["GitHub Actions", "Mastodon", "Automation", "VibeCoding"]
 aliases: ["/writing/vibecoding-day009-bot-to-autopost-kannada-poetry-verses/"]
 description: "KaggaBot uses GitHub Actions as a free scheduler to post two Mankutimmana Kagga verses to Mastodon every day — no server, no cost, no babysitting."
-cover:
-  image: "/images/writing/vibecoding-009-kaggabot-actions.png"
-  alt: "GitHub Actions workflow run for KaggaBot automated posting"
-  relative: false
+featureimage: "/images/writing/vibecoding-009-kaggabot-actions.png"
 ---
 
 
