@@ -4,10 +4,7 @@ date: 2026-03-16
 tags: ["Automation", "Podcast", "Python", "VibeCoding"]
 aliases: ["/writing/vibecoding-003-webscraping/"]
 description: "Scraped 165+ episodes of Think Fast, Talk Smart and used an LLM to distil each guest's core advice into 7 words or less, then assembled it into a video montage."
-cover:
-  image: "/images/writing/vibecoding-003-podcast-montage.png"
-  alt: "Podcast episode montage with 7-word advice cards"
-  relative: false
+featureimage: "/images/writing/vibecoding-003-podcast-montage.png"
 ---
 
 ### Prompt Used

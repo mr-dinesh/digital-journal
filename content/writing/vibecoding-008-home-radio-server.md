@@ -4,10 +4,7 @@ date: 2026-03-22
 tags: ["Self-Hosted", "Media", "Docker", "VibeCoding"]
 aliases: ["/writing/vibecoding-008-building-a-home-media-streaming-and-player/"]
 description: "Tried to build a home Icecast radio server to stream MP3s to my phone. What actually happened: four Docker containers, a Mega.nz dead-end, and a surprisingly working result."
-cover:
-  image: "/images/writing/vibecoding-008-home-radio.png"
-  alt: "Home radio server web UI showing the playlist and stream controls"
-  relative: false
+featureimage: "/images/writing/vibecoding-008-home-radio.png"
 ---
 
 ### I Asked an AI to Help Me Build a Home Radio Server. Here's What Actually Happened.

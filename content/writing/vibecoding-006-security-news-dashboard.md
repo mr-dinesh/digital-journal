@@ -4,10 +4,7 @@ date: 2026-03-20
 tags: ["Security", "News", "Groq", "VibeCoding"]
 aliases: ["/writing/vibecoding-006-building-a-slashdot-style-cybersecurity-news-dashboard-with-groq/"]
 description: "SlashSec is a single HTML file that pulls live RSS from five trusted security sources and uses Groq to generate summaries, severity ratings, and Slashdot-style dept. lines."
-cover:
-  image: "/images/writing/vibecoding-006-slashsec.png"
-  alt: "SlashSec cybersecurity news dashboard with Slashdot-style layout"
-  relative: false
+featureimage: "/images/writing/vibecoding-006-slashsec.png"
 ---
 
 
