@@ -3,10 +3,11 @@
 Extract books mentioned in "Everything is Everything" podcast show notes.
 
 Workflow:
-  1. Fetch all episode descriptions from YouTube via yt-dlp (no API key needed)
-  2. Cache them locally so you can re-run without re-fetching
-  3. Extract books using Groq API (free tier, no payment required)
-  4. Write results to eid_books.csv — import into Google Sheets
+  1. Fetch episode descriptions via Piped API (no key, works in CI)
+     Falls back to yt-dlp if Piped is unavailable
+  2. Cache locally — re-runs skip the fetch entirely
+  3. Extract books using Groq API (free tier, no payment)
+  4. Write eid_books.csv — import into Google Sheets
 
 Usage:
     pip install -r requirements.txt
@@ -21,16 +22,24 @@ import sys
 import os
 from pathlib import Path
 from urllib.request import urlopen, Request as URLRequest
-from urllib.parse import urlencode
-from urllib.error import HTTPError
+from urllib.parse import quote
+from urllib.error import HTTPError, URLError
 
-PLAYLIST_URL = "https://www.youtube.com/playlist?list=PLIG8a9wNRHVu-Aw2VgUJacXlpsJMbF5Y_"
+PLAYLIST_ID = "PLIG8a9wNRHVu-Aw2VgUJacXlpsJMbF5Y_"
 CACHE_FILE = "episodes_cache.json"
 OUTPUT_FILE = "eid_books.csv"
 MAX_DESCRIPTION_CHARS = 4000
 
+# Multiple Piped instances — tried in order until one works
+PIPED_INSTANCES = [
+    "https://pipedapi.kavin.rocks",
+    "https://api.piped.projectsegfau.lt",
+    "https://piped-api.garudalinux.org",
+    "https://pipedapi.drgns.space",
+]
+
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-GROQ_MODEL = "llama-3.1-8b-instant"   # fast, free, good at extraction
+GROQ_MODEL = "llama-3.1-8b-instant"
 
 EXTRACTION_PROMPT = """\
 Extract all book titles and their authors mentioned in these podcast show notes.
@@ -55,18 +64,79 @@ Example: [{{"title": "Thinking, Fast and Slow", "author": "Daniel Kahneman"}}]\
 
 
 # ---------------------------------------------------------------------------
-# Step 1: Fetch episodes via yt-dlp (no API key required)
+# Step 1a: Fetch via Piped API (preferred — works in CI/GitHub Actions)
 # ---------------------------------------------------------------------------
 
-def fetch_episodes_from_youtube() -> list[dict]:
+def piped_get(base: str, path: str) -> dict:
+    url = f"{base}{path}"
+    req = URLRequest(url, headers={"User-Agent": "curl/8.0"})
+    with urlopen(req, timeout=15) as resp:
+        return json.loads(resp.read())
+
+
+def find_working_piped_instance() -> str | None:
+    for base in PIPED_INSTANCES:
+        try:
+            piped_get(base, f"/playlists/{PLAYLIST_ID}")
+            print(f"  Using Piped instance: {base}")
+            return base
+        except Exception:
+            continue
+    return None
+
+
+def fetch_episodes_via_piped(base: str) -> list[dict]:
+    print("Fetching playlist from Piped API...")
+
+    videos = []
+    data = piped_get(base, f"/playlists/{PLAYLIST_ID}")
+    videos.extend(data.get("relatedStreams", []))
+    nextpage = data.get("nextpage")
+
+    while nextpage:
+        data = piped_get(base, f"/nextpage/playlists/{PLAYLIST_ID}?nextpage={quote(nextpage)}")
+        videos.extend(data.get("relatedStreams", []))
+        nextpage = data.get("nextpage")
+
+    print(f"Found {len(videos)} videos. Fetching descriptions...")
+
+    episodes = []
+    for i, v in enumerate(videos, 1):
+        vid_id = v.get("url", "").replace("/watch?v=", "").split("&")[0]
+        title = v.get("title", "")
+        print(f"  [{i}/{len(videos)}] {title[:70]}")
+
+        description = ""
+        try:
+            stream = piped_get(base, f"/streams/{vid_id}")
+            description = stream.get("description", "")
+        except Exception as e:
+            print(f"    Warning: could not fetch description — {e}")
+
+        episodes.append({
+            "id": vid_id,
+            "title": title,
+            "url": f"https://youtube.com/watch?v={vid_id}",
+            "description": description,
+        })
+        time.sleep(0.3)
+
+    return episodes
+
+
+# ---------------------------------------------------------------------------
+# Step 1b: Fallback — fetch via yt-dlp (works locally, may be blocked in CI)
+# ---------------------------------------------------------------------------
+
+def fetch_episodes_via_ytdlp() -> list[dict]:
     try:
         import yt_dlp
     except ImportError:
         print("Error: yt-dlp not installed. Run: pip install yt-dlp")
         sys.exit(1)
 
-    print("Fetching episode data from YouTube (no API key needed)...")
-    print("Expect 3-5 minutes for 128 episodes.\n")
+    playlist_url = f"https://www.youtube.com/playlist?list={PLAYLIST_ID}"
+    print("Fetching via yt-dlp (fallback)...")
 
     episodes = []
     ydl_opts = {
@@ -77,7 +147,7 @@ def fetch_episodes_from_youtube() -> list[dict]:
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(PLAYLIST_URL, download=False)
+        info = ydl.extract_info(playlist_url, download=False)
         entries = info.get("entries", []) if info else []
 
         for i, entry in enumerate(entries, 1):
@@ -96,37 +166,58 @@ def fetch_episodes_from_youtube() -> list[dict]:
     return episodes
 
 
+# ---------------------------------------------------------------------------
+# Fetch dispatcher + cache
+# ---------------------------------------------------------------------------
+
+def fetch_episodes_from_youtube() -> list[dict]:
+    print("Looking for a working Piped instance...")
+    base = find_working_piped_instance()
+
+    if base:
+        episodes = fetch_episodes_via_piped(base)
+    else:
+        print("All Piped instances unavailable — falling back to yt-dlp...")
+        episodes = fetch_episodes_via_ytdlp()
+
+    if not episodes:
+        print("\nError: failed to fetch any episodes.")
+        print("Piped instances may be down and yt-dlp may be blocked.")
+        print("Try re-running the workflow, or run the script locally.")
+        sys.exit(1)
+
+    return episodes
+
+
 def load_or_fetch_episodes() -> list[dict]:
     cache = Path(CACHE_FILE)
     if cache.exists():
-        print(f"Loading episodes from cache ({CACHE_FILE})...")
         with open(cache, encoding="utf-8") as f:
             episodes = json.load(f)
-        print(f"Loaded {len(episodes)} episodes.\n")
-        return episodes
+        if episodes:
+            print(f"Loaded {len(episodes)} episodes from cache.\n")
+            return episodes
+        print("Cache is empty — re-fetching...\n")
 
     episodes = fetch_episodes_from_youtube()
 
     with open(cache, "w", encoding="utf-8") as f:
         json.dump(episodes, f, indent=2, ensure_ascii=False)
-    print(f"\nCached {len(episodes)} episodes to {CACHE_FILE}\n")
+    print(f"\nCached {len(episodes)} episodes.\n")
     return episodes
 
 
 # ---------------------------------------------------------------------------
-# Step 2: Extract books via Groq API (free tier)
+# Step 2: Extract books via Groq API
 # ---------------------------------------------------------------------------
 
 def groq_extract(api_key: str, title: str, description: str) -> list[dict]:
-    """Call Groq API to extract books from one episode description."""
     payload = json.dumps({
         "model": GROQ_MODEL,
-        "messages": [
-            {"role": "user", "content": EXTRACTION_PROMPT.format(
-                title=title,
-                description=description[:MAX_DESCRIPTION_CHARS],
-            )}
-        ],
+        "messages": [{"role": "user", "content": EXTRACTION_PROMPT.format(
+            title=title,
+            description=description[:MAX_DESCRIPTION_CHARS],
+        )}],
         "temperature": 0,
         "max_tokens": 512,
     }).encode()
@@ -134,10 +225,7 @@ def groq_extract(api_key: str, title: str, description: str) -> list[dict]:
     req = URLRequest(
         GROQ_API_URL,
         data=payload,
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
+        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
         method="POST",
     )
 
@@ -145,21 +233,17 @@ def groq_extract(api_key: str, title: str, description: str) -> list[dict]:
         with urlopen(req, timeout=30) as resp:
             data = json.loads(resp.read())
     except HTTPError as e:
-        body = e.read().decode()
         if e.code == 429:
-            # Rate limited — wait and retry once
-            retry_after = int(e.headers.get("retry-after", "10"))
-            print(f"    Rate limited, waiting {retry_after}s...")
+            retry_after = int(e.headers.get("retry-after", "15"))
+            print(f"    Rate limited — waiting {retry_after}s...")
             time.sleep(retry_after)
             with urlopen(req, timeout=30) as resp:
                 data = json.loads(resp.read())
         else:
-            print(f"    Groq error {e.code}: {body[:200]}")
+            print(f"    Groq error {e.code}: {e.read().decode()[:200]}")
             return []
 
     text = data["choices"][0]["message"]["content"].strip()
-
-    # Strip markdown fences if model added them
     if text.startswith("```"):
         lines = text.splitlines()
         inner = lines[1:-1] if lines[-1].strip() == "```" else lines[1:]
@@ -177,18 +261,16 @@ def groq_extract(api_key: str, title: str, description: str) -> list[dict]:
 def extract_all_books(api_key: str, episodes: list[dict]) -> list[dict]:
     rows = []
     total = len(episodes)
-
     for i, ep in enumerate(episodes, 1):
         description = (ep.get("description") or "").strip()
         if not description:
-            print(f"  [{i}/{total}] SKIP (no description) — {ep['title'][:50]}")
+            print(f"  [{i}/{total}] SKIP — {ep['title'][:50]}")
             continue
 
         print(f"  [{i}/{total}] {ep['title'][:60]}")
         books = groq_extract(api_key, ep["title"], description)
-
         if books:
-            print(f"          → {len(books)} book(s): {', '.join(b.get('title','?') for b in books[:3])}")
+            print(f"          → {', '.join(b.get('title', '?') for b in books[:3])}")
         for book in books:
             title = (book.get("title") or "").strip()
             if not title:
@@ -199,8 +281,6 @@ def extract_all_books(api_key: str, episodes: list[dict]) -> list[dict]:
                 "Book Title": title,
                 "Author": (book.get("author") or "").strip(),
             })
-
-        # Groq free tier: ~30 req/min — small delay keeps us well within limits
         time.sleep(2)
 
     return rows
@@ -213,21 +293,15 @@ def extract_all_books(api_key: str, episodes: list[dict]) -> list[dict]:
 def main():
     api_key = os.environ.get("GROQ_API_KEY", "").strip()
     if not api_key:
-        print("Error: GROQ_API_KEY not set.")
-        print("Get a free key (no payment) at: https://console.groq.com")
-        print("Then: export GROQ_API_KEY=gsk_...")
+        print("Error: GROQ_API_KEY not set. Get a free key at console.groq.com")
         sys.exit(1)
 
-    # 1. Episodes
     episodes = load_or_fetch_episodes()
     print(f"Processing {len(episodes)} episodes...\n")
 
-    # 2. Extract
     rows = extract_all_books(api_key, episodes)
-
     rows.sort(key=lambda r: r["Episode Title"])
 
-    # 3. Write CSV
     with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(
             f, fieldnames=["Episode Title", "Episode URL", "Book Title", "Author"]
@@ -237,8 +311,7 @@ def main():
 
     print(f"\nDone! Found {len(rows)} book mentions across {len(episodes)} episodes.")
     print(f"Saved to: {OUTPUT_FILE}")
-    print("\nTo import into Google Sheets:")
-    print("  File → Import → Upload → select eid_books.csv → Replace spreadsheet")
+    print("\nImport to Google Sheets: File → Import → Upload → select eid_books.csv")
 
 
 if __name__ == "__main__":
