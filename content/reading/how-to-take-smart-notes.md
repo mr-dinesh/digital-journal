@@ -5,9 +5,10 @@ author: "mrdee"
 tags: ["book-notes", "writing", "learning", "note-taking", "thinking"]
 categories: ["reading"]
 description: "Notes from How to Take Smart Notes by Sönke Ahrens. On building a slip-box, writing to understand, and why the one who does the work does the learning."
-featureimage: "/images/reading/how-to-take-smart-notes.jpg"
 draft: false
 ---
+![image](/images/reading/how-to-take-smart-notes.jpg)
+
 
 **How to Take Smart Notes** by Sönke Ahrens
 

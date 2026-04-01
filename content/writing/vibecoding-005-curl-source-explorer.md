@@ -4,8 +4,9 @@ date: 2026-03-19
 tags: ["Open Source", "Learning", "Curl", "VibeCoding"]
 aliases: ["/writing/vibecoding-005-curl_source_explorer/"]
 description: "A browser app that walks you through curl's internals — DNS, TLS, cookies, redirects — with AI explanations tuned to your experience level and progress tracking."
-featureimage: "/images/writing/vibecoding-005-curl-explorer.png"
 ---
+![image](/images/writing/vibecoding-005-curl-explorer.png)
+
 
 ## Curl Source Explorer: Learn a 30-Year-Old Codebase Without Getting Lost
 

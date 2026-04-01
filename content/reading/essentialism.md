@@ -5,9 +5,10 @@ author: "mrdee"
 tags: ["book-notes", "productivity", "focus", "decision-making"]
 categories: ["reading"]
 description: "Notes from Essentialism: The Disciplined Pursuit of Less by Greg McKeown. On cutting out the noise, saying no gracefully, and doing fewer things better."
-featureimage: "/images/reading/essentialism.jpg"
 draft: false
 ---
+![image](/images/reading/essentialism.jpg)
+
 
 **Essentialism: The Disciplined Pursuit of Less** by Greg McKeown
 

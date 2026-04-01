@@ -5,9 +5,10 @@ author: "mrdee"
 tags: ["book-notes", "reasoning", "critical-thinking", "logic", "decision-making"]
 categories: ["reading"]
 description: "Notes from The Little Blue Reasoning Book by Brandon Royal. On selective perception, attacking arguments, logical errors, and the gap between plans and action."
-featureimage: "/images/reading/the-little-blue-reasoning-book.jpg"
 draft: false
 ---
+![image](/images/reading/the-little-blue-reasoning-book.jpg)
+
 
 **The Little Blue Reasoning Book: 50 Powerful Principles for Clear and Effective Thinking** by Brandon Royal
 

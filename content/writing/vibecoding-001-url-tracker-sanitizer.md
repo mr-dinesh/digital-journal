@@ -4,8 +4,9 @@ date: 2026-03-14
 tags: ["Browser Extension", "Privacy", "VibeCoding"]
 aliases: ["/writing/vibe_coding_001/"]
 description: "Built a browser extension with Gemini that strips tracking parameters from URLs before you open them. Day 1 of the 100 Vibe Coding Projects challenge."
-featureimage: "/images/writing/vibecoding-001-purelink.png"
 ---
+![image](/images/writing/vibecoding-001-purelink.png)
+
 
 ### Two big ideas here
 - Idea#1: Use an LLM, to create something, anything

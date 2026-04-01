@@ -4,8 +4,9 @@ date: 2026-03-17
 tags: ["Security", "Career", "AI", "VibeCoding"]
 aliases: ["/writing/vibecoding-004-interview_simulator_webapp/"]
 description: "A browser-based flashcard simulator with 80+ cards for Director-level cybersecurity interview prep — covering risk, governance, STAR storytelling, and leadership vocabulary."
-featureimage: "/images/writing/vibecoding-004-interview-simulator.png"
 ---
+![image](/images/writing/vibecoding-004-interview-simulator.png)
+
 
 ### Prompt Used: 
 Build an interview simulator, for an upcoming job interview for a senior cybersecurity role. Generate flashcards which will give me appropriate vocabulary for risk, governance, leader, team building, story-telling in STAR format, context-action-impact frameworks.

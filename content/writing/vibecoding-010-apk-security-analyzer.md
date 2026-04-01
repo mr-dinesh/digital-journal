@@ -4,8 +4,9 @@ date: 2026-03-31
 tags: ["Security", "Android", "Flask", "Python", "VibeCoding"]
 aliases: ["/writing/vibecoding-day010-offline-apk-security-analyzer/"]
 description: "A local Flask tool for APK security analysis — parses permissions, scans for secrets, fingerprints SDKs, and checks crypto usage. Nothing leaves your machine."
-featureimage: "/images/writing/vibecoding-010-apk-analyzer.png"
 ---
+![image](/images/writing/vibecoding-010-apk-analyzer.png)
+
 
 ### Building an Offline APK Security Analyzer in Flask
 
