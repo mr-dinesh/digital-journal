@@ -5,10 +5,7 @@ author: "mrdee"
 tags: ["book-notes", "communication", "persuasion", "listening"]
 categories: ["reading"]
 description: "Notes from Verbal Judo: The Gentle Art of Persuasion by George J. Thompson. On reading people, decoding meaning, and communicating with presence."
-cover:
-  image: "/images/reading/verbal-judo.jpg"
-  alt: "Verbal Judo: The Gentle Art of Persuasion by George J. Thompson — book cover"
-  relative: false
+featureimage: "/images/reading/verbal-judo.jpg"
 draft: false
 ---
 

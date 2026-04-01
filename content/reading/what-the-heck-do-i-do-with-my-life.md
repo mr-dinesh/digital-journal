@@ -5,10 +5,7 @@ author: "mrdee"
 tags: ["book-notes", "career", "mindset", "self-belief", "agency"]
 categories: ["reading"]
 description: "Notes from What the Heck Do I Do with My Life? by Ravi Venkatesan. On mindset, self-belief, and taking charge in a volatile, uncertain world."
-cover:
-  image: "/images/reading/what-the-heck-do-i-do-with-my-life.jpg"
-  alt: "What the Heck Do I Do with My Life? by Ravi Venkatesan — book cover"
-  relative: false
+featureimage: "/images/reading/what-the-heck-do-i-do-with-my-life.jpg"
 draft: false
 ---
 
