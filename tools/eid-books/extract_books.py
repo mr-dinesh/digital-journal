@@ -5,12 +5,12 @@ Extract books mentioned in "Everything is Everything" podcast show notes.
 Workflow:
   1. Fetch all episode descriptions from YouTube via yt-dlp (no API key needed)
   2. Cache them locally so you can re-run without re-fetching
-  3. Send all descriptions to Claude in one Batches API call (50% cheaper)
+  3. Extract books using Groq API (free tier, no payment required)
   4. Write results to eid_books.csv — import into Google Sheets
 
 Usage:
     pip install -r requirements.txt
-    export ANTHROPIC_API_KEY=your_key
+    export GROQ_API_KEY=your_key   # free at console.groq.com
     python extract_books.py
 """
 
@@ -18,16 +18,19 @@ import json
 import csv
 import time
 import sys
+import os
 from pathlib import Path
-
-import anthropic
-from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
-from anthropic.types.messages.batch_create_params import Request
+from urllib.request import urlopen, Request as URLRequest
+from urllib.parse import urlencode
+from urllib.error import HTTPError
 
 PLAYLIST_URL = "https://www.youtube.com/playlist?list=PLIG8a9wNRHVu-Aw2VgUJacXlpsJMbF5Y_"
 CACHE_FILE = "episodes_cache.json"
 OUTPUT_FILE = "eid_books.csv"
 MAX_DESCRIPTION_CHARS = 4000
+
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_MODEL = "llama-3.1-8b-instant"   # fast, free, good at extraction
 
 EXTRACTION_PROMPT = """\
 Extract all book titles and their authors mentioned in these podcast show notes.
@@ -56,7 +59,6 @@ Example: [{{"title": "Thinking, Fast and Slow", "author": "Daniel Kahneman"}}]\
 # ---------------------------------------------------------------------------
 
 def fetch_episodes_from_youtube() -> list[dict]:
-    """Fetch all video metadata including descriptions using yt-dlp."""
     try:
         import yt_dlp
     except ImportError:
@@ -64,14 +66,14 @@ def fetch_episodes_from_youtube() -> list[dict]:
         sys.exit(1)
 
     print("Fetching episode data from YouTube (no API key needed)...")
-    print("This makes one request per episode — expect 3-5 minutes for 128 episodes.\n")
+    print("Expect 3-5 minutes for 128 episodes.\n")
 
     episodes = []
     ydl_opts = {
         "quiet": True,
         "no_warnings": True,
-        "extract_flat": False,   # needed to get descriptions
-        "ignoreerrors": True,    # skip unavailable videos instead of crashing
+        "extract_flat": False,
+        "ignoreerrors": True,
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -95,7 +97,6 @@ def fetch_episodes_from_youtube() -> list[dict]:
 
 
 def load_or_fetch_episodes() -> list[dict]:
-    """Return episodes from local cache, or fetch and cache them."""
     cache = Path(CACHE_FILE)
     if cache.exists():
         print(f"Loading episodes from cache ({CACHE_FILE})...")
@@ -113,65 +114,57 @@ def load_or_fetch_episodes() -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
-# Step 2: Extract books via Batches API
+# Step 2: Extract books via Groq API (free tier)
 # ---------------------------------------------------------------------------
 
-def build_batch_requests(episodes: list[dict]) -> list[Request]:
-    requests = []
-    for ep in episodes:
-        description = (ep.get("description") or "").strip()
-        if not description:
-            continue
-        requests.append(Request(
-            custom_id=ep["id"],
-            params=MessageCreateParamsNonStreaming(
-                model="claude-haiku-4-5",
-                max_tokens=512,
-                messages=[{
-                    "role": "user",
-                    "content": EXTRACTION_PROMPT.format(
-                        title=ep["title"],
-                        description=description[:MAX_DESCRIPTION_CHARS],
-                    ),
-                }],
-            ),
-        ))
-    return requests
+def groq_extract(api_key: str, title: str, description: str) -> list[dict]:
+    """Call Groq API to extract books from one episode description."""
+    payload = json.dumps({
+        "model": GROQ_MODEL,
+        "messages": [
+            {"role": "user", "content": EXTRACTION_PROMPT.format(
+                title=title,
+                description=description[:MAX_DESCRIPTION_CHARS],
+            )}
+        ],
+        "temperature": 0,
+        "max_tokens": 512,
+    }).encode()
 
+    req = URLRequest(
+        GROQ_API_URL,
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
 
-def run_batch(client: anthropic.Anthropic, requests: list[Request]) -> dict:
-    """Submit batch, poll until done, return {custom_id: result} mapping."""
-    print(f"Submitting batch with {len(requests)} requests...")
-    batch = client.messages.batches.create(requests=requests)
-    print(f"Batch ID: {batch.id}\n")
+    try:
+        with urlopen(req, timeout=30) as resp:
+            data = json.loads(resp.read())
+    except HTTPError as e:
+        body = e.read().decode()
+        if e.code == 429:
+            # Rate limited — wait and retry once
+            retry_after = int(e.headers.get("retry-after", "10"))
+            print(f"    Rate limited, waiting {retry_after}s...")
+            time.sleep(retry_after)
+            with urlopen(req, timeout=30) as resp:
+                data = json.loads(resp.read())
+        else:
+            print(f"    Groq error {e.code}: {body[:200]}")
+            return []
 
-    while True:
-        batch = client.messages.batches.retrieve(batch.id)
-        c = batch.request_counts
-        total = c.processing + c.succeeded + c.errored + c.canceled + c.expired
-        done = c.succeeded + c.errored + c.canceled + c.expired
-        print(f"  {batch.processing_status} — {done}/{total} done "
-              f"({c.succeeded} ok, {c.errored} errors)")
+    text = data["choices"][0]["message"]["content"].strip()
 
-        if batch.processing_status == "ended":
-            break
-        time.sleep(15)
-
-    print(f"\nBatch complete: {c.succeeded} succeeded, {c.errored} errored.\n")
-    return {r.custom_id: r for r in client.messages.batches.results(batch.id)}
-
-
-# ---------------------------------------------------------------------------
-# Step 3: Parse results
-# ---------------------------------------------------------------------------
-
-def parse_books(text: str) -> list[dict]:
-    """Parse a JSON book list from Claude's response text."""
-    text = text.strip()
+    # Strip markdown fences if model added them
     if text.startswith("```"):
         lines = text.splitlines()
-        inner = lines[1:-1] if lines and lines[-1].strip() == "```" else lines[1:]
+        inner = lines[1:-1] if lines[-1].strip() == "```" else lines[1:]
         text = "\n".join(inner).strip()
+
     try:
         parsed = json.loads(text)
         if isinstance(parsed, list):
@@ -181,48 +174,60 @@ def parse_books(text: str) -> list[dict]:
     return []
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
-def main():
-    client = anthropic.Anthropic()
-
-    # 1. Episodes
-    episodes = load_or_fetch_episodes()
-    ep_by_id = {ep["id"]: ep for ep in episodes}
-    print(f"Total episodes: {len(episodes)}")
-
-    # 2. Batch extraction
-    batch_reqs = build_batch_requests(episodes)
-    skipped = len(episodes) - len(batch_reqs)
-    if skipped:
-        print(f"Skipping {skipped} episode(s) with no description.\n")
-
-    batch_results = run_batch(client, batch_reqs)
-
-    # 3. Compile rows
+def extract_all_books(api_key: str, episodes: list[dict]) -> list[dict]:
     rows = []
-    for ep_id, result in batch_results.items():
-        ep = ep_by_id.get(ep_id, {})
-        if result.result.type != "succeeded":
+    total = len(episodes)
+
+    for i, ep in enumerate(episodes, 1):
+        description = (ep.get("description") or "").strip()
+        if not description:
+            print(f"  [{i}/{total}] SKIP (no description) — {ep['title'][:50]}")
             continue
-        text = result.result.message.content[0].text
-        books = parse_books(text)
+
+        print(f"  [{i}/{total}] {ep['title'][:60]}")
+        books = groq_extract(api_key, ep["title"], description)
+
+        if books:
+            print(f"          → {len(books)} book(s): {', '.join(b.get('title','?') for b in books[:3])}")
         for book in books:
             title = (book.get("title") or "").strip()
             if not title:
                 continue
             rows.append({
-                "Episode Title": ep.get("title", ""),
-                "Episode URL": ep.get("url", ""),
+                "Episode Title": ep["title"],
+                "Episode URL": ep["url"],
                 "Book Title": title,
                 "Author": (book.get("author") or "").strip(),
             })
 
+        # Groq free tier: ~30 req/min — small delay keeps us well within limits
+        time.sleep(2)
+
+    return rows
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
+def main():
+    api_key = os.environ.get("GROQ_API_KEY", "").strip()
+    if not api_key:
+        print("Error: GROQ_API_KEY not set.")
+        print("Get a free key (no payment) at: https://console.groq.com")
+        print("Then: export GROQ_API_KEY=gsk_...")
+        sys.exit(1)
+
+    # 1. Episodes
+    episodes = load_or_fetch_episodes()
+    print(f"Processing {len(episodes)} episodes...\n")
+
+    # 2. Extract
+    rows = extract_all_books(api_key, episodes)
+
     rows.sort(key=lambda r: r["Episode Title"])
 
-    # 4. Write CSV
+    # 3. Write CSV
     with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(
             f, fieldnames=["Episode Title", "Episode URL", "Book Title", "Author"]
@@ -230,9 +235,9 @@ def main():
         writer.writeheader()
         writer.writerows(rows)
 
-    print(f"Found {len(rows)} book mentions across {len(episodes)} episodes.")
-    print(f"Saved to: {OUTPUT_FILE}\n")
-    print("To import into Google Sheets:")
+    print(f"\nDone! Found {len(rows)} book mentions across {len(episodes)} episodes.")
+    print(f"Saved to: {OUTPUT_FILE}")
+    print("\nTo import into Google Sheets:")
     print("  File → Import → Upload → select eid_books.csv → Replace spreadsheet")
 
 
