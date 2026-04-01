@@ -278,20 +278,82 @@ def _finish_fetch(episodes: list[dict]) -> list[dict]:
     return episodes
 
 
+def fill_missing_descriptions(episodes: list[dict]) -> list[dict]:
+    """Fetch descriptions for episodes that have empty descriptions."""
+    missing = [e for e in episodes if not (e.get("description") or "").strip()]
+    if not missing:
+        return episodes
+
+    print(f"{len(missing)} episodes have empty descriptions. Fetching now...")
+
+    # Try Piped /streams/{id} first — most reliable for descriptions
+    print("Looking for a working Piped instance...")
+    base = find_working_piped_instance()
+    fetch_fn = None
+    if base:
+        def fetch_fn(vid_id):
+            return piped_get(base, f"/streams/{vid_id}").get("description", "")
+    else:
+        print("Piped unavailable. Trying Invidious...")
+        inv_base = find_working_invidious_instance()
+        if inv_base:
+            def fetch_fn(vid_id):
+                return invidious_get(inv_base, f"/api/v1/videos/{vid_id}").get("description", "")
+
+    if not fetch_fn:
+        print("Warning: no proxy available to fetch descriptions. Descriptions will remain empty.")
+        return episodes
+
+    id_map = {e["id"]: e for e in episodes}
+    total = len(missing)
+    for i, ep in enumerate(missing, 1):
+        print(f"  [{i}/{total}] {ep['title'][:70]}")
+        try:
+            desc = fetch_fn(ep["id"])
+            id_map[ep["id"]]["description"] = desc or ""
+            if desc:
+                print(f"         ✓ got {len(desc)} chars")
+            else:
+                print(f"         — empty")
+        except Exception as e:
+            print(f"         Warning: {e}")
+        time.sleep(0.4)
+
+    return list(id_map.values())
+
+
+def deduplicate(episodes: list[dict]) -> list[dict]:
+    seen = set()
+    out = []
+    for ep in episodes:
+        if ep["id"] not in seen:
+            seen.add(ep["id"])
+            out.append(ep)
+    return out
+
+
+def save_cache(episodes: list[dict]) -> None:
+    with open(CACHE_FILE, "w", encoding="utf-8") as f:
+        json.dump(episodes, f, indent=2, ensure_ascii=False)
+
+
 def load_or_fetch_episodes() -> list[dict]:
     cache = Path(CACHE_FILE)
     if cache.exists():
         with open(cache, encoding="utf-8") as f:
             episodes = json.load(f)
         if episodes:
-            print(f"Loaded {len(episodes)} episodes from cache.\n")
+            episodes = deduplicate(episodes)
+            print(f"Loaded {len(episodes)} episodes from cache.")
+            episodes = fill_missing_descriptions(episodes)
+            save_cache(episodes)
+            print()
             return episodes
         print("Cache is empty — re-fetching...\n")
 
     episodes = fetch_episodes_from_youtube()
-
-    with open(cache, "w", encoding="utf-8") as f:
-        json.dump(episodes, f, indent=2, ensure_ascii=False)
+    episodes = deduplicate(episodes)
+    save_cache(episodes)
     print(f"\nCached {len(episodes)} episodes.\n")
     return episodes
 
