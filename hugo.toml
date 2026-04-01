@@ -14,7 +14,7 @@ buildExpired = false
 
 [params]
   description = "Daily Notes"
-  colorScheme = "slate"
+  colorScheme = "ocean"
   defaultAppearance = "auto"
   autoSwitchAppearance = true
   enableSearch = true
