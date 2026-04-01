@@ -36,6 +36,10 @@ PIPED_INSTANCES = [
     "https://api.piped.projectsegfau.lt",
     "https://piped-api.garudalinux.org",
     "https://pipedapi.drgns.space",
+    "https://api.piped.yt",
+    "https://piped.privacydev.net/api",
+    "https://api.piped.adminforge.de",
+    "https://pipedapi.reallyaweso.me",
 ]
 
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
@@ -70,7 +74,7 @@ Example: [{{"title": "Thinking, Fast and Slow", "author": "Daniel Kahneman"}}]\
 def piped_get(base: str, path: str) -> dict:
     url = f"{base}{path}"
     req = URLRequest(url, headers={"User-Agent": "curl/8.0"})
-    with urlopen(req, timeout=15) as resp:
+    with urlopen(req, timeout=30) as resp:
         return json.loads(resp.read())
 
 
@@ -171,19 +175,23 @@ def fetch_episodes_via_ytdlp() -> list[dict]:
 # ---------------------------------------------------------------------------
 
 def fetch_episodes_from_youtube() -> list[dict]:
+    in_ci = os.environ.get("CI", "") == "true"
+
     print("Looking for a working Piped instance...")
     base = find_working_piped_instance()
 
     if base:
         episodes = fetch_episodes_via_piped(base)
+    elif in_ci:
+        print("\nError: all Piped instances are unavailable.")
+        print("Re-run the workflow — instances are sometimes temporarily down.")
+        sys.exit(1)
     else:
-        print("All Piped instances unavailable — falling back to yt-dlp...")
+        print("All Piped instances unavailable — falling back to yt-dlp (local only)...")
         episodes = fetch_episodes_via_ytdlp()
 
     if not episodes:
-        print("\nError: failed to fetch any episodes.")
-        print("Piped instances may be down and yt-dlp may be blocked.")
-        print("Try re-running the workflow, or run the script locally.")
+        print("\nError: fetched 0 episodes. Try re-running.")
         sys.exit(1)
 
     return episodes
