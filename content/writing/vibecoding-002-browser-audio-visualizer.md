@@ -4,8 +4,9 @@ date: 2026-03-15
 tags: ["Audio", "WebGL", "Browser", "VibeCoding"]
 aliases: ["/writing/vibecoding_day002/"]
 description: "Used Claude to build VIZMIX — a Winamp-inspired 3D audio visualizer in the browser with five visualization modes, live mic input, and trippy WebGL effects."
-featureimage: "/images/writing/vibecoding-002-vizmix.png"
 ---
+![image](/images/writing/vibecoding-002-vizmix.png)
+
 
 ### Create A Browser App - for visualising music
  - Music visualiser app insipired by [Justin's WinAmp]( It really kicks the llama's ass :-)

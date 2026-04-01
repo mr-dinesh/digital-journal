@@ -5,9 +5,10 @@ author: "mrdee"
 tags: ["book-notes", "philosophy", "spirituality", "consciousness", "meditation"]
 categories: ["reading"]
 description: "Notes from The Upanishads translated by Eknath Easwaran. On consciousness as the final frontier, meditation as a lab science, and the infinite as the only source of joy."
-featureimage: "/images/reading/the-upanishads.jpg"
 draft: false
 ---
+![image](/images/reading/the-upanishads.jpg)
+
 
 **The Upanishads** translated by Eknath Easwaran (2nd Edition)
 

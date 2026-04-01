@@ -5,9 +5,10 @@ author: "mrdee"
 tags: ["book-notes", "mindfulness", "emotional-intelligence", "leadership"]
 categories: ["reading"]
 description: "Notes from Search Inside Yourself by Chade-Meng Tan. On emotional intelligence, attention training, and the quiet mechanics of not suffering."
-featureimage: "/images/reading/search-inside-yourself.jpg"
 draft: false
 ---
+![image](/images/reading/search-inside-yourself.jpg)
+
 
 **Search Inside Yourself** by Chade-Meng Tan  
 *With forewords by Daniel Goleman and Jon Kabat-Zinn*

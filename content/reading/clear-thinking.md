@@ -5,9 +5,10 @@ author: "mrdee"
 tags: ["book-notes", "thinking", "decision-making", "judgment", "mental-models"]
 categories: ["reading"]
 description: "Notes from Clear Thinking by Shane Parrish. On pausing before reacting, overcoming biological defaults, and putting outcome over ego."
-featureimage: "/images/reading/clear-thinking.jpg"
 draft: false
 ---
+![image](/images/reading/clear-thinking.jpg)
+
 
 **Clear Thinking: Turning Ordinary Moments into Extraordinary Results** by Shane Parrish
 
