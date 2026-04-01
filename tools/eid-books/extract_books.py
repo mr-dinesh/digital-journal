@@ -301,23 +301,65 @@ def fill_missing_descriptions(episodes: list[dict]) -> list[dict]:
                 return invidious_get(inv_base, f"/api/v1/videos/{vid_id}").get("description", "")
 
     if not fetch_fn:
+        in_ci = os.environ.get("CI", "") == "true"
+        if not in_ci:
+            print("Piped/Invidious unavailable. Falling back to yt-dlp for descriptions...")
+            return _fill_via_ytdlp(episodes)
         print("Warning: no proxy available to fetch descriptions. Descriptions will remain empty.")
         return episodes
 
     id_map = {e["id"]: e for e in episodes}
     total = len(missing)
+    failed = 0
     for i, ep in enumerate(missing, 1):
         print(f"  [{i}/{total}] {ep['title'][:70]}")
         try:
             desc = fetch_fn(ep["id"])
             id_map[ep["id"]]["description"] = desc or ""
             if desc:
-                print(f"         ✓ got {len(desc)} chars")
+                print(f"         got {len(desc)} chars")
             else:
-                print(f"         — empty")
+                failed += 1
         except Exception as e:
             print(f"         Warning: {e}")
+            failed += 1
         time.sleep(0.4)
+
+    # If proxy returned mostly empty/errors, fall back to yt-dlp locally
+    if failed > total * 0.5 and os.environ.get("CI", "") != "true":
+        print(f"\n{failed}/{total} descriptions empty via proxy. Falling back to yt-dlp...")
+        return _fill_via_ytdlp(episodes)
+
+    return list(id_map.values())
+
+
+def _fill_via_ytdlp(episodes: list[dict]) -> list[dict]:
+    """Re-fetch descriptions for empty episodes using yt-dlp (local only)."""
+    try:
+        import yt_dlp
+    except ImportError:
+        print("Error: yt-dlp not installed. Run: pip install yt-dlp")
+        return episodes
+
+    missing_ids = {e["id"] for e in episodes if not (e.get("description") or "").strip()}
+    id_map = {e["id"]: e for e in episodes}
+
+    print(f"Fetching {len(missing_ids)} descriptions via yt-dlp...")
+    ydl_opts = {"quiet": True, "no_warnings": True, "extract_flat": False, "ignoreerrors": True}
+
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        for i, vid_id in enumerate(missing_ids, 1):
+            title = id_map[vid_id]["title"]
+            print(f"  [{i}/{len(missing_ids)}] {title[:70]}")
+            try:
+                info = ydl.extract_info(f"https://www.youtube.com/watch?v={vid_id}", download=False)
+                if info:
+                    desc = info.get("description", "") or ""
+                    id_map[vid_id]["description"] = desc
+                    if desc:
+                        print(f"         got {len(desc)} chars")
+            except Exception as e:
+                print(f"         Warning: {e}")
 
     return list(id_map.values())
 
