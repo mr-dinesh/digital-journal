@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EiE Books → CSV</title>
+<style>
+  body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; }
+  h1 { font-size: 1.4em; }
+  textarea { width: 100%; height: 400px; font-family: monospace; font-size: 13px; }
+  button { margin-top: 12px; padding: 10px 24px; font-size: 15px; cursor: pointer; background: #2563eb; color: white; border: none; border-radius: 6px; }
+  button:hover { background: #1d4ed8; }
+  #status { margin-top: 12px; font-weight: bold; color: #16a34a; }
+  .instructions { background: #f1f5f9; padding: 14px; border-radius: 6px; margin-bottom: 16px; line-height: 1.6; }
+  code { background: #e2e8f0; padding: 2px 5px; border-radius: 3px; font-size: 13px; }
+</style>
+</head>
+<body>
+<h1>Everything is Everything — Books CSV Generator</h1>
+
+<div class="instructions">
+  <strong>Instructions:</strong><br>
+  1. Go back to the Claude.ai conversation where books were extracted<br>
+  2. Copy all the <code>BOOK|...</code> lines<br>
+  3. Paste them into the box below<br>
+  4. Click <strong>Download CSV</strong> — the file saves automatically
+</div>
+
+<textarea id="input" placeholder="Paste BOOK| lines here, e.g.:
+BOOK|Ep 128 - Some Title|The Selfish Gene|Richard Dawkins
+BOOK|Ep 128 - Some Title|In Service of the Republic|Vijay Kelkar &amp; Ajay Shah
+..."></textarea>
+
+<br>
+<button onclick="downloadCSV()">Download CSV</button>
+<div id="status"></div>
+
+<script>
+function downloadCSV() {
+  const raw = document.getElementById('input').value;
+  const lines = raw.split('\n');
+  const rows = [['Episode Title', 'Book Title', 'Author']];
+  let count = 0;
+
+  for (let line of lines) {
+    line = line.trim();
+    if (!line.startsWith('BOOK|')) continue;
+    const parts = line.split('|');
+    if (parts.length < 4) continue;
+    const episode = parts[1].trim();
+    const title   = parts[2].trim();
+    const author  = parts[3].trim().toLowerCase() === 'unknown' ? '' : parts[3].trim();
+    if (title) {
+      rows.push([episode, title, author]);
+      count++;
+    }
+  }
+
+  if (count === 0) {
+    document.getElementById('status').textContent = 'No BOOK| lines found. Make sure lines start with BOOK|';
+    document.getElementById('status').style.color = '#dc2626';
+    return;
+  }
+
+  // Build CSV with proper quoting
+  const csv = rows.map(r =>
+    r.map(cell => '"' + cell.replace(/"/g, '""') + '"').join(',')
+  ).join('\r\n');
+
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'eid_books.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+
+  document.getElementById('status').textContent = 'Done! ' + count + ' books exported to eid_books.csv';
+  document.getElementById('status').style.color = '#16a34a';
+}
+</script>
+</body>
+</html>
