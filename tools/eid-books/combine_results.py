@@ -5,8 +5,8 @@ Step 2: Combine Claude.ai responses into a single CSV.
 Usage:
     python combine_results.py
 
-Reads all response_XX.txt files from C:\Users\Sushmita\eie_batches\
-and writes C:\Users\Sushmita\eid_books.csv
+Reads all response_XX.txt files from C:/Users/Sushmita/eie_batches/
+and writes C:/Users/Sushmita/eid_books.csv
 """
 
 import csv

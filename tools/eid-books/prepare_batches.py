@@ -5,7 +5,7 @@ Step 1: Prepare batch prompt files to paste into Claude.ai (free).
 Usage:
     python prepare_batches.py
 
-This creates files like batch_01.txt, batch_02.txt, etc. in C:\Users\Sushmita\eie_batches\
+This creates files like batch_01.txt, batch_02.txt, etc. in C:/Users/Sushmita/eie_batches/
 Paste each file into Claude.ai and save the response as response_01.txt, response_02.txt, etc.
 Then run: python combine_results.py
 """
