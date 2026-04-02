@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-Extract books from local eie_with_desc.json using the Groq API (free).
+Extract books from local eie_with_desc.json using OpenRouter (free models).
 
 Usage:
-    set GROQ_API_KEY=your_key
+    set OPENROUTER_API_KEY=your_key
     python extract_from_local.py
 
-Get a FREE API key (no credit card) at: https://console.groq.com
+Get a FREE API key (no credit card) at: https://openrouter.ai
+Free models are available — no payment needed.
 """
 
 import json
@@ -19,9 +20,9 @@ import requests
 INPUT_FILE = r"C:\Users\Sushmita\eie_with_desc.json"
 OUTPUT_FILE = r"C:\Users\Sushmita\eid_books.csv"
 
-GROQ_MODEL = "llama-3.1-8b-instant"
+OPENROUTER_MODEL = "meta-llama/llama-3.1-8b-instruct:free"
 MAX_DESCRIPTION_CHARS = 4000
-GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 EXTRACTION_PROMPT = """\
 Extract all book titles and their authors mentioned in these podcast show notes.
@@ -48,7 +49,7 @@ Example: [{{"title": "Thinking, Fast and Slow", "author": "Daniel Kahneman"}}]\
 def groq_extract(api_key, title, description):
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     payload = {
-        "model": GROQ_MODEL,
+        "model": OPENROUTER_MODEL,
         "temperature": 0,
         "max_tokens": 512,
         "messages": [{"role": "user", "content": EXTRACTION_PROMPT.format(
@@ -58,14 +59,14 @@ def groq_extract(api_key, title, description):
     }
 
     for attempt in range(5):
-        resp = requests.post(GROQ_URL, headers=headers, json=payload, timeout=30)
+        resp = requests.post(OPENROUTER_URL, headers=headers, json=payload, timeout=30)
         if resp.status_code == 429:
             wait = 30 * (attempt + 1)
             print(f"    Rate limited — waiting {wait}s...")
             time.sleep(wait)
             continue
         if not resp.ok:
-            print(f"    Groq error {resp.status_code}: {resp.text[:200]}")
+            print(f"    OpenRouter error {resp.status_code}: {resp.text[:200]}")
             return []
         data = resp.json()
         break
@@ -87,11 +88,11 @@ def groq_extract(api_key, title, description):
 
 
 def main():
-    api_key = os.environ.get("GROQ_API_KEY", "").strip()
+    api_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
     if not api_key:
-        print("Error: GROQ_API_KEY not set.")
-        print("Get a FREE key (no credit card) at: https://console.groq.com")
-        print("Run:  set GROQ_API_KEY=your_key_here")
+        print("Error: OPENROUTER_API_KEY not set.")
+        print("Get a FREE key (no credit card) at: https://openrouter.ai")
+        print("Run:  set OPENROUTER_API_KEY=your_key_here")
         sys.exit(1)
 
     # Load episodes — supports both JSONL and JSON array formats
