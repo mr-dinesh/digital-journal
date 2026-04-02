@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """
-Extract books from local eie_full_desc.json (yt-dlp JSONL or JSON array format).
+Extract books from local eie_with_desc.json using the Anthropic Claude API.
 
 Usage:
-    set GEMINI_API_KEY=your_key
+    pip install anthropic
+    set ANTHROPIC_API_KEY=your_key
     python extract_from_local.py
+
+Get a free API key at: https://console.anthropic.com
 """
 
 import json
@@ -12,12 +15,11 @@ import csv
 import time
 import sys
 import os
-import requests
+import anthropic
 
-INPUT_FILE = r"C:\Users\Sushmita\eie_full_desc.json"
+INPUT_FILE = r"C:\Users\Sushmita\eie_with_desc.json"
 OUTPUT_FILE = r"C:\Users\Sushmita\eid_books.csv"
 
-GEMINI_MODEL = "gemini-2.0-flash"
 MAX_DESCRIPTION_CHARS = 4000
 
 EXTRACTION_PROMPT = """\
@@ -42,52 +44,50 @@ Example: [{{"title": "Thinking, Fast and Slow", "author": "Daniel Kahneman"}}]\
 """
 
 
-def gemini_extract(api_key, title, description):
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent?key={api_key}"
-    payload = {
-        "contents": [{"parts": [{"text": EXTRACTION_PROMPT.format(
-            title=title,
-            description=description[:MAX_DESCRIPTION_CHARS],
-        )}]}],
-        "generationConfig": {"temperature": 0, "maxOutputTokens": 512},
-    }
-
+def claude_extract(client, title, description):
     for attempt in range(5):
-        resp = requests.post(url, json=payload, timeout=30)
-        if resp.status_code == 429:
-            wait = 60 * (attempt + 1)
+        try:
+            message = client.messages.create(
+                model="claude-haiku-4-5-20251001",
+                max_tokens=512,
+                temperature=0,
+                messages=[{
+                    "role": "user",
+                    "content": EXTRACTION_PROMPT.format(
+                        title=title,
+                        description=description[:MAX_DESCRIPTION_CHARS],
+                    )
+                }]
+            )
+            text = message.content[0].text.strip()
+            if text.startswith("```"):
+                lines = text.splitlines()
+                text = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
+            parsed = json.loads(text)
+            if isinstance(parsed, list):
+                return parsed
+        except anthropic.RateLimitError:
+            wait = 30 * (attempt + 1)
             print(f"    Rate limited — waiting {wait}s...")
             time.sleep(wait)
             continue
-        if not resp.ok:
-            print(f"    Gemini error {resp.status_code}: {resp.text[:200]}")
+        except (json.JSONDecodeError, IndexError):
+            pass
+        except anthropic.APIError as e:
+            print(f"    API error: {e}")
             return []
-        data = resp.json()
-        break
-    else:
-        return []
-
-    text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
-    if text.startswith("```"):
-        lines = text.splitlines()
-        text = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
-
-    try:
-        parsed = json.loads(text)
-        if isinstance(parsed, list):
-            return parsed
-    except json.JSONDecodeError:
-        pass
     return []
 
 
 def main():
-    api_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
     if not api_key:
-        print("Error: GEMINI_API_KEY not set.")
-        print("Get a free key at: aistudio.google.com")
-        print("Run:  set GEMINI_API_KEY=your_key_here")
+        print("Error: ANTHROPIC_API_KEY not set.")
+        print("Get a free API key at: https://console.anthropic.com")
+        print("Run:  set ANTHROPIC_API_KEY=your_key_here")
         sys.exit(1)
+
+    client = anthropic.Anthropic(api_key=api_key)
 
     # Load episodes — supports both JSONL and JSON array formats
     episodes = []
@@ -95,14 +95,12 @@ def main():
         raw = f.read().strip()
 
     if raw.startswith("["):
-        # JSON array (e.g. from yt-dlp playlist dump)
         outer = json.loads(raw)
         entries = outer.get("entries", outer) if isinstance(outer, dict) else outer
         for ep in entries:
             if isinstance(ep, dict):
                 episodes.append(ep)
     else:
-        # JSONL — one JSON object per line
         for line in raw.splitlines():
             line = line.strip()
             if not line:
@@ -120,7 +118,6 @@ def main():
 
     FIELDNAMES = ["Episode Title", "Episode URL", "Book Title", "Author"]
 
-    # Open CSV for progressive writing (write header only if file is new)
     csv_is_new = not os.path.exists(OUTPUT_FILE)
     csv_file = open(OUTPUT_FILE, "a", newline="", encoding="utf-8")
     writer = csv.DictWriter(csv_file, fieldnames=FIELDNAMES)
@@ -140,7 +137,7 @@ def main():
             continue
 
         print(f"  [{i}/{total}] {title[:60]}")
-        books = gemini_extract(api_key, title, description)
+        books = claude_extract(client, title, description)
         if books:
             print(f"         → {', '.join(b.get('title','?') for b in books[:3])}")
         for book in books:
@@ -153,14 +150,14 @@ def main():
                     "Author": (book.get("author") or "").strip(),
                 })
                 total_books += 1
-        csv_file.flush()  # save after every episode
-        time.sleep(5)
+        csv_file.flush()
+        time.sleep(1)
 
     csv_file.close()
 
     print(f"\nDone! Found {total_books} book mentions across {total} episodes.")
     print(f"Saved to: {OUTPUT_FILE}")
-    print("\nImport to Google Sheets: File → Import → Upload → select eid_books.csv")
+    print("\nImport to Google Sheets: File \u2192 Import \u2192 Upload \u2192 select eid_books.csv")
 
 
 if __name__ == "__main__":
