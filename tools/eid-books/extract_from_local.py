@@ -17,8 +17,7 @@ import requests
 INPUT_FILE = r"C:\Users\Sushmita\eie_full.json"
 OUTPUT_FILE = r"C:\Users\Sushmita\eid_books.csv"
 
-GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-GROQ_MODEL = "llama-3.1-8b-instant"
+GEMINI_MODEL = "gemini-1.5-flash"
 MAX_DESCRIPTION_CHARS = 4000
 
 EXTRACTION_PROMPT = """\
@@ -43,37 +42,31 @@ Example: [{{"title": "Thinking, Fast and Slow", "author": "Daniel Kahneman"}}]\
 """
 
 
-def groq_extract(api_key, title, description):
+def gemini_extract(api_key, title, description):
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent?key={api_key}"
     payload = {
-        "model": GROQ_MODEL,
-        "messages": [{"role": "user", "content": EXTRACTION_PROMPT.format(
+        "contents": [{"parts": [{"text": EXTRACTION_PROMPT.format(
             title=title,
             description=description[:MAX_DESCRIPTION_CHARS],
-        )}],
-        "temperature": 0,
-        "max_tokens": 512,
-    }
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
+        )}]}],
+        "generationConfig": {"temperature": 0, "maxOutputTokens": 512},
     }
 
     for attempt in range(3):
-        resp = requests.post(GROQ_API_URL, json=payload, headers=headers, timeout=30)
+        resp = requests.post(url, json=payload, timeout=30)
         if resp.status_code == 429:
-            wait = int(resp.headers.get("retry-after", "20"))
-            print(f"    Rate limited — waiting {wait}s...")
-            time.sleep(wait)
+            print(f"    Rate limited — waiting 20s...")
+            time.sleep(20)
             continue
         if not resp.ok:
-            print(f"    Groq error {resp.status_code}: {resp.text[:200]}")
+            print(f"    Gemini error {resp.status_code}: {resp.text[:200]}")
             return []
         data = resp.json()
         break
     else:
         return []
 
-    text = data["choices"][0]["message"]["content"].strip()
+    text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
     if text.startswith("```"):
         lines = text.splitlines()
         text = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
@@ -88,10 +81,11 @@ def groq_extract(api_key, title, description):
 
 
 def main():
-    api_key = os.environ.get("GROQ_API_KEY", "").strip()
+    api_key = os.environ.get("GEMINI_API_KEY", "").strip()
     if not api_key:
-        print("Error: GROQ_API_KEY not set.")
-        print("Run:  set GROQ_API_KEY=your_key_here")
+        print("Error: GEMINI_API_KEY not set.")
+        print("Get a free key at: aistudio.google.com")
+        print("Run:  set GEMINI_API_KEY=your_key_here")
         sys.exit(1)
 
     # Load episodes from JSONL file
@@ -121,7 +115,7 @@ def main():
             continue
 
         print(f"  [{i}/{total}] {title[:60]}")
-        books = groq_extract(api_key, title, description)
+        books = gemini_extract(api_key, title, description)
         if books:
             print(f"         → {', '.join(b.get('title','?') for b in books[:3])}")
         for book in books:
