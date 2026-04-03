@@ -5,6 +5,8 @@ description: "I scraped all 128 episodes of the EiE podcast and built reference 
 tags: ["vibecoding", "podcast", "data", "books", "python", "amit varma", "eie"]
 ---
 
+![Everything is Everything Podcast](/images/eie-channel-thumbnail.jpg)
+
 I've been listening to *Everything is Everything* — Amit Varma and Ajay Shah's podcast — for a while now. Every episode is dense. Books, papers, essays, songs — recommendations come fast, buried in show notes that you'd have to open episode by episode to find. I kept thinking: somebody should just compile all of this.
 
 So I did.
@@ -125,7 +127,7 @@ A few things stood out while building this:
 
 The book recommendations are remarkably consistent. *Seeing Like a State* nine times. Scott's other work appears repeatedly. James C. Scott is clearly canonical on this podcast.
 
-The music selections are personal in a way the books aren't. Van Morrison, Joni Mitchell, Bob Dylan — there's a very specific sensibility here that feels like Amit Varma's personal listening rather than curation for the audience. Which makes it more interesting, not less.
+The music selections are personal in a way the books aren't. Van Morrison, Joni Mitchell, Bruce Springsteen — there's a very specific sensibility here that feels like Amit Varma's personal listening rather than curation for the audience. Which makes it more interesting, not less.
 
 The articles section reveals the actual intellectual substrate of the show. The Economics & Markets cluster dominates, but Philosophy and India & Policy are close behind. Amid all the policy papers there are poems, literary essays, and pieces on cricket. The show refuses to be one thing, and the article list reflects that.
 
