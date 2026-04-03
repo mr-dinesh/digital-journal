@@ -1,8 +1,8 @@
 ---
-title: "Everything is Everything: What 128 Episodes of Amit Varma's Podcast Recommend"
-date: 2025-07-12
+title: "Vibecoding 011: Everything is Everything — What 128 Episodes of Amit Varma's Podcast Recommend"
+date: 2026-04-03
 description: "I scraped all 128 episodes of the EiE podcast and built reference spreadsheets for every book, song, and article recommended. Here's how."
-tags: ["podcast", "data", "books", "python", "amit varma", "eie"]
+tags: ["vibecoding", "podcast", "data", "books", "python", "amit varma", "eie"]
 ---
 
 I've been listening to *Everything is Everything* — Amit Varma and Ajay Shah's podcast — for a while now. Every episode is dense. Books, papers, essays, songs — recommendations come fast, buried in show notes that you'd have to open episode by episode to find. I kept thinking: somebody should just compile all of this.
@@ -45,9 +45,9 @@ The tricky part wasn't extraction — it was filtering. Amazon links don't only 
 
 - A Nannari Root (herbal drink)
 - A FreeStyle Libre glucose monitoring sensor
-- The standing promo for *In Service of the Republic*, which appears in literally every single episode description
+- One item that appeared in every single episode description
 
-That last one was the interesting problem. Rather than hardcode it, I counted how many episodes each item appeared in. "In Service of the Republic" hit 128/128 — an obvious outlier. Everything else was episode-specific. That threshold approach cleanly separated boilerplate from genuine recommendations.
+Rather than hardcode it, I counted how many episodes each item appeared in. The outlier hit 128/128. Everything else was episode-specific. That threshold approach cleanly separated boilerplate from genuine recommendations.
 
 **Final count: 563 book recommendations across 128 episodes, 407 unique titles.**
 
@@ -65,7 +65,9 @@ Spotify links were easier — I only kept `album/`, `artist/`, `track/`, and `pl
 
 **Final count: 65 music recommendations.**
 
-Top artists: Van Morrison (5 appearances), Bob Dylan (4), U2 (4), Joni Mitchell (4). A very specific kind of taste.
+Top artists: Van Morrison (5 appearances), Bob Dylan (4), U2 (4), Joni Mitchell (4). A very specific kind of taste — and notably, Van Morrison shows up here because Amit discovered him downstream of Springsteen, who was the core influence first.
+
+One name conspicuously absent from the data: Bruce Springsteen. He never appears in the show notes because he isn't a recommendation — he's the foundation. The show is named *Everything is Everything* after a line in his song "You're Missing." Amit calls Springsteen his favourite songwriter of all time; Ajay says exactly the same and credits him as a major influence on his understanding of how to write in English. Episode 13 of the podcast is devoted entirely to him — released to coincide with Springsteen's birthday on September 23rd — and runs through his autobiography, his albums from *Born to Run* to *Devils and Dust*, his craft, and what his music means to both of them. He's the rare artist who doesn't show up in the spreadsheet because he's already inside the show itself.
 
 ---
 
