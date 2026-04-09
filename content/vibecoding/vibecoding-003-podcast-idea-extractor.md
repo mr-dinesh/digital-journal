@@ -2,7 +2,7 @@
 title: "Extracting One Usable Idea From Every Podcast Episode"
 date: 2026-03-16
 tags: ["Automation", "Podcast", "Python", "VibeCoding"]
-aliases: ["/writing/vibecoding-003-webscraping/"]
+aliases: ["/writing/vibecoding-003-webscraping/", "/writing/vibecoding-003-podcast-idea-extractor/"]
 description: "Scraped 165+ episodes of Think Fast, Talk Smart and used an LLM to distil each guest's core advice into 7 words or less, then assembled it into a video montage."
 ---
 ![image](/images/writing/vibecoding-003-podcast-montage.png)

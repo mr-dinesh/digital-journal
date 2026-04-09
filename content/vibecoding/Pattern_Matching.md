@@ -1,5 +1,6 @@
 
 ---
+aliases: ["/writing/pattern_matching/"]
 title: "Pattern Matching"
 date: 2026-02-12
 tags: ["Writing"]

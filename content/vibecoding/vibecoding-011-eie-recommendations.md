@@ -1,4 +1,5 @@
 ---
+aliases: ["/writing/vibecoding-011-eie-recommendations/"]
 title: "Vibecoding 011: Everything is Everything — What 128 Episodes of Amit Varma's Podcast Recommend"
 date: 2026-04-03
 description: "I scraped all 128 episodes of the EiE podcast and built reference spreadsheets for every book, song, and article recommended. Here's how."

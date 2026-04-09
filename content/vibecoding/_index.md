@@ -1,4 +1,5 @@
 ---
+aliases: ["/writing/"]
 title: "Writing"
 description: "100 Vibe Coding Projects — building one thing a day with AI, and writing about what happened."
 ---
