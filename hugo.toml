@@ -73,5 +73,5 @@ buildExpired = false
 
   [[menu.main]]
     name = "Vibe Coding"
-    url = "/writing/"
+    url = "/vibecoding/"
     weight = 3
