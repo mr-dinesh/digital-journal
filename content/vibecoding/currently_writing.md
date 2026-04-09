@@ -1,4 +1,5 @@
 ---
+aliases: ["/writing/currently_writing/"]
 title: "Currently Writing"
 date: 2026-02-12
 tags: ["Writing Ideas"]

@@ -2,7 +2,7 @@
 title: "The URL Sanitizer That Strips Trackers Before You Click"
 date: 2026-03-14
 tags: ["Browser Extension", "Privacy", "VibeCoding"]
-aliases: ["/writing/vibe_coding_001/"]
+aliases: ["/writing/vibe_coding_001/", "/writing/vibecoding-001-url-tracker-sanitizer/"]
 description: "Built a browser extension with Gemini that strips tracking parameters from URLs before you open them. Day 1 of the 100 Vibe Coding Projects challenge."
 ---
 ![image](/images/writing/vibecoding-001-purelink.png)
