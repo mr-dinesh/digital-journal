@@ -8,7 +8,7 @@ aliases: ["/writing/vibecoding-013-link-archive/"]
 
 ![Link Archive](/images/writing/vibecoding-012-link-archive.png)
 
-The Clear Writing Community WhatsApp group has been running for over two years. Amit Varma started it, and it does what it says — a few hundred people sharing things worth reading. Good articles, podcast episodes, essays, the occasional book. I've been in it since near the beginning.
+The Clear Writing Community WhatsApp group has been running for over four years. Amit Varma started it, and it does what it says — a few hundred people sharing things worth reading. Good articles, podcast episodes, essays, the occasional book. I've been in it since a little more than two years.
 
 The problem is WhatsApp. Every link is buried in chat. The good ones get scrolled past, the useful ones are impossible to find again, and there's no way to answer the most obvious question: what does this group actually share?
 
@@ -76,7 +76,7 @@ DATE_FORMATS = [
 ]
 ```
 
-The group is based in India, so day/month/year with a 12-hour clock is what actually appeared. But you don't know that until you try parsing and see what succeeds.
+The group is based in India, with many active members from across the globe, so day/month/year with a 12-hour clock is what actually appeared. But you don't know that until you try parsing and see what succeeds.
 
 ---
 
