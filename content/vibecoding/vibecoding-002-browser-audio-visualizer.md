@@ -1,5 +1,5 @@
 ---
-title: "I Rebuilt Winamp's Visualizer in a Browser Tab"
+title: "Vibecoding 002 — I Rebuilt Winamp's Visualizer in a Browser Tab"
 date: 2026-03-15
 tags: ["Audio", "WebGL", "Browser", "VibeCoding"]
 aliases: ["/writing/vibecoding_day002/", "/writing/vibecoding-002-browser-audio-visualizer/"]

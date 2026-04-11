@@ -1,5 +1,5 @@
 ---
-title: "The URL Sanitizer That Strips Trackers Before You Click"
+title: "Vibecoding 001 — The URL Sanitizer That Strips Trackers Before You Click"
 date: 2026-03-14
 tags: ["Browser Extension", "Privacy", "VibeCoding"]
 aliases: ["/writing/vibe_coding_001/", "/writing/vibecoding-001-url-tracker-sanitizer/"]

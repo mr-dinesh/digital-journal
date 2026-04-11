@@ -1,5 +1,5 @@
 ---
-title: "Extracting One Usable Idea From Every Podcast Episode"
+title: "Vibecoding 003 — Extracting One Usable Idea From Every Podcast Episode"
 date: 2026-03-16
 tags: ["Automation", "Podcast", "Python", "VibeCoding"]
 aliases: ["/writing/vibecoding-003-webscraping/", "/writing/vibecoding-003-podcast-idea-extractor/"]

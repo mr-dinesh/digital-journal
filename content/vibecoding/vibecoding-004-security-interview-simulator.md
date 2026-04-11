@@ -1,5 +1,5 @@
 ---
-title: "Building My Own Interview Coach for a Director-Level Security Role"
+title: "Vibecoding 004 — Building My Own Interview Coach for a Security Role"
 date: 2026-03-17
 tags: ["Security", "Career", "AI", "VibeCoding"]
 aliases: ["/writing/vibecoding-004-interview_simulator_webapp/", "/writing/vibecoding-004-security-interview-simulator/"]

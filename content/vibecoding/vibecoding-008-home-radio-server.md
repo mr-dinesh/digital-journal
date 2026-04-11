@@ -1,5 +1,5 @@
 ---
-title: "I Asked AI to Help Me Build a Home Radio Server on a Sunday Afternoon"
+title: "Vibecoding 008 — I Asked AI to Help Me Build a Home Radio Server"
 date: 2026-03-22
 tags: ["Self-Hosted", "Media", "Docker", "VibeCoding"]
 aliases: ["/writing/vibecoding-008-building-a-home-media-streaming-and-player/", "/writing/vibecoding-008-home-radio-server/"]
