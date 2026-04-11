@@ -24,16 +24,7 @@ The first conversation with Claude was vague: *how do I create an Excel sheet of
 
 The answer started with Google Drive. The export was in a folder there, so the obvious first plan was OAuth, the Drive API, download the file programmatically. I started going down that road — credentials.json, scopes, token refresh — and then mentioned the zip file was already on my Desktop.
 
-That was the moment I like best about vibecoding. The entire OAuth layer evaporated in one exchange. We pivoted to reading the zip directly, the script got simpler, and the thing that had felt like infrastructure became a five-line function. The Google Cloud Console setup that would have taken thirty minutes never happened.
-
-```python
-def read_chat_from_zip(zip_path):
-    with zipfile.ZipFile(zip_path) as z:
-        txt_names = [n for n in z.namelist() if n.endswith(".txt")]
-        return z.read(txt_names[0]).decode("utf-8", errors="ignore")
-```
-
-That's the whole file reader. The exports go in as a zip, the text comes out.
+That was the moment I like best about vibecoding. The entire OAuth layer evaporated in one exchange. We pivoted to reading the zip directly, the script got simpler, and the thing that had felt like infrastructure became a five-line function. The Google Cloud Console setup that would have taken thirty minutes never happened. The exports go in as a zip, the text comes out.
 
 ---
 
@@ -41,42 +32,9 @@ That's the whole file reader. The exports go in as a zip, the text comes out.
 
 WhatsApp exports are messier than they look. The format varies by operating system (Android vs iOS), locale (date order), and time convention (12h vs 24h). A message that starts a new line without a timestamp is a continuation of the previous message, not a new one.
 
-The naive approach — split by line, look for timestamps — falls apart immediately on multi-line messages. The right approach is to find message *boundaries* first, then extract the body between them:
+The naive approach — split by line, look for timestamps — falls apart immediately on multi-line messages. The right approach is to find message *boundaries* first: the parser looks for the pattern of a timestamp, a dash, and a sender name, then treats everything up to the next one as the message body. URLs are extracted from there, stripped of trailing punctuation, and deduplicated across the entire chat.
 
-```python
-MSG_RE = re.compile(
-    r"^(?:\[)?(\d{1,2}/\d{1,2}/\d{2,4}),\s+"
-    r"(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[AP]M)?)(?:\])?"
-    r"\s*[-–]\s*"
-    r"([^:]+):\s*",
-    re.MULTILINE | re.IGNORECASE,
-)
-
-def parse_messages(text):
-    matches = list(MSG_RE.finditer(text))
-    messages = []
-    for i, m in enumerate(matches):
-        body_start = m.end()
-        body_end   = matches[i + 1].start() if i + 1 < len(matches) else len(text)
-        body       = text[body_start:body_end].strip()
-        messages.append((m.group(1), m.group(2).strip(), m.group(3).strip(), body))
-    return messages
-```
-
-Each message becomes a `(date, time, sender, body)` tuple. URLs are then extracted from the body with a single regex, stripped of trailing punctuation, and deduplicated across the entire chat.
-
-The date parsing alone required ten format strings to handle all the variants WhatsApp produces:
-
-```python
-DATE_FORMATS = [
-    "%d/%m/%y %I:%M %p",   # Android EU 12h  ← this group's format
-    "%m/%d/%y %I:%M %p",   # Android US 12h
-    "%d/%m/%Y %I:%M %p",   # iOS EU 12h
-    # ... seven more
-]
-```
-
-The group is based in India, with many active members from across the globe, so day/month/year with a 12-hour clock is what actually appeared. But you don't know that until you try parsing and see what succeeds.
+Date parsing required ten different format variations to handle all the combinations WhatsApp produces across Android, iOS, 12h and 24h clocks, and regional date ordering. The group is based in India, with members from across the globe, so day/month/year with a 12-hour clock is what actually appeared — but you don't know that until you try and see what succeeds.
 
 ---
 
@@ -86,25 +44,7 @@ Once the extraction was working, the obvious next step was categories. The data 
 
 Twenty-two, as it turned out.
 
-The categorisation function is a priority-ordered list of rules. Each rule tests the domain:
-
-```python
-CATEGORY_RULES = [
-    ("YouTube",            lambda n, _: n in ("youtu.be", "youtube.com", "m.youtube.com")),
-    ("Substack",           lambda n, _: n == "open.substack.com"
-                                        or n.endswith(".substack.com")
-                                        or n == "substack.com"),
-    ("Indian News",        lambda n, _: n in ("thehindu.com", "indianexpress.com",
-                                              "scroll.in", "newslaundry.com", ...)),
-    ("International News", lambda n, _: n in ("nytimes.com", "theatlantic.com",
-                                              "economist.com", "ft.com", ...)),
-    ("Books / Amazon",     lambda n, _: n in ("amzn.in", "amazon.in", "goodreads.com", ...)),
-    # ... 17 more
-    ("Blog / Personal / Miscellaneous", lambda n, _: True),  # catch-all
-]
-```
-
-First match wins. Everything that doesn't match a known platform falls through to the catch-all. The order matters — YouTube before Substack before News before Miscellaneous.
+The categorisation logic is a priority-ordered list — YouTube first, then Substack, then Indian news domains, then international news, and so on down through twenty-two buckets — with everything unrecognised falling into a catch-all at the end. First match wins, and the order matters.
 
 Here's what four years of the Clear Writing Community actually shares:
 
