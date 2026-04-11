@@ -4,11 +4,13 @@ date: 2026-03-31
 layout: "single"
 ---
 
-## Hi, I'm Dee.
+## Hi, I'm Dinesh.
 
 I work in cybersecurity — the part where you spend years building defences, and then watch someone click a phishing link anyway.
 
-By day I think about risk, governance, incident response, and how to explain threat models to people who would rather be doing literally anything else. By night I build small things with AI, read source code nobody asked me to read, and occasionally post Kannada philosophy to Mastodon.
+I came to security through the military, which turns out to be decent preparation: in both fields, what gets you isn't the threat you planned for.
+
+By day I think about risk, governance, and incident response. By night I build small things with AI, read source code nobody asked me to read, and post Kannada philosophy to Mastodon.
 
 ---
 
@@ -26,11 +28,11 @@ Three things, loosely held together:
 
 ## The longer version
 
-I've spent enough time in security to know that the scariest vulnerabilities aren't in the code — they're in the assumptions. The "this will never happen" and the "someone else is handling that" and the "we'll fix it after the release."
+I'm from Bengaluru. I spent years in uniform before landing in tech, which means I'd been doing risk management long before I had a job title for it.
 
-I started this blog because I wanted a place to think in public. Writing forces clarity. Shipping forces honesty. And doing it for 100 days in a row forces the kind of consistency that's harder to maintain than it sounds.
+I started this blog because writing forces clarity and shipping forces honesty. The vibe coding series is my answer to a question I kept asking: what can these AI tools actually do when you give them a real problem? The answer, so far: more than I expected, differently than I expected, and never quite on the first try.
 
-The vibe coding series is my answer to a question I kept asking: what can these AI tools actually do when you give them a real problem and hold them accountable for the result? The answer, so far, is: more than I expected, differently than I expected, and never quite on the first try.
+Outside work I read a lot — history, economics, long-form journalism. I have a particular soft spot for D.V. Gundappa's *Mankutimmana Kagga*, 945 verses of Kannada philosophy from the 1940s that wrestle with life's big questions without pretending to answer them. Good company.
 
 ---
 
@@ -46,4 +48,4 @@ The vibe coding series is my answer to a question I kept asking: what can these 
 
 ---
 
-*No tracking. No newsletter. No "I'm building in public" LinkedIn posts. Just the blog.*
+*Read, build, write. That's the whole thing.*
