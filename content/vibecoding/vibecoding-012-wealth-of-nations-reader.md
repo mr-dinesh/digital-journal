@@ -32,17 +32,11 @@ That's the whole product. A reader where every paragraph is a prompt waiting to 
 
 ### How It Works
 
-The backend exposes three API routes:
+Three routes power the backend: one to fetch a chapter's text, one for paragraph Q&A, and one for full chapter summaries.
 
-```
-GET  /api/chapter/<id>   # returns chapter text as JSON
-POST /api/ask            # paragraph Q&A with chapter context
-POST /api/summarize      # full chapter summary
-```
+The context window for each question is deliberately generous: the full chapter text, the specific paragraph selected, and the user's question. Gemini can see *why* a passage says what it says — the full argument around it, not just the sentence in isolation.
 
-The context window for each question is deliberately generous: the full chapter text (up to ~12,000 characters), the specific paragraph selected, and the user's question. Gemini can see *why* a passage says what it says — the full argument around it.
-
-A small parser splits the Project Gutenberg text into 33 chapters and their paragraphs, saved as `book_data.json` at setup time.
+A small parser splits the Project Gutenberg text into 33 chapters and their paragraphs at setup time. After that, everything is read from a single data file loaded into memory when the app starts.
 
 ### The UI
 

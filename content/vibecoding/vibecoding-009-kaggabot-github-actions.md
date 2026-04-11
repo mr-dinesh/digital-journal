@@ -28,14 +28,7 @@ Verses in .py file  →  bot script  →  GitHub Actions cron  →  Mastodon pos
 
 ### The scheduling magic
 
-A GitHub Actions workflow file defines two daily triggers — morning and evening. When the schedule fires, GitHub spins up a clean environment, checks out the code, and runs the bot. That's the entire pipeline.
-
-### Two posts a day, every day
-on:
-  schedule:
-    - cron: '0 6 * * *'   # morning
-    - cron: '0 18 * * *'  # evening
-No cloud bill. No server to maintain. No babysitting.
+A GitHub Actions workflow file defines two daily triggers — morning and evening. When the schedule fires, GitHub spins up a clean environment, checks out the code, and runs the bot. That's the entire pipeline. No cloud bill. No server to maintain. No babysitting.
 
 ### Why Mastodon?
 Mastodon is open, ad-free, and has a clean API — ideal for a bot that exists purely to share literature, not to game an algorithm. The posts are public and readable by anyone, no account needed.

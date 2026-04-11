@@ -7,48 +7,19 @@ description: "Used Claude to build VIZMIX — a Winamp-inspired 3D audio visuali
 ---
 ![image](/images/writing/vibecoding-002-vizmix.png)
 
+### VIZMIX — A Winamp-Inspired 3D Audio Visualizer for the Browser
 
-### Create A Browser App - for visualising music
- - Music visualiser app insipired by [Justin's WinAmp]( It really kicks the llama's ass :-)
- - LLM used: Claude. Had used Gemini for Day1 (browser addon).
+*Project #2 of the 100 Vibe Coding Projects challenge*
 
-### Prompt Used
-Create an interactive browser app which can visualize music, audio. Use X,Y,Z axis for visualization, of the music, with customizable effects like trippy, colours, waterfall. This was a feature available in Winamp.
+The prompt was simple: build something that visualises music the way Winamp used to — but in a browser tab, using X, Y and Z axes instead of a flat frequency bar. Claude took that constraint seriously.
 
+The result is **VIZMIX**: five 3D visualisation modes (classic frequency bars, a dual waveform, a waterfall cascade, a particle sphere that deforms to the beat, and an infinite zooming tunnel), six colour palettes, and a handful of live effects — trippy hue shifts, bloom brightness, mirror symmetry, and auto-orbit. Drop in any audio file or switch to live mic input. Control sensitivity, speed, and camera angle in real time.
 
-### Outcome
- - VIZMIX — your Winamp-inspired 3D audio visualizer.
- - Source code is [here](https://github.com/mr-dinesh/Vibecoding_002_VIZMIX--Winamp-inspired-3D-audio-visualize/tree/main)
- 
- 
-### Visualization Modes 
- - BARS — classic 3D frequency bars along the X axis, height on Y, time on Z
- - WAVE — dual waveform lines with mirror reflection
- - FALL — waterfall cascade where history scrolls back into Z depth
- - SPHERE — 1,800-point particle sphere that deforms to the beat
- - TUNNEL — an infinite zooming tunnel that warps with bass hits
-
-### Audio Sources
- - 🎵 Drop/click any audio file (MP3, WAV, OGG, FLAC…)
- - 🎙 Live microphone input
-
-### Customizable Effects
- - 🌀 TRIPPY — shifting background hues + geometry distortion
- - ✨ BLOOM — amplitude-driven brightness boost
- - 🪞 MIRROR — symmetrical reflection
- - 🔄 SPIN — auto-rotating camera orbit
- - 6 Color Palettes — Cyber, Fire, Ocean, Neon, Mono, Rainbow
- - Controls — sensitivity, height, smoothing, animation speed, volume, seek bar, and drag-to-orbit the 3D camera with your mouse (or touch).
-
- 
-### What could be better
-- Not all the 5 Visualization Modes work very well.
-- Would have liked more granular control of the effects
-- Also looping of tracks, full-screen mode, better UX are ideas to work on in Version2.
+[Source code on GitHub](https://github.com/mr-dinesh/Vibecoding_002_VIZMIX--Winamp-inspired-3D-audio-visualize/tree/main)
 
 ### What Broke
 
-SPHERE and TUNNEL — the two most ambitious modes — don't render correctly on all hardware. SPHERE loses its bass-deformation response on lower-end GPUs; TUNNEL stutters at high frame rates due to a depth buffer issue. Both are Claude-generated and both have the same root cause: the WebGL implementation assumes consistent `requestAnimationFrame` timing that mobile browsers and integrated graphics don't always deliver. The fix requires delta-time calculations. Version 2 problem.
+SPHERE and TUNNEL — the two most ambitious modes — don't render correctly on all hardware. SPHERE loses its bass-deformation response on lower-end GPUs; TUNNEL stutters at high frame rates due to a depth buffer issue. Both have the same root cause: the WebGL implementation assumes consistent frame timing that mobile browsers and integrated graphics don't always deliver. The fix requires delta-time calculations. Version 2 problem.
 
 BARS and WAVE work reliably. FALL is somewhere in between. If you're demoing this, stick to BARS.
 
@@ -65,11 +36,5 @@ Building this was a reminder that the browser's permission model is doing real s
 It's easy to dismiss these browser restrictions as friction. They're not. They're the same security boundary that stops a malicious page from silently activating your microphone. Worth appreciating.
 
 ### Interesting Asides
- - [Pixabay](https://pixabay.com/music/) has a surprisingly good library of royalty-free music for testing.
- - [Audio Coffee Background Visualization](https://pixabay.com/music/upbeat-melodic-background-visualization-120919/) — good test track for the waterfall mode.
- - [Source code](https://github.com/mr-dinesh/Vibecoding_002_VIZMIX--Winamp-inspired-3D-audio-visualize/tree/main)
- 
-
-
-
-
+- [Pixabay](https://pixabay.com/music/) has a surprisingly good library of royalty-free music for testing.
+- [Audio Coffee Background Visualization](https://pixabay.com/music/upbeat-melodic-background-visualization-120919/) — good test track for the waterfall mode.

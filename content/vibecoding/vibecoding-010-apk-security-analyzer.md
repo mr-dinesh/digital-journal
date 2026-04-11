@@ -18,8 +18,6 @@ I've been doing APK security analysis manually for years — pulling the file, r
 
 This week's project: wrap that entire methodology into a local web tool. Upload an APK, get a structured risk report in your browser. No internet required, nothing stored, APK deleted the moment analysis completes.
 
-Here's how it was built and what I learned.
-
 ---
 
 ### Why Offline?
@@ -34,17 +32,13 @@ Second, building it yourself means you control the logic. Every SDK detection ru
 
 ### The Architecture
 
-The tool is deliberately simple. Flask handles the file upload and routing. androguard does the heavy lifting on the APK binary. Jinja2 renders the report. No database, no queue, no JavaScript framework.
-
-```
-Browser → Flask → androguard/zipfile → Jinja2 report
-```
+The tool is deliberately simple: a browser upload goes into Flask, which hands the APK to an Android analysis library and the standard ZIP reader, and the results are rendered as an HTML report. No database, no queue, no JavaScript framework.
 
 Five analysis modules run sequentially on the uploaded APK:
 
 1. **Manifest parser** — package metadata, permissions, exported components
 2. **Secret scanner** — regex patterns over text resources
-3. **SDK fingerprinter** — DEX class namespace matching
+3. **SDK fingerprinter** — class namespace matching
 4. **Crypto analyzer** — control and weakness detection
 5. **Network security config parser** — pinning, cleartext, CA trust
 
@@ -52,187 +46,76 @@ Five analysis modules run sequentially on the uploaded APK:
 
 ### The Interesting Technical Problem: DEX Class Extraction
 
-The first version of the SDK fingerprinter searched the APK's ZIP contents for file paths like `smali/com/dynatrace/...`. That works if you have a smali-format APK, but standard Play Store APKs don't contain smali files — the code is compiled DEX.
+The first version of the SDK fingerprinter searched the APK's ZIP contents for file paths like `smali/com/dynatrace/...`. That works if you have a smali-format APK, but standard Play Store APKs don't contain smali files — the code is compiled into a binary format called DEX.
 
-The fix was using androguard to parse the DEX bytecode directly and extract class names:
-
-```python
-from androguard.misc import AnalyzeAPK
-
-def get_dex_classes(apk_path):
-    try:
-        a, d, dx = AnalyzeAPK(apk_path)
-        return set(
-            c.name.lstrip('L').replace(';', '').replace('.', '/')
-            for c in dx.get_classes()
-        )
-    except Exception as e:
-        print(f"[DEX] {e}")
-        return set()
-```
-
-The class names come out of DEX in JVM descriptor format — `Lcom/dynatrace/android/agent/Dynatrace;` — so we strip the leading `L` and trailing `;` to get `com/dynatrace/android/agent/Dynatrace`, which can then be prefix-matched against our SDK map.
-
-This function gets called once and the result is shared across both the SDK fingerprinter and the crypto analyzer, avoiding parsing the DEX twice.
+The fix was directing androguard to parse that bytecode directly and pull out class names — each in the format `com/dynatrace/android/agent` — which can then be matched against a known SDK map. The extraction runs once and feeds both the SDK fingerprinter and the crypto analyzer, so the binary only gets parsed once.
 
 ---
 
 ### SDK Detection: Curating the Map
 
-The SDK map is the heart of the tool. Each entry maps a class namespace prefix to a name, category, risk level, and a specific security note:
+The SDK map is the heart of the tool. Each of the 30+ entries carries a name, category, risk level, and a specific security note — so a hit on Dynatrace doesn't just say HIGH, it tells you *why*: its default setting enables full session replay, and the note tells you exactly what to look for and verify. On a banking app, that means account balances and transaction history may be recorded.
 
-```python
-SDK_MAP = {
-    'com/dynatrace': (
-        'Dynatrace',
-        'SESSION REPLAY',
-        'HIGH',
-        'Full session replay capable — verify DataCollectionLevel=PERFORMANCE'
-    ),
-    'com/adobe/marketing/mobile': (
-        'Adobe Experience Platform',
-        'TRACKING',
-        'HIGH',
-        'Full behavioral profiling — Analytics, Target, Identity, Audience'
-    ),
-    'androidx/biometric': (
-        'AndroidX Biometric',
-        'AUTH',
-        'GOOD',
-        'Hardware-backed biometric authentication'
-    ),
-    # ... 30+ more
-}
-```
-
-The risk classifications aren't arbitrary. Dynatrace is HIGH because its default `DataCollectionLevel` is `USER_BEHAVIOR`, which enables full session replay. On a banking app, that means account balances and transaction history may be recorded. The note tells you exactly what to verify.
-
-Security controls get a `GOOD` classification — the tool distinguishes between "this SDK sends data to a third party" and "this SDK provides a security control that should be present."
+Security controls get a GOOD classification — the tool distinguishes between "this SDK sends data to a third party" and "this SDK provides a security control that should be present."
 
 ---
 
 ### The Network Security Config Check
 
-The most actionable finding the tool surfaces is expired certificate pinning. Android's `NetworkSecurityConfig` supports a `pin-set` with an optional `expiration` attribute:
+The most actionable finding the tool surfaces is expired certificate pinning. Android lets developers set an expiry date on certificate pinning — and when that date passes, Android silently falls back to trusting all system certificates. Pinning stops working without a single log message or error.
 
-```xml
-<pin-set expiration="2025-12-31">
-    <pin digest="SHA-256">HASH=</pin>
-</pin-set>
-```
-
-When the expiration date passes, Android silently falls back to trusting all system CA certificates. The pinning doesn't fail loudly — it just stops working. The tool checks this explicitly:
-
-```python
-exp = re.search(r'expiration="([^"]+)"', xml)
-if exp:
-    if datetime.strptime(exp.group(1), '%Y-%m-%d') < datetime.now():
-        # Certificate pinning silently disabled
-        findings.append({'status': 'FAIL', 'text': f'Pin expiration LAPSED: {exp_date}', ...})
-```
-
-This is a finding I've seen in real-world production apps. It's a five-minute fix once identified — remove the expiration attribute or update the date — but it's invisible unless you're specifically looking for it.
+This is a finding I've seen in real-world production apps. It's a five-minute fix once identified — remove the expiration date or update it — but it's completely invisible unless you're specifically looking for it.
 
 ---
 
 ### Secret Scanning: Text Resources Only
 
-The secrets scanner searches all text-format files inside the APK ZIP — XML resources, JSON configs, JS bundles, properties files. It won't find secrets compiled into DEX bytecode (you need JADX for that), but it catches a surprising amount:
+The secrets scanner searches all text-format files inside the APK ZIP — XML resources, JSON configs, JS bundles, properties files. It won't find secrets compiled into bytecode (you need JADX for that), but it catches a surprising amount:
 
-- Firebase API keys in `google-services.json`  
+- Firebase API keys in `google-services.json`
 - Staging URLs left in `strings.xml`
 - Internal IP addresses in config files
 - Razorpay/Stripe live keys in resource files
 - Dynatrace beacon URLs that reveal your monitoring infrastructure
 
-The tool is honest about this limitation — it tells you in the report that DEX bytecode requires JADX for full coverage.
+The tool is honest about this limitation — it tells you in the report that bytecode requires JADX for full coverage.
 
 ---
 
 ### The Flask Routing
 
-The upload route is straightforward. The file gets saved to a temp location, analysis runs, the file gets deleted in a `finally` block so it's gone whether analysis succeeds or fails:
-
-```python
-@app.route('/analyze', methods=['POST'])
-def analyze():
-    file = request.files['apk_file']
-    apk_path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file.filename))
-    file.save(apk_path)
-    try:
-        results = run_analysis(apk_path)
-    except Exception as e:
-        flash(f'Analysis failed: {str(e)}')
-        return redirect(url_for('index'))
-    finally:
-        if os.path.exists(apk_path):
-            os.remove(apk_path)
-    return render_template('report.html', r=results)
-```
-
-The 150MB upload limit handles most APKs. Large apps with multiple split APKs may need the base APK pulled separately with `adb pull`.
+The upload route saves the file to a temp location, runs analysis, then deletes it in a cleanup step that runs regardless of whether analysis succeeded or failed. The 150MB upload limit handles most APKs.
 
 ---
 
 ### Risk Scoring
 
-The report generates a letter grade (A–F) based on finding counts:
-
-```
-score = 100 - (critical × 20) - (high × 10) - (medium × 3)
-```
-
-An app with no critical or high findings gets an A regardless of score. The grade is a conversation starter, not a compliance verdict — the real value is in the specific findings.
+The report generates a letter grade (A–F) based on finding counts: start at 100, subtract 20 for every critical finding, 10 for every high, and 3 for every medium. An app with no critical or high findings gets an A regardless. The grade is a conversation starter, not a compliance verdict — the real value is in the specific findings.
 
 ---
 
 ### What Broke
 
-**androguard v4 broke every tutorial on the internet.** The first version of the DEX extractor was written against androguard v3, which is what every Stack Overflow answer and blog post references. In v4, the import paths moved, `APK()` became `AnalyzeAPK()`, and class iteration changed entirely. The code would import without errors but return empty results — no SDKs detected, no crypto findings, nothing. Took a while to realise the API had changed underneath.
+**androguard v4 broke every tutorial on the internet.** The first version of the DEX extractor was written against androguard v3, which is what every Stack Overflow answer references. In v4, the import paths moved and the class iteration API changed entirely. The code imported without errors but returned empty results — no SDKs detected, no crypto findings, nothing. Took a while to realise the library had changed underneath.
 
-**The SDK fingerprinter silently returned zero results.** Early versions of the fingerprinter swallowed all exceptions quietly. If DEX parsing failed for any reason, `dex_classes` came back empty and the report showed zero SDKs — no error, no warning, no indication anything had gone wrong. A clean-looking report on a real banking app was the first sign something was wrong. Fix: explicit logging on every exception path so failures are immediately visible.
+**The SDK fingerprinter silently returned zero results.** Early versions swallowed all exceptions quietly. If DEX parsing failed for any reason, the report would show zero SDKs — no error, no warning. A clean-looking report on a real banking app was the first sign something was wrong. Fix: explicit logging on every failure path.
 
-**Binary AXML parsing failed on unsigned APKs.** The AndroidManifest.xml inside an APK is compiled binary XML (AXML), not plain text. androguard parses it correctly — but only on properly signed APKs. Test APKs built locally without signing caused the parser to throw and fall through to a regex fallback that only caught basic package names. The fix was adding a clear fallback path and flagging in the report when full manifest parsing wasn't available.
+**Binary AXML parsing failed on unsigned APKs.** The AndroidManifest.xml inside an APK is compiled binary XML, not plain text. The parser handled it correctly on properly signed APKs, but test APKs built locally without signing caused it to fall through to a regex fallback that only caught basic package names. The fix was a clear fallback path with a note in the report when full parsing wasn't available.
 
-**Flask couldn't find its templates.** `render_template('report.html')` looks for a `templates/` folder relative to where `python3 app.py` was run from — not where `app.py` lives. Running the script from a parent directory broke template discovery without any useful error message. The fix was setting `template_folder` explicitly in the Flask app constructor.
+**Flask couldn't find its templates.** The template engine looks for its templates folder relative to where the script is *run from*, not where it *lives*. Running from a parent directory broke template discovery silently. Fix: set the template folder path explicitly in the app constructor.
 
-**APK deletion in the `finally` block wasn't enough.** The original cleanup code ran `os.remove(apk_path)` after analysis. What it didn't account for: androguard holds a file handle open during analysis. On Windows, this causes a `PermissionError`. On Linux it's fine. The fix was adding `try/except` around the deletion, which handles both platforms and any analysis that leaves open handles.
-
-### What I Learned Building This
-
-**androguard's API changed significantly between v3 and v4.** Most tutorials and Stack Overflow answers reference the v3 API (`APK`, `DalvikVMFormat`, `Analysis`). In v4, the import paths moved and the class iteration API changed. The v4 way is `AnalyzeAPK()` returning a tuple of `(APK, list[DEX], Analysis)`.
-
-**Binary AXML is genuinely annoying.** Android's compiled binary XML format (AXML) is what's actually inside the APK's `AndroidManifest.xml`. Parsing it correctly from scratch requires implementing the full chunk format — string pool, resource map, element nodes. androguard handles this, but only if you feed it a properly signed APK. The fallback to regex over the raw binary catches basic package names and permissions when the parser fails.
-
-**Silent failures are the enemy of security tools.** Early versions of the SDK fingerprinter swallowed all exceptions quietly. The DEX extraction would fail, `dex_classes` would be empty, and the report would show zero SDKs with no indication anything went wrong. Adding explicit `print(f"[DEX] {e}")` statements made debugging immediate.
-
-**Flask's template discovery is strict about working directory.** `render_template('index.html')` looks for `templates/` relative to where the Flask app is instantiated, which is the directory you ran `python3 app.py` from. Running the script from a different directory breaks template discovery silently.
-
----
-
-### Running It
-
-```bash
-git clone https://github.com/yourusername/apk-security-analyzer
-cd apk-security-analyzer
-python3 -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
-python3 app.py
-# Open http://localhost:5000
-```
-
-Grab any APK from APKMirror, upload it, and see what's in it.
+**The APK deletion didn't always work.** The analysis library holds a file handle open while it works. On Windows, trying to delete a file while a handle is open throws an error. The fix was wrapping the cleanup in a try/except so it handles both platforms gracefully.
 
 ---
 
 ### What's Next
 
-The natural next step is adding JADX integration — run the decompiler automatically and grep the output for the high-value patterns (onReceivedSslError, DataCollectionLevel, trackAction calls). That would close the gap between what static resource scanning catches and what method-level analysis reveals.
+The natural next step is JADX integration — running the decompiler automatically and searching the output for high-value patterns. That would close the gap between what static resource scanning catches and what method-level analysis reveals.
 
-A diff mode would also be useful — upload two versions of the same APK and see what SDKs were added or removed between releases. That's how you catch a marketing team quietly adding a new tracking SDK between app updates.
+A diff mode would also be useful — upload two versions of the same APK and see what SDKs were added or removed between releases. That's how you catch a marketing team quietly adding a tracking SDK between app updates.
 
 ---
 
-### Code 
-[Access it at github.com](https://github.com/mr-dinesh/Offline-APK-Analyzer)  
-[Part of the 100 Vibe Coding Projects series] (https://mrdee.in)
+### Code
+[Access it at github.com](https://github.com/mr-dinesh/Offline-APK-Analyzer)
+[Part of the 100 Vibe Coding Projects series](https://mrdee.in)
