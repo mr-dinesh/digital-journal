@@ -1,5 +1,5 @@
 ---
-title: "One Page, Five Sources, Zero Noise — My Security News Dashboard"
+title: "Vibecoding 006 — One Page, Five Sources, Zero Noise"
 date: 2026-03-20
 tags: ["Security", "News", "Groq", "VibeCoding"]
 aliases: ["/writing/vibecoding-006-building-a-slashdot-style-cybersecurity-news-dashboard-with-groq/", "/writing/vibecoding-006-security-news-dashboard/"]

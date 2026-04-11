@@ -1,5 +1,5 @@
 ---
-title: "Vibecoding 013: Two Years of WhatsApp Group Chat Links, Sorted, Categorized and Searchable"
+title: "Vibecoding 013 — Two Years of WhatsApp Links, Sorted and Searchable"
 date: 2026-04-10
 description: "I built a Flask web app that extracts, categorises, and archives every link ever shared in a WhatsApp group — 4,094 unique URLs across two years of conversation, now sorted, categorised, searchable, and downloadable as Excel."
 tags: ["vibecoding", "python", "flask", "whatsapp", "data", "tools"]

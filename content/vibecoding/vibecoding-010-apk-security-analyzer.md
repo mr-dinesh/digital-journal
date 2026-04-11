@@ -1,5 +1,5 @@
 ---
-title: "The APK Analyzer That Runs on Your Machine and Tells No One"
+title: "Vibecoding 010 — The APK Analyzer That Runs on Your Machine and Tells No One"
 date: 2026-03-31
 tags: ["Security", "Android", "Flask", "Python", "VibeCoding"]
 aliases: ["/writing/vibecoding-day010-offline-apk-security-analyzer/", "/writing/vibecoding-010-apk-security-analyzer/"]

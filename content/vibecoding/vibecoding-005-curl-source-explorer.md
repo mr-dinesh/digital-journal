@@ -1,5 +1,5 @@
 ---
-title: "Making a 30-Year-Old Codebase Approachable With AI"
+title: "Vibecoding 005 — Making a 30-Year-Old Codebase Approachable With AI"
 date: 2026-03-19
 tags: ["Open Source", "Learning", "Curl", "VibeCoding"]
 aliases: ["/writing/vibecoding-005-curl_source_explorer/", "/writing/vibecoding-005-curl-source-explorer/"]

@@ -1,6 +1,6 @@
 
 ---
-title: "KaggaBot: Automating Daily Verse Posts With GitHub Actions"
+title: "Vibecoding 009 — KaggaBot: Automating Daily Verse Posts With GitHub Actions"
 date: 2026-03-25
 tags: ["GitHub Actions", "Mastodon", "Automation", "VibeCoding"]
 aliases: ["/writing/vibecoding-day009-bot-to-autopost-kannada-poetry-verses/", "/writing/vibecoding-009-kaggabot-github-actions/"]

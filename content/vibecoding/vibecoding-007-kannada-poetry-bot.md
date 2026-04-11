@@ -1,5 +1,5 @@
 ---
-title: "Putting 945 Verses of Kannada Philosophy on the Internet, One at a Time"
+title: "Vibecoding 007 — Putting 945 Verses of Kannada Philosophy on the Internet"
 date: 2026-03-21
 tags: ["Mastodon", "Kannada", "Poetry", "VibeCoding"]
 aliases: ["/writing/vibecoding-007-bot-to-post-kannada-poetry-on-mastodon/", "/writing/vibecoding-007-kannada-poetry-bot/"]

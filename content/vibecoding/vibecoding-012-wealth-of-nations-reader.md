@@ -1,5 +1,5 @@
 ---
-title: "Reading The Wealth of Nations with a Paragraph-Level AI Tutor"
+title: "Vibecoding 012 — Reading The Wealth of Nations with a Paragraph-Level AI Tutor"
 date: 2026-04-09
 tags: ["Python", "Flask", "Gemini", "LLM", "Books", "VibeCoding"]
 aliases: ["/writing/vibecoding-012-wealth-of-nations-reader/"]
