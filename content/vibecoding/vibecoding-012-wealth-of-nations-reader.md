@@ -32,7 +32,7 @@ That's the whole product. A reader where every paragraph is a prompt waiting to 
 
 ### How It Works
 
-Three routes power the backend: one to fetch a chapter's text, one for paragraph Q&A, and one for full chapter summaries.
+Four routes power the backend: two for fetching chapter data (`/api/chapters` for the list, `/api/chapter/<id>` for the text), one for paragraph Q&A, and one for full chapter summaries.
 
 The context window for each question is deliberately generous: the full chapter text, the specific paragraph selected, and the user's question. Gemini can see *why* a passage says what it says — the full argument around it, not just the sentence in isolation.
 
