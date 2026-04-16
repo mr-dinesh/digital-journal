@@ -82,6 +82,7 @@ The explanation pipeline was the part I hadn't planned for at the start. But onc
 
 ## Try It
 
+- **Claude Artifact:** [Run YaraWeave in your browser](https://claude.ai/public/artifacts/8c198f5f-e4db-4765-9ee2-b88ee0b35a1f)
 - **GitHub:** [github.com/mr-dinesh/yaraweave](https://github.com/mr-dinesh/yaraweave)
 - Open `yaraweave.html` in any browser
 - Click **⚙ Configure**, add your Gemini key (free at [aistudio.google.com](https://aistudio.google.com))
