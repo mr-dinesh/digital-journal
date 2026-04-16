@@ -32,7 +32,7 @@ A bot that just posts quotes gets boring quickly. What made Wodehouse worth retu
 | Saturday | Simile | Another one — they earn a second slot |
 | Sunday | Wildcard | Anything that didn't fit elsewhere |
 
-Wednesday's dialogue format is the most technically interesting. Bluesky threads work through reply references — you post the first toot, take its `uri` and `cid`, and pass those as the reply anchor for the second. The exchange between two characters maps naturally to this: the opening line first, the comeback in reply.
+Wednesday's dialogue format is the most technically interesting. Bluesky threads work through reply references — you post the first post, take its `uri` and `cid`, and pass those as the reply anchor for the second. The exchange between two characters maps naturally to this: the opening line first, the comeback in reply.
 
 ---
 

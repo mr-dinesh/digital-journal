@@ -6,7 +6,7 @@ tags: ["vibecoding", "python", "flask", "whatsapp", "data", "tools"]
 aliases: ["/writing/vibecoding-013-link-archive/"]
 ---
 
-![Link Archive](/images/writing/vibecoding-012-link-archive.png)
+![Link Archive](/images/writing/vibecoding-013-link-archive.png)
 
 The Clear Writing Community WhatsApp group has been running for over four years. Amit Varma started it, and it does what it says — a few hundred people sharing things worth reading. Good articles, podcast episodes, essays, the occasional book. I've been in it since a little more than two years.
 
@@ -46,7 +46,7 @@ Twenty-two, as it turned out.
 
 The categorisation logic is a priority-ordered list — YouTube first, then Substack, then Indian news domains, then international news, and so on down through twenty-two buckets — with everything unrecognised falling into a catch-all at the end. First match wins, and the order matters.
 
-Here's what four years of the Clear Writing Community actually shares:
+Here's what two years of the Clear Writing Community actually shares:
 
 | Category | Links |
 |---|---|

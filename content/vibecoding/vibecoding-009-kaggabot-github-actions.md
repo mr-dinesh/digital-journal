@@ -10,9 +10,9 @@ description: "KaggaBot uses GitHub Actions as a free scheduler to post two Manku
 
 
 
-### What's Mankuthimmana Kagga
+### What's Mankutimmana Kagga
 
-Mankuthimmana Kagga — often called the Kannada Gita — is a collection of 945 philosophical verses by D.V. Gundappa (DVG). Written in the 1940s, it wrestles with life's biggest questions with a rare combination of humility and depth. It deserves a wider audience.
+Mankutimmana Kagga — often called the Kannada Gita — is a collection of 945 philosophical verses by D.V. Gundappa (DVG). Written in the 1940s, it wrestles with life's biggest questions with a rare combination of humility and depth. It deserves a wider audience.
 
 ### KaggaBot
 
@@ -44,7 +44,7 @@ Mastodon is open, ad-free, and has a clean API — ideal for a bot that exists p
 **The Mastodon API token in GitHub Secrets.** Storing the token as a repository secret works, but if the secret is misconfigured (wrong variable name in the workflow YAML) the bot fails silently — no post, no obvious error in the logs unless you know to look at the environment variable step. Naming the secret `MASTODON_ACCESS_TOKEN` and double-checking the `${{ secrets.MASTODON_ACCESS_TOKEN }}` reference in the YAML saved a lot of confusion.
 
 ### Why this matters
-At two posts a day, it takes over a year to work through all 945 verses of Mankuthimmana Kagga.
+At two posts a day, it takes over a year to work through all 945 verses of Mankutimmana Kagga.
 
 That's the right pace for philosophy — slow enough to sit with, regular enough to build a habit. KaggaBot transforms reading a classic Kannada text into a daily practice, entirely on autopilot.
 
