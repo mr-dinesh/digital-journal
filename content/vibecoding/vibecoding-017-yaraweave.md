@@ -82,7 +82,7 @@ The explanation pipeline was the part I hadn't planned for at the start. But onc
 
 ## Try It
 
-- **GitHub:** [github.com/mrdee/yaraweave](https://github.com/mrdee/yaraweave) *(update with actual URL)*
+- **GitHub:** [github.com/mr-dinesh/yaraweave](https://github.com/mr-dinesh/yaraweave)
 - Open `yaraweave.html` in any browser
 - Click **⚙ Configure**, add your Gemini key (free at [aistudio.google.com](https://aistudio.google.com))
 - Try `Emotet` in family mode — no other keys needed
