@@ -3,8 +3,9 @@ title: "The Doctor Who Disappeared"
 date: 2026-04-17
 description: "A marathon, a stranger, and the moment I learned what the other side of pain feels like."
 tags: ["running", "marathon", "personal"]
-cover: "/images/journal-the-doctor-who-disappeared.png"
 ---
+
+![Kaveri Trail Marathon 2013](/images/journal-the-doctor-who-disappeared.png)
 
 Kaveri Trail Marathon, 2013. Srirangapatna. Mile 24, and I had nothing left.
 
