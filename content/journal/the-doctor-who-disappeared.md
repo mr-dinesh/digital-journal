@@ -29,6 +29,4 @@ If it weren't for that quiet intervention, that day ends differently. That's not
 
 ---
 
-Dr. Chandrashekar never asked for credit. He saw someone about to quit, did what he could, and disappeared back into the race. I don't think he knows that conversation stayed with me for over a decade.
-
 I'm facing a different wall now — work, not miles. But I remember what it felt like to keep moving when I was certain I couldn't. That's the thing about crossing those thresholds: you can't unknow them.
