@@ -62,16 +62,21 @@ buildExpired = false
     weight = 0
 
   [[menu.main]]
-    name = "curl Source"
-    url = "/curl-notes/"
+    name = "Notes"
+    url = "/notes/"
     weight = 1
 
   [[menu.main]]
-    name = "Book Notes"
+    name = "Reading"
     url = "/reading/"
     weight = 2
 
   [[menu.main]]
-    name = "Vibe Coding"
+    name = "Vibecoding"
     url = "/vibecoding/"
     weight = 3
+
+  [[menu.main]]
+    name = "Journal"
+    url = "/journal/"
+    weight = 4

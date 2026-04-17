@@ -3,6 +3,7 @@ title: "First Steps"
 date: 2026-03-01
 drafts: false
 hidden: false
+aliases: ["/curl-notes/first-steps-03-01-2026/"]
 ---
 
 ### What I did Today

@@ -1,6 +1,6 @@
 ---
 title: "Notes"
-description: "Short technical notes — things I investigated, fixed, or figured out. Not projects, just problems and how I worked through them."
+description: "Technical notes — things investigated, fixed, or figured out. Includes a running series on reading the curl source code."
 ---
 
-Short technical notes. Things I investigated, fixed, or figured out. Not full projects — just problems worth writing down.
+Technical notes. Things investigated, fixed, or figured out. Includes a running series on reading the curl source code internals.
