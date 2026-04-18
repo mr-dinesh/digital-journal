@@ -1,30 +1,21 @@
 ---
-title: "cURL Docs: Reading Notes"
+title: "cURL Docs: First Impressions"
 date: 2026-02-12
-tags: ["curl", "libcurl", "source-code"]
+description: "First look at the curl documentation and source — the scale of it, and where to begin."
+tags: ["curl", "libcurl", "source-code", "open-source"]
 aliases: ["/curl-notes/2026-02-12-first-impressions/"]
 ---
 
-### Scope
+Started exploring the [curl documentation](https://curl.se/docs/) today. The honest first reaction: it's vast. Not in a discouraging way, but in the way that reminds you this tool has been built and maintained by real people over decades, and that depth is visible everywhere you look.
 
-Browsed around the https://curl.se/docs/ and gaping at the vastness of the tool's architecture
+curl ships in billions of devices. It's one of those pieces of software you use without thinking, and then one day you look at the source and realise how much thought went into it.
 
+### What I noticed
 
+- The documentation is layered — there's a quick-start surface for users, and then a much deeper set of specs, internals, and protocol notes for anyone who wants to go further.
+- The distinction between `curl` (the command-line tool) and `libcurl` (the library) is worth keeping in mind from the start. Most of the interesting engineering lives in the library.
 
-### Key Observations
+### What I want to do next
 
-- Be consistent, and spend atleast 15-20min each day, in exploring the portal
-
-- Ask yourself, what can I do, to contribute? It may be too early, but having the question at the back of your mind would be useful
-
-
-### Questions
-
-- Identify areas, where you want to deep-dive and list your questions here.
-
-
-### Areas to focus on
-
-- Read the documentation available (be selective, don't just rush through the content)
-
-- Ask yourself, what an I trying to learn and how can I apply this concept. 
+- Read selectively — not cover-to-cover, but follow threads that connect to things I already know or am curious about.
+- Keep the question open: where could someone like me actually contribute? It may be too early to answer that, but having it in the background helps focus what to pay attention to.

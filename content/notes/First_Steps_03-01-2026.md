@@ -1,32 +1,26 @@
 ---
-title: "First Steps"
+title: "First Steps: Static Analysis on the curl Repo"
 date: 2026-03-01
+description: "Running a static code analyser on the curl source — what came up, what was a false positive, and what to watch out for."
 drafts: false
 hidden: false
 aliases: ["/curl-notes/first-steps-03-01-2026/"]
 ---
 
-### What I did Today
+Took a first concrete step today — rather than just reading, I ran a static code analysis on the curl repository.
 
-- Static code review.
-- Initial impression of the curl git repo.
+ChatGPT suggested SonarQube, so I went with that. Cloned the curl repo into my account, configured an authentication token, and let the analysis run.
 
+### What came up
 
-### How Things Went
-Everything seemed so overwhelming and not knowing where to start and what next.
+The findings were mostly manageable for a first pass:
 
-One thought was to use an automated static code analyzer. 
-ChatGPT suggested SonarCube, and so I started down another rabbit-hole, hopefully not a disastrous decision.
+- A flag about Python version — easily fixed by specifying `python3` explicitly.
+- Several "passwords in plain text" warnings — these turned out to be false positives. The flagged strings were examples in documentation and test fixtures showing syntax like `uname` and `passwd`, not actual credentials.
 
-I had to clone the curl public repo into my account, configure an authentication token and the analysis began.
+Worth noting: the authentication token I set up is sitting in a config file. That needs to be obfuscated before anything gets pushed anywhere public.
 
-There seemed to be some trivial findings to start with, like Python version 3.x to be specified, did that and the passwords in plain text, were false positives - these were examples of syntax usage with uname&passwd not actual creds.
+### What's next
 
-The token is in the config file. I'll need to obfuscate it.
-the situation in the M.E. and at home were becoming extrmely volatile and I had to switch tasks. 
-
-### Next Actions
-
-- Maybe I should take another stab at the code repo. 
-- I'll try to clone it on another system / OS. 
-- I should also find a way to reduce the friction of loggin in via VNC and then into another VM.
+- Try cloning the repo on a different machine or OS — partly to reduce the friction of the current setup (VNC into one system, then into another VM adds up).
+- Take another pass at the static analysis findings with fresh eyes.
