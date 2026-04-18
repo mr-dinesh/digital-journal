@@ -67,3 +67,5 @@ Security findings are not equally weighted. This one is amber on a scanner becau
 ---
 
 The final scan came back clean on everything that matters. The whole thing — reading the theme source, writing the headers, pushing, re-scanning — took less time than writing this post.
+
+![securityheaders.com A+ scorecard for mrdee.in](/images/notes/security-headers-scorecard.jpg)
