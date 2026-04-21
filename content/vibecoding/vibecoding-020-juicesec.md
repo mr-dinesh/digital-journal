@@ -62,4 +62,4 @@ Three-pane layout: challenge list on the left (with OWASP category and difficult
 
 ## Source
 
-→ [github.com/mr-dinesh/juicesec](https://github.com/mr-dinesh/juicesec)
+→ [Try it live](https://juicesec.mrdinesh.workers.dev/) · [github.com/mr-dinesh/juicesec](https://github.com/mr-dinesh/juicesec)
