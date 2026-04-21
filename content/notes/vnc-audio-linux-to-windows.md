@@ -9,8 +9,6 @@ VNC is excellent at showing you your Linux desktop on a Windows machine. It will
 
 This is the story of fixing that.
 
----
-
 ## The Setup
 
 - Linux machine running Debian, PipeWire/PulseAudio, TigerVNC server
@@ -31,8 +29,6 @@ Lesson learned: always check if it's a *release* zip or a *source* zip before sp
 
 Moving on.
 
----
-
 ## Attempt 2: Stream Over HTTP
 
 Linux's PulseAudio was already listening on TCP port 4713, restricted to localhost. The plan: open it to the LAN, stream audio as MP3 over HTTP, play it in VLC on Windows.
@@ -42,8 +38,6 @@ Simple. Except Windows refused to connect. Not "connection refused" — that wou
 Tested port 8888. Timeout. Port 8080. Timeout. The VNC connection on port 5901 worked perfectly, which made this even more baffling. The Windows machine could clearly see Linux — it just didn't want to knock on any door except the VNC one.
 
 Windows Defender was turned off. All three profiles. Still nothing. Some mysteries are left unsolved.
-
----
 
 ## The Fix: Stop Pulling, Start Pushing
 
@@ -66,8 +60,6 @@ ffmpeg -f s16le -ar 44100 -ac 2 -i pipe:0 \
 
 There was a brief detour through G.711 audio — working, but sounding like a 2003 Skype call — before landing on MP3 stereo, which sounds entirely respectable.
 
----
-
 ## The Result
 
 A desktop shortcut on Linux starts the stream. A one-line `.m3u` playlist on Windows opens it in VLC. Click, click, music.
@@ -79,8 +71,6 @@ rtp://@:5004
 ```
 
 The Linux side auto-starts at login via `~/.config/autostart`, with a five-second delay to let PulseAudio settle. No measurable impact on boot time.
-
----
 
 ## What I'd Do Differently
 
