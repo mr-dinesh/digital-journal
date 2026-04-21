@@ -78,5 +78,5 @@ Prompt engineering compounds. Each of the four prompt constraints above was adde
 
 ---
 
-**[github.com/mr-dinesh/argus](https://github.com/mr-dinesh/argus)**  
+**[Try it live](https://argus-proxy.mrdinesh.workers.dev/)** · **[github.com/mr-dinesh/argus](https://github.com/mr-dinesh/argus)**  
 *Part of the [100 Vibe Coding Projects](https://mrdee.in/vibecoding/) series.*
