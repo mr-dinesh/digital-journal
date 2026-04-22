@@ -1,5 +1,5 @@
 ---
-title: "Vibecoding 015 — CISO Articulator"
+title: "Vibecoding 015 — A Timed Communication Drill for Security Leaders"
 date: 2026-04-12
 description: "I built a timed communication drill for security leaders — 26 scenarios across three modes, with LLM coaching on jargon, clarity, and business framing."
 tags: ["vibecoding", "python", "flask", "security", "llm", "tools"]

@@ -1,9 +1,10 @@
 ---
-title: "Vibecoding 020: JuiceSec — OWASP Vulnerability Lab with AI Tutor"
+title: "Vibecoding 020 — JuiceSec: OWASP Vulnerability Lab with AI Tutor"
 date: 2026-04-17
 weight: -20
 description: "An interactive OWASP Top 10 vulnerability lab where you exploit real attack patterns and an AI tutor guides you through the why — without giving away the answer."
 tags: ["vibecoding", "security", "owasp", "cloudflare", "workers-ai", "javascript"]
+aliases: ["/writing/vibecoding-020-juicesec/"]
 ---
 
 OWASP Juice Shop is the gold standard for learning web application security — a deliberately vulnerable Node.js app where you practice exploiting real vulnerabilities in a safe environment. I wanted to build something with the same spirit but without the setup: no Docker, no Node, no local install. Open a URL, start hacking.
