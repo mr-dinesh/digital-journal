@@ -1,5 +1,5 @@
 ---
-title: "Vibecoding 016 — Argus"
+title: "Vibecoding 016 — Argus: Steelman Any Argument Before You Commit to It"
 date: 2026-04-14
 description: "A single-file Cloudflare Workers app that stress-tests any claim, URL, or article from every angle — steelman, strawman, synthesis."
 tags: ["vibecoding", "cloudflare", "workers-ai", "llm", "tools", "reasoning"]

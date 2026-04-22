@@ -1,8 +1,9 @@
 ---
-title: "Vibecoding 019: HN Blackout Poetry"
+title: "Vibecoding 019 — HN Blackout Poetry: Found Poems from Tech Headlines"
 date: 2026-04-18
 description: "Blackout poetry from the Hacker News front page — an LLM picks the surviving words, the rest gets erased."
 tags: ["vibecoding", "llm", "poetry", "javascript", "hacker-news"]
+aliases: ["/writing/vibecoding-019-hn-blackout-poetry/"]
 ---
 
 Austin Kleon takes a newspaper page and a black marker, and turns the news into poetry by erasing most of it. What's left — the surviving words — becomes a found poem. He's been doing this for years. It's a surprisingly moving art form.
