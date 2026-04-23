@@ -4,6 +4,7 @@ date: 2026-04-23
 description: "One search box. Two social networks. A live stream of what the infosec community is talking about right now."
 tags: ["vibecoding", "security", "cloudflare", "javascript", "mastodon", "bluesky"]
 aliases: ["/writing/vibecoding-021-signal-live/"]
+weight: -21
 ---
 
 I have a tab problem. Two social networks — Bluesky and Mastodon — that actually have useful security conversations happening on them, and I kept switching between them to track what was moving. CVE drops, breach coverage, threat intel, people arguing about something Crowdstrike did. Two feeds, two refresh cycles, one set of eyes.
