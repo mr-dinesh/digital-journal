@@ -55,6 +55,36 @@ Boot time is still ~2 minutes. That's hardware init — the touchscreen firmware
 
 ---
 
+## WiFi Recovery via EDL Reflash
+
+Six months later the WiFi toggle greyed out entirely — unresponsive on the screen and via ADB. Known issue on the TB-X605LC with Android 9: the WiFi driver stack corrupts silently, often after an OTA or hard reset cycle. Bluetooth still worked, which confirmed the hardware (Qualcomm WCN3620 combo chip) was fine.
+
+Software fixes exhausted in order: ADB wifi toggle, airplane mode cycle, wpa_supplicant restart, wiping `/data/misc/wifi/*`, network settings reset. None of them brought the toggle back.
+
+The fix was a full stock firmware reflash via Qualcomm EDL (Emergency Download) mode — the same protocol used on the factory floor.
+
+Since the bootloader was already unlocked and the device was rooted, entering EDL was one command:
+
+```bash
+adb reboot edl
+```
+
+The device re-enumerates as `05c6:9008` (Qualcomm QDL). From there, the `edl` Python tool handles the rest on Linux — no Windows required, no QPST/QFIL.
+
+The firmware package from firmwarefile.com is a QDL bundle: a firehose programmer (`prog_emmc_firehose_8953_ddr.mbn`), a partition layout XML (`rawprogram_unsparse.xml`), a patch XML (`patch0.xml`), and all partition images split into chunks. The edl tool streams them to the device over USB at ~28 MB/s.
+
+One command flashes the full eMMC:
+
+```bash
+python3 edl.py qfil rawprogram_unsparse.xml patch0.xml . --loader=prog_emmc_firehose_8953_ddr.mbn
+```
+
+Device reboots into stock Android 9. WiFi toggle immediately responsive. Magisk was gone (boot partition overwritten) but reinstalling it took ten minutes following the same path as before.
+
+Total time from greyed-out WiFi to working: about an hour, most of it downloading the 2.4 GB firmware package.
+
+---
+
 ## Annexure — Commands
 
 ### No-root tweaks (run inside `adb shell`)
@@ -129,4 +159,65 @@ adb shell su -c "free -h"
 # Swap: 1.0G  429M used  595M free
 ```
 
-**Tools:** Debian Linux, `android-tools-adb`, `android-tools-fastboot`, Magisk v30.7, stock firmware from firmwarefile.com.
+### EDL WiFi recovery
+
+```bash
+# Enter EDL mode (requires rooted device or hardware testpoint)
+adb reboot edl
+
+# Confirm device is in QDL mode
+lsusb | grep 9008
+# Bus 001 Device 009: ID 05c6:9008 Qualcomm, Inc. Gobi Wireless Modem (QDL mode)
+
+# Clone edl tool and install dependencies
+git clone https://github.com/bkerler/edl.git
+cd edl
+pip3 install -r requirements.txt --break-system-packages
+
+# Install udev rules so edl can access the device without sudo
+sudo cp Drivers/51-edl.rules /etc/udev/rules.d/
+sudo udevadm control --reload-rules && sudo udevadm trigger
+
+# Flash — run from inside the Firmware/ directory of the extracted QDL package
+cd /path/to/TB-X605LC_firmware/Firmware
+python3 ~/edl/edl.py qfil rawprogram_unsparse.xml patch0.xml . --loader=prog_emmc_firehose_8953_ddr.mbn
+
+# Reset after flash completes
+python3 ~/edl/edl.py reset --loader=prog_emmc_firehose_8953_ddr.mbn
+```
+
+Firmware source: firmwarefile.com — `Lenovo_Tab_M10_FHD_Rel_TB-X605LC_HW71_S000100_1912291512_Q00014_ROW_QDL.zip` (2.4 GB). This wipes userdata — back up first if possible.
+
+### Post-reflash cleanup
+
+After the reflash, Magisk was reinstalled (boot partition overwritten by EDL flash), then the full bloat removal pass was run again. Additional apps removed beyond the original list:
+
+```bash
+# Google
+adb shell su -c "pm uninstall --user 0 com.google.android.apps.tachyon"     # Duo
+adb shell su -c "pm uninstall --user 0 com.google.android.googlequicksearchbox"  # Assistant
+adb shell su -c "pm uninstall --user 0 com.google.android.apps.wellbeing"   # Digital Wellbeing
+
+# Microsoft
+adb shell su -c "pm uninstall --user 0 com.microsoft.office.outlook"
+
+# Skype
+adb shell su -c "pm uninstall --user 0 com.skype.raider"
+
+# Factory/diagnostic tools
+adb shell su -c "pm uninstall --user 0 com.yha.factory"
+adb shell su -c "pm uninstall --user 0 com.qualcomm.qti.qmmi"
+
+# Logging and telemetry
+adb shell su -c "pm uninstall --user 0 com.log.logservice"
+adb shell su -c "pm uninstall --user 0 com.log.setlog"
+adb shell su -c "pm uninstall --user 0 com.qualcomm.qti.qms.service.telemetry"
+
+# Security hardening
+adb shell settings put global send_action_app_error 0
+adb shell settings put secure send_action_app_error 0
+```
+
+Apps installed via ADB: Magisk, AdAway (root hosts blocking), NewPipe, Termux. F-Droid handles the rest.
+
+**Tools:** Debian Linux, `android-tools-adb`, `android-tools-fastboot`, Magisk v30.7, stock firmware from firmwarefile.com, `bkerler/edl` Python tool.
