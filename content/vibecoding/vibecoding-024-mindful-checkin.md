@@ -9,7 +9,7 @@ weight: -24
 
 I wanted a check-in tool that matched how I actually think about a mindfulness practice: not a mood tracker with sliding scales, not a journal app with blank pages, but three specific questions asked at specific times of day.
 
-**Live:** [mindful.mrdinesh.workers.dev](https://mindful.mrdinesh.workers.dev)
+**Live:** [mindful.mrdinesh.workers.dev](https://mindful.mrdinesh.workers.dev) · **Public stats:** [mindful.mrdinesh.workers.dev?public=1](https://mindful.mrdinesh.workers.dev?public=1)
 
 ## The three dimensions
 
