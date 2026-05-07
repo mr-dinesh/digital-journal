@@ -1,19 +1,19 @@
 ---
 title: "Vibecoding 006 — One Page, Five Sources, Zero Noise"
 date: 2026-03-20
-tags: ["Security", "News", "Groq", "VibeCoding"]
+tags: ["Security", "News", "Cloudflare", "VibeCoding"]
 aliases: ["/writing/vibecoding-006-building-a-slashdot-style-cybersecurity-news-dashboard-with-groq/", "/writing/vibecoding-006-security-news-dashboard/"]
-description: "SlashSec is a single HTML file that pulls live RSS from five trusted security sources and uses Groq to generate summaries, severity ratings, and Slashdot-style dept. lines."
+description: "SlashSec pulls live RSS from five trusted security sources and uses Cloudflare Workers AI to generate summaries, severity ratings, and Slashdot-style dept. lines — no API key required."
 ---
 ![image](/images/writing/vibecoding-006-slashsec.png)
 
-
+**[Live: slashsec.mrdinesh.workers.dev](https://slashsec.mrdinesh.workers.dev)**
 
 ---
 
 I wanted a single place to read cybersecurity news from the sources I already trust — SANS ISC, Bruce Schneier's blog, Brian Krebs, Bleeping Computer, and Zack Whittaker's This Week in Security. I wanted something purpose-built for security, with AI-generated summaries short enough to scan quickly.
 
-The result is **SlashSec**: a single HTML file, no build step, no server, no dependencies beyond a free Groq API key.
+The result is **SlashSec**: a Cloudflare Worker that serves the full UI and handles RSS fetching and AI inference server-side. Open it and click Fetch Stories — no API keys, no setup.
 
 ---
 
@@ -29,18 +29,21 @@ The "dept." line — borrowed from Slashdot's classic format — turned out to b
 
 ---
 
-### The LLM
+### The Architecture
 
-**Groq** running **llama-3.3-70b-versatile**.
+The app is a single Cloudflare Worker (`worker.js`) that does three things:
 
-Groq was chosen for speed and its generous free tier. A full refresh — up to 40 articles across 5 feeds. 
-The API key is stored in `sessionStorage` only, cleared when the tab closes, and sent exclusively to `api.groq.com`. No proxy or third-party service sees it.
+- `GET /` — serves the full HTML/CSS/JS UI inlined in the Worker
+- `POST /fetch` — server-side RSS proxy with an allowlist of 7 domains; no browser CORS issues
+- `POST /groq` — runs inference via **Cloudflare Workers AI** (`llama-3.1-8b-instruct`); no external API key
+
+The AI runs through Cloudflare's `[ai]` binding — the same mechanism used in [JuiceSec](/vibecoding/vibecoding-005-owasp-juice-shop-training/). No account needed beyond the Cloudflare deployment itself.
 
 ---
 
 ### Features
 
-- **5 live RSS feeds** fetched concurrently on every refresh, with a three-proxy fallback chain for CORS handling
+- **5 live RSS feeds** fetched concurrently on every refresh via a Worker-side proxy (no CORS issues)
 - **AI summaries** — 3–4 sentences per article: what happened, who is affected, what to do
 - **Severity classification** — High, Medium, or Low per article, with one-click filtering
 - **Slashdot layout** — masthead, sticky nav, two-column story feed with sidebar, bylines, and dept. lines
@@ -49,17 +52,17 @@ The API key is stored in `sessionStorage` only, cleared when the tab closes, and
 - **Dark and bright themes** — toggled with a single button, saved between sessions
 - **Verified links** — every "Read More" link is sourced directly from the RSS feed, marked with a ✓ badge
 
-The whole thing is one `.html` file. Open it in a browser, paste a Groq API key, click Fetch Stories.
-
 ---
 
 ### What Broke
 
-CORS. RSS feeds don't serve with the headers browsers need for cross-origin fetches. The first version used a single CORS proxy — which worked for about a day before the free tier started rate-limiting requests.
+**CORS, twice.** RSS feeds don't serve with the headers browsers need for cross-origin fetches. The first version used a three-proxy fallback chain (`allorigins.win` → `corsproxy.io` → a third fallback). This worked for about a day before rate limits kicked in and feeds started silently failing.
 
-The final implementation uses a three-proxy fallback chain: `allorigins.win` → `corsproxy.io` → a third fallback. If all three fail, the feed degrades gracefully and shows whatever was cached from the last successful fetch. Getting this right took longer than building the entire rest of the dashboard. It's always CORS.
+The fix was moving RSS fetching into the Worker itself. The Worker fetches feeds server-side with a proper `User-Agent` and an allowlist of permitted domains, then returns the XML to the browser. The browser never touches the feed hosts directly. No third-party proxy, no rate limits, no CORS.
 
-The other problem was JSON reliability. Groq returns JSON most of the time. "Most of the time" is not good enough when your UI depends on parsing it. The fix was wrapping every parse in a try/catch with a fallback to a safe default object — so a malformed response shows a placeholder summary rather than crashing the whole refresh.
+The other problem was JSON reliability. The LLM returns JSON most of the time. "Most of the time" is not good enough when your UI depends on parsing it. The fix was wrapping every parse in a try/catch with a fallback to a safe default object — so a malformed response shows a placeholder summary rather than crashing the whole refresh.
+
+---
 
 ### What I Learned
 
@@ -67,14 +70,14 @@ The "dept." line was an afterthought in the prompt — added because Slashdot ha
 
 A 3–5 word distillation forces compression that a 3–4 sentence summary doesn't. *supply-chain-never-sleeps dept* tells you the story before you read the headline. *patch-tuesday-forever dept* sets the tone immediately. Good prompt design often comes from constraints you didn't plan for. The lesson: include something playful in your prompt. It surfaces structure you didn't know you needed.
 
-Also: `sessionStorage` for API keys is the right call. `localStorage` persists across tabs and sessions, which is more convenient but widens the exposure window. A key that disappears when the tab closes can't be exfiltrated by a script that runs later. Small decision, correct decision.
+Moving CORS handling server-side (into the Worker) also eliminated the entire class of "proxy is down / rate-limited / blocked" failures. A Worker that fetches its own data is more reliable than a browser that depends on third-party CORS proxies. When something needs a server, give it a server.
 
 ### Get The Code
 
 **[github.com/mr-dinesh/SlashSec_style-Infosec-RSS-Dashboard](https://github.com/mr-dinesh/SlashSec_style-Infosec-RSS-Dashboard)**
 
-One `.html` file. Free Groq account at [console.groq.com](https://console.groq.com). Open in browser, paste key, click Fetch Stories.
+Deploy with `wrangler deploy` — the `[ai]` binding is pre-configured in `wrangler.toml`. No secrets to set.
 
 ---
 
-*Built iteratively with Claude Sonnet. The final file is about 1,100 lines of vanilla HTML, CSS, and JavaScript.*
+*Built iteratively with Claude Sonnet. The Worker is about 1,200 lines of vanilla HTML, CSS, and JavaScript embedded in a Cloudflare Worker.*
