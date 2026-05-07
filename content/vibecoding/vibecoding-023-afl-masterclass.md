@@ -47,3 +47,7 @@ Writing a good fuzzing harness is a deep reading skill, not a fuzzer skill. It r
 ## References
 
 The references section links to the primary sources: Zalewski's `technical_details.txt`, the AFLFast paper (Böhme et al., CCS 2016), the REDQUEEN paper (Aschermann et al., NDSS 2019) that underpins AFL++'s CMPLOG feature, and the AFL++ design paper (Fioraldi et al., WOOT 2020). If you're going to use this as a starting point, those are the natural next things to read.
+
+---
+
+**[Try it live](https://afl-masterclass.pages.dev/) · [github.com/mr-dinesh/afl-masterclass](https://github.com/mr-dinesh/afl-masterclass)**

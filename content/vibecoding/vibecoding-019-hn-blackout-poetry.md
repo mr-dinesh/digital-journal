@@ -87,4 +87,4 @@ All of this is client-side — `localStorage` only, no backend. It won't stop a 
 
 ## Source
 
-→ [Try it live](https://hn-blackout.pages.dev/) · [github.com/mrdee-in/hn-blackout](https://github.com/mrdee-in/hn-blackout)
+→ [Try it live](https://hn-blackout.pages.dev/) · [github.com/mr-dinesh/hn-blackout](https://github.com/mr-dinesh/hn-blackout)

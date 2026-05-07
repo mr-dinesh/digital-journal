@@ -141,4 +141,6 @@ The `kagga_bot` project earlier in this series did the same thing for Kannada po
 
 ---
 
+**[github.com/mr-dinesh/npp-quotes](https://github.com/mr-dinesh/npp-quotes)**
+
 *Part of the 100 Vibe Coding Projects series.*
