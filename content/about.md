@@ -38,7 +38,7 @@ Outside work I read a lot — history, economics, long-form journalism. I have a
 
 ## Find me elsewhere
 
-- **Email** — [dinesh@mrdee.in](mailto:dinesh@mrdee.in)
+- **Email** — [dinesh(AT)mrdee.in](mailto:dinesh@mrdee.in)
 - **GitHub** — [mr-dinesh](https://github.com/mr-dinesh) — all the project code, warts and all
 - **Mastodon** — [@mrd@infosec.exchange](https://infosec.exchange/@mrd) — military roots, nerd, tinkerer, babbling about tech
 - **X** — [@m_r_dinesh](https://x.com/m_r_dinesh)
