@@ -2,9 +2,8 @@
 title: "First Steps: Static Analysis on the curl Repo"
 date: 2026-03-01
 description: "Running a static code analyser on the curl source — what came up, what was a false positive, and what to watch out for."
-drafts: false
-hidden: false
-aliases: ["/curl-notes/first-steps-03-01-2026/"]
+draft: false
+aliases: ["/curl-notes/first-steps-03-01-2026/", "/notes/First_Steps_03-01-2026/"]
 ---
 
 Took a first concrete step today — rather than just reading, I ran a static code analysis on the curl repository.
