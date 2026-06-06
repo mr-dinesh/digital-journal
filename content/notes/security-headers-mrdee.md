@@ -21,17 +21,15 @@ I added `static/_headers` to the Hugo repo so it gets copied into the build outp
 /*
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
   X-Content-Type-Options: nosniff
-  X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' cloudflareinsights.com; font-src 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' cloudflareinsights.com; font-src 'self'; frame-src https://www.youtube.com https://www.youtube-nocookie.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'
 ```
 
 What each one does:
 
 - **HSTS** — tells browsers to only ever connect over HTTPS, for the next two years, including subdomains. The `preload` flag submits the domain to browsers' built-in HSTS lists.
 - **X-Content-Type-Options: nosniff** — stops browsers from guessing content types. Prevents a text file being executed as a script.
-- **X-Frame-Options: DENY** — blocks the site from being embedded in an iframe. Clickjacking mitigation.
 - **Referrer-Policy** — sends the full URL as referrer within the site, but only the origin when crossing to other domains.
 - **Permissions-Policy** — explicitly revokes camera, microphone, and geolocation access. Belt-and-suspenders on a blog that needs none of those.
 - **Content-Security-Policy** — the interesting one. More on this below.

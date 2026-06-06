@@ -1,5 +1,11 @@
 let _Q = [];
-fetch('/data/npp-quotes.json').then(r => r.json()).then(d => { _Q = d; nppNext(); });
+fetch('/data/npp-quotes.json')
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(d => { _Q = d; nppNext(); })
+  .catch(() => {
+    const q = document.getElementById('npp-q');
+    if (q) q.textContent = 'Quotes unavailable.';
+  });
 function nppNext() {
   if (!_Q.length) return;
   const r = _Q[Math.floor(Math.random() * _Q.length)];
