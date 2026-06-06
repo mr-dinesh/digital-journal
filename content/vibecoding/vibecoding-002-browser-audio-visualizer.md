@@ -5,8 +5,6 @@ tags: ["Audio", "WebGL", "Browser", "VibeCoding"]
 aliases: ["/writing/vibecoding_day002/", "/writing/vibecoding-002-browser-audio-visualizer/"]
 description: "Used Claude to build VIZMIX — a Winamp-inspired 3D audio visualizer in the browser with five visualization modes, live mic input, and trippy WebGL effects."
 ---
-![image](/images/writing/vibecoding-002-vizmix.png)
-
 ### VIZMIX — A Winamp-Inspired 3D Audio Visualizer for the Browser
 
 *Project #2 of the 100 Vibe Coding Projects challenge*
