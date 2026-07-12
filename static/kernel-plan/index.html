@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A checkable 90-day plan to go from Linux basics to a first merged Linux kernel patch, with timestamped check-ins and Markdown export.">
+<title>90 Days to Your First Kernel Patch</title>
+<style>
+  :root{
+    --bg:#f5f3ee; --surface:#fffdf8; --surface-2:#efece4;
+    --text:#1b1a16; --muted:#6c685f; --border:#e4ded2;
+    --accent:#b3760f; --accent-soft:#f2e3c8; --accent-strong:#8f5c0a;
+    --done:#3f8a5a; --done-soft:#dbeee0;
+    --read:#3a6ea5; --watch:#a5423a; --course:#7a4fa0; --build:#b3760f;
+    --shadow:0 1px 2px rgba(40,32,12,.06),0 6px 20px rgba(40,32,12,.05);
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#14161a; --surface:#1b1e25; --surface-2:#232833;
+      --text:#e7e9ec; --muted:#949aa5; --border:#2b313c;
+      --accent:#e8a33d; --accent-soft:#33291a; --accent-strong:#f3b862;
+      --done:#5fbf7f; --done-soft:#1d2a22;
+      --read:#6ea8de; --watch:#e08a82; --course:#b48ad6; --build:#e8a33d;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.28);
+    }
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.55;
+    margin:0;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 90px;}
+
+  header.hero{padding:56px 0 28px;border-bottom:1px solid var(--border);}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--accent-strong);margin:0 0 14px;}
+  h1{font-family:var(--mono);font-weight:600;font-size:clamp(28px,5vw,44px);line-height:1.08;
+    margin:0 0 14px;text-wrap:balance;letter-spacing:-.01em;}
+  h1 .amp{color:var(--accent);}
+  .lede{font-size:17px;color:var(--muted);max-width:60ch;margin:0;}
+
+  .status{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--border);
+    display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 20px;margin:0 -20px 0;}
+  .status .bar{flex:1;min-width:160px;height:8px;border-radius:99px;background:var(--surface-2);
+    overflow:hidden;border:1px solid var(--border);}
+  .status .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-strong));
+    border-radius:99px;transition:width .35s cubic-bezier(.4,0,.2,1);}
+  .status .pct{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:15px;font-weight:600;
+    min-width:132px;}
+  .status .pct b{color:var(--accent);}
+  button.ghost{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--muted);
+    background:transparent;border:1px solid var(--border);border-radius:7px;padding:6px 11px;cursor:pointer;}
+  button.ghost:hover{color:var(--text);border-color:var(--accent);}
+  button.ghost:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+  .recover{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);
+    border-radius:12px;padding:20px 22px;margin:28px 0;box-shadow:var(--shadow);}
+  .recover h2{font-family:var(--mono);font-size:15px;margin:0 0 8px;letter-spacing:.02em;}
+  .recover p{margin:6px 0;color:var(--muted);font-size:14.5px;}
+  .recover .mvp{font-family:var(--mono);color:var(--text);background:var(--accent-soft);
+    padding:2px 7px;border-radius:5px;font-size:13px;}
+
+  .phase{margin:40px 0 0;}
+  .phase-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+    padding-bottom:10px;border-bottom:2px solid var(--border);margin-bottom:22px;}
+  .phase-num{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:.1em;}
+  .phase-head h2{font-family:var(--mono);font-size:22px;margin:0;font-weight:600;letter-spacing:-.01em;}
+  .phase-days{font-family:var(--mono);font-size:12px;color:var(--muted);margin-left:auto;}
+  .phase-goal{width:100%;font-size:14.5px;color:var(--muted);margin:2px 0 0;}
+
+  .week{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:18px 20px;margin:0 0 16px;box-shadow:var(--shadow);}
+  .week-head{display:flex;align-items:center;gap:10px;margin:0 0 4px;}
+  .week-num{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--bg);background:var(--accent);
+    padding:3px 8px;border-radius:6px;letter-spacing:.03em;}
+  .week-title{font-weight:600;font-size:16px;margin:0;}
+  .week-check{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted);
+    font-variant-numeric:tabular-nums;}
+  .week.complete .week-check{color:var(--done);}
+  ul.tasks{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:2px;}
+  li.task{display:flex;align-items:flex-start;gap:11px;padding:8px 8px;border-radius:8px;cursor:pointer;
+    transition:background .12s;}
+  li.task:hover{background:var(--surface-2);}
+  li.task input{appearance:none;-webkit-appearance:none;flex:0 0 auto;width:19px;height:19px;margin:1px 0 0;
+    border:1.8px solid var(--border);border-radius:5px;background:var(--bg);cursor:pointer;position:relative;
+    transition:all .15s;}
+  li.task input:checked{background:var(--done);border-color:var(--done);}
+  li.task input:checked::after{content:"";position:absolute;left:5.5px;top:2px;width:5px;height:9px;
+    border:solid #fff;border-width:0 2px 2px 0;transform:rotate(42deg);}
+  li.task input:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .task-body{flex:1;min-width:0;}
+  .task-body .txt{font-size:14.5px;transition:color .15s;}
+  li.task.done .txt{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--border);}
+  .stamp{display:none;font-family:var(--mono);font-size:11px;color:var(--done);margin-top:3px;
+    letter-spacing:.02em;font-variant-numeric:tabular-nums;}
+  li.task.done .stamp{display:block;}
+  .tag{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.09em;
+    padding:2px 6px;border-radius:4px;margin-right:9px;vertical-align:1.5px;text-transform:uppercase;}
+  .tag.read{color:var(--read);background:color-mix(in srgb,var(--read) 14%,transparent);}
+  .tag.watch{color:var(--watch);background:color-mix(in srgb,var(--watch) 14%,transparent);}
+  .tag.course{color:var(--course);background:color-mix(in srgb,var(--course) 14%,transparent);}
+  .tag.build{color:var(--build);background:color-mix(in srgb,var(--build) 16%,transparent);}
+  .task-body a{color:var(--accent-strong);text-decoration:none;border-bottom:1px solid var(--accent-soft);}
+  .task-body a:hover{border-bottom-color:var(--accent);}
+
+  .res{margin:48px 0 0;}
+  .res h2{font-family:var(--mono);font-size:18px;margin:0 0 6px;}
+  .res p.sub{color:var(--muted);font-size:14px;margin:0 0 20px;}
+  .res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;}
+  .res-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:15px 16px;}
+  .res-card h3{font-family:var(--mono);font-size:13px;margin:0 0 10px;color:var(--accent-strong);
+    letter-spacing:.04em;text-transform:uppercase;}
+  .res-card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;}
+  .res-card li{font-size:14px;line-height:1.4;}
+  .res-card a{color:var(--text);text-decoration:none;border-bottom:1px solid var(--border);}
+  .res-card a:hover{border-bottom-color:var(--accent);color:var(--accent-strong);}
+  .res-card .note{color:var(--muted);font-size:12.5px;display:block;margin-top:1px;}
+
+  footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--border);
+    font-size:13px;color:var(--muted);font-family:var(--mono);}
+  footer a{color:var(--accent-strong);}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+<div class="status" role="status" aria-label="overall progress">
+  <span class="pct"><b id="pctNum">0%</b> · <span id="doneCount">0</span>/<span id="totalCount">0</span></span>
+  <div class="bar"><div class="fill" id="fill"></div></div>
+  <button class="ghost" id="dlBtn">↓ download .md</button>
+  <button class="ghost" id="resetBtn">reset</button>
+</div>
+
+<div class="wrap">
+  <header class="hero">
+    <p class="kicker">// 90-day track · linux kernel &amp; open source</p>
+    <h1>From <span class="amp">$</span> whoami <span class="amp">→</span> your first merged patch</h1>
+    <p class="lede">A checkable, resume-anytime plan to go from "I have a working KVM lab" to submitting real patches to the Linux kernel. Twelve weeks, three phases, mixed reading / video / free courses / hands-on. Your progress saves in this browser automatically.</p>
+  </header>
+
+  <section class="recover">
+    <h2>⟲ Fell off the wagon? Read this, not the guilt.</h2>
+    <p><strong>Don't restart the clock — resume the checkbox.</strong> Missing days is expected; this plan is built to be re-entered, not perfected. The bar above only ever goes up.</p>
+    <p><strong>The 15-minute rule.</strong> On any low-energy day, do one <span class="mvp">git pull &amp;&amp; make</span>-sized thing: read one doc section, watch 10 min, or tick one task. Momentum beats intensity.</p>
+    <p><strong>Been away a week+?</strong> Jump to the <em>last unchecked box</em> — don't re-read what's done. If a whole week feels stale, skim its titles and check what you already know; honesty here keeps the bar meaningful.</p>
+  </section>
+
+  <div id="plan"></div>
+
+  <section class="res">
+    <h2>Reference shelf</h2>
+    <p class="sub">Everything below is free unless marked. Bookmark this section — it's your library for all 90 days and beyond.</p>
+    <div class="res-grid">
+      <div class="res-card">
+        <h3>Free Courses</h3>
+        <ul>
+          <li><a href="https://training.linuxfoundation.org/training/a-beginners-guide-to-linux-kernel-development-lfd103/" target="_blank" rel="noopener">LFD103 — Beginner's Guide to Kernel Development</a><span class="note">Linux Foundation · the spine of this plan</span></li>
+          <li><a href="https://training.linuxfoundation.org/training/introduction-to-linux-lfs101x/" target="_blank" rel="noopener">LFS101 — Introduction to Linux</a><span class="note">edX · free audit</span></li>
+          <li><a href="https://training.linuxfoundation.org/training/a-beginners-guide-to-open-source-software-development-lfd102/" target="_blank" rel="noopener">LFD102 — Beginner's Guide to Open Source Dev</a><span class="note">community etiquette &amp; licensing</span></li>
+        </ul>
+      </div>
+      <div class="res-card">
+        <h3>Books</h3>
+        <ul>
+          <li><a href="https://www.oreilly.com/library/view/linux-kernel-development/9780768696974/" target="_blank" rel="noopener">Linux Kernel Development</a> — Robert Love<span class="note">the readable starting book (paid)</span></li>
+          <li><a href="https://lwn.net/Kernel/LDD3/" target="_blank" rel="noopener">Linux Device Drivers, 3rd ed (LDD3)</a><span class="note">free PDF · dated but foundational</span></li>
+          <li><a href="https://sysprog21.github.io/lkmpg/" target="_blank" rel="noopener">The Linux Kernel Module Programming Guide</a><span class="note">free · kept current</span></li>
+        </ul>
+      </div>
+      <div class="res-card">
+        <h3>Docs &amp; Sites</h3>
+        <ul>
+          <li><a href="https://kernelnewbies.org/FirstKernelPatch" target="_blank" rel="noopener">KernelNewbies — First Kernel Patch</a><span class="note">the canonical walk-through</span></li>
+          <li><a href="https://docs.kernel.org/process/index.html" target="_blank" rel="noopener">kernel.org — Development Process docs</a><span class="note">submitting-patches.rst lives here</span></li>
+          <li><a href="https://bootlin.com/docs/" target="_blank" rel="noopener">Bootlin free training materials</a><span class="note">excellent slide decks</span></li>
+          <li><a href="https://lwn.net/Kernel/Index/" target="_blank" rel="noopener">LWN Kernel Index</a><span class="note">how subsystems really work</span></li>
+        </ul>
+      </div>
+      <div class="res-card">
+        <h3>Video</h3>
+        <ul>
+          <li><a href="https://www.youtube.com/results?search_query=greg+kroah-hartman+write+and+submit+your+first+linux+kernel+patch" target="_blank" rel="noopener">GKH — Write &amp; Submit Your First Patch</a><span class="note">Greg Kroah-Hartman talk</span></li>
+          <li><a href="https://www.youtube.com/results?search_query=linux+kernel+internals+lecture" target="_blank" rel="noopener">Kernel internals lecture series</a><span class="note">pick one, watch alongside Love's book</span></li>
+        </ul>
+      </div>
+      <div class="res-card">
+        <h3>Where to contribute</h3>
+        <ul>
+          <li><a href="https://kernelnewbies.org/KernelJanitors" target="_blank" rel="noopener">Kernel Janitors — small cleanup tasks</a></li>
+          <li><a href="https://www.kernel.org/doc/html/latest/process/submitting-patches.html" target="_blank" rel="noopener">drivers/staging tree</a><span class="note">friendliest first-patch target</span></li>
+          <li><a href="https://www.outreachy.org/" target="_blank" rel="noopener">Outreachy</a> / <a href="https://summerofcode.withgoogle.com/" target="_blank" rel="noopener">GSoC</a><span class="note">longer-term, mentored</span></li>
+        </ul>
+      </div>
+      <div class="res-card">
+        <h3>My lab (already set up)</h3>
+        <ul>
+          <li><span class="note" style="margin:0">trixie 13.6 · KVM + libvirt working</span></li>
+          <li><code>~/kernel-vm/boot.sh</code> — boot any bzImage</li>
+          <li><code>nice -n 19 make</code> — build command</li>
+          <li><code>scripts/checkpatch.pl</code> — run before every patch</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>progress stored locally in your browser · nothing leaves this page · <a href="/notes/kernel-lab-and-90-day-plan/">read the story behind it →</a></footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
