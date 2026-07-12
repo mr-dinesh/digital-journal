@@ -7,6 +7,7 @@ enableRobotsTXT = true
 buildDrafts = false
 buildFuture = false
 buildExpired = false
+disableHugoGeneratorInject = true
 
 [markup]
   [markup.goldmark]
@@ -24,6 +25,7 @@ buildExpired = false
   autoSwitchAppearance = true
   enableSearch = true
   enableCodeCopy = true
+  goatcounter = "mrdee"
 
   [params.author]
     name = "Mr.Dee"
