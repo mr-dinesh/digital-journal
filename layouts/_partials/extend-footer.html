@@ -1,0 +1,9 @@
+{{/* Privacy-friendly analytics — GoatCounter (open source, cookieless, no PII).
+     Activates only when `goatcounter` is set under [params] in hugo.toml, e.g.
+       [params]
+         goatcounter = "yourcode"   # the subdomain from your goatcounter.com account
+     count.js honours Do-Not-Track and sets no cookies. */}}
+{{ with .Site.Params.goatcounter }}
+<script data-goatcounter="https://{{ . }}.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+{{ end }}
