@@ -99,4 +99,4 @@ It leans almost entirely on free material — the Linux Foundation's [LFD103](ht
 
 The one design decision I'm proud of is a **recovery rule** baked into the plan itself: *don't restart the clock, resume the checkbox.* Missing days is assumed, not punished. On a low-energy day the bar is one `git pull && make`-sized thing — read a doc section, tick one box. Momentum beats intensity, and a plan that shames you for slipping is a plan you'll abandon.
 
-I built it as an [interactive checklist](https://claude.ai/code/artifact/9402ec45-c74d-4826-860c-deee7f277e24) with timestamped check-ins so there's a dated record of the journey — it exports back to a version-controlled Markdown file whenever I want a permanent copy. If a merged patch is at the end of it, I'll write that note too.
+I built it as an [interactive checklist](/kernel-plan/) with timestamped check-ins so there's a dated record of the journey — it exports back to a version-controlled Markdown file whenever I want a permanent copy. If a merged patch is at the end of it, I'll write that note too.
