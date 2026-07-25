@@ -97,8 +97,8 @@ function card(s,g){
   b.className="preset"; b.id="preset-"+s.id;
   const nameLang=(g.id==="kn"||g.id==="hi")?` lang="${g.lang}"`:"";
   b.innerHTML=
-    `<div class="p-name"${nameLang}>${s.name}</div>`+
-    `<div class="p-desc">${s.desc}</div>`+
+    `<span class="p-logo" style="${logoStyle(s)}" aria-hidden="true">${logoText(s)}</span>`+
+    `<span class="p-txt"><span class="p-name"${nameLang}>${s.name}</span><span class="p-desc">${s.desc}</span></span>`+
     `<button class="p-fav${isFav(s.id)?" on":""}" aria-label="Toggle favorite" title="Favorite">${isFav(s.id)?"★":"☆"}</button>`+
     `<span class="p-eq" aria-hidden="true"><span></span><span></span><span></span></span>`;
   b.addEventListener("click",e=>{
@@ -106,6 +106,21 @@ function card(s,g){
     tune(s);
   });
   return b;
+}
+
+/* ---------- station logo tiles ---------- */
+function hashCode(str){ let h=0; for(let i=0;i<str.length;i++) h=(h*31+str.charCodeAt(i))>>>0; return h; }
+const BAND_HUE={kn:28, hi:352, rp:190, soma:266};
+function logoStyle(s){
+  const base=(s.grp in BAND_HUE)?BAND_HUE[s.grp]:hashCode(s.id)%360;
+  const h=(base + (hashCode(s.id)%36) - 18 + 360)%360;
+  return `background:linear-gradient(135deg,hsl(${h},58%,44%),hsl(${(h+20)%360},66%,30%))`;
+}
+function logoText(s){
+  const src=(s.desc||s.name).replace(/^RP\s*/,"");
+  const w=src.match(/[A-Za-z0-9]+/g)||[];
+  if(w.length>=2) return (w[0][0]+w[1][0]).toUpperCase();
+  return ((w[0]||"").slice(0,2)||"♪").toUpperCase();
 }
 
 /* ---------- favorites ---------- */
