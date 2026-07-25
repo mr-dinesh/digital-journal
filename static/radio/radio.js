@@ -6,7 +6,7 @@ const STATIONS = [
   {id:"air-akashvani-kn", grp:"kn", type:"hls",    name:"ಆಕಾಶವಾಣಿ ಬೆಂಗಳೂರು", desc:"Akashvani Bengaluru", url:"https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio030/hlspbaudio030_Auto.m3u8"},
   {id:"air-vb-kn",        grp:"kn", type:"hls",    name:"ವಿವಿಧ ಭಾರತಿ",       desc:"Vividh Bharati BLR",  url:"https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio026/hlspbaudio026_Auto.m3u8"},
   {id:"air-amrutha",      grp:"kn", type:"hls",    name:"ಅಮೃತವರ್ಷಿಣಿ",       desc:"classical · AIR",     url:"https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio028/hlspbaudio028_Auto.m3u8"},
-  {id:"girmit",           grp:"kn", type:"direct", meta:"radiojar", np:"https://www.radiojar.com/api/stations/g6dgm6m6p3hvv/now_playing/", name:"ರೇಡಿಯೋ ಗಿರ್ಮಿಟ್",   desc:"Radio Girmit",        url:"https://stream.radiojar.com/g6dgm6m6p3hvv"},
+  {id:"kannadahits",      grp:"kn", type:"direct", name:"ಕನ್ನಡ ಹಿಟ್ಸ್",       desc:"Kannada Hits",        url:"https://stream.zeno.fm/68snnbug8rhvv"},
   {id:"suno-kn",          grp:"kn", type:"direct", name:"ಸುನೋ ಎಫ್‌ಎಂ",       desc:"Suno FM · melody",    url:"https://playerservices.streamtheworld.com/api/livestream-redirect/RADIO_SUNO_MELODY_S06.mp3"},
 
   {id:"air-vb-national",  grp:"hi", type:"hls",    name:"विविध भारती",        desc:"national · AIR",      url:"https://air.pc.cdn.bitgravity.com/air/live/pbaudio001/playlist.m3u8"},
