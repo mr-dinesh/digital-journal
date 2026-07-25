@@ -1,9 +1,6 @@
-/radio/*
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; worker-src blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://img.radioparadise.com https://azuracast.vibesounds.in https://radiojar-lib.appspot.com; font-src 'self'; media-src blob: https:; connect-src 'self' https: https://cdn.jsdelivr.net; frame-ancestors 'none'; object-src 'none'; base-uri 'self'
-
 /*
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.goatcounter.com; font-src 'self'; frame-src https://www.youtube.com https://www.youtube-nocookie.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://gc.zgo.at https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.goatcounter.com https://api.radioparadise.com https://somafm.com https://airhlspush.pc.cdn.bitgravity.com https://air.pc.cdn.bitgravity.com https://azuracast.vibesounds.in https://www.radiojar.com https://cdn.jsdelivr.net; font-src 'self'; media-src blob: https:; worker-src blob:; frame-src https://www.youtube.com https://www.youtube-nocookie.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'
