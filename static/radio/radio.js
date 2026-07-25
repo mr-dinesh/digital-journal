@@ -176,7 +176,6 @@ function teardown(){
   if(hls){ hls.destroy(); hls=null; }
   try{ audio.pause(); }catch(e){}
   audio.removeAttribute("src");
-  try{ audio.load(); }catch(e){}
 }
 function togglePlay(){
   if(!current){ const first=STATIONS.find(matches)||STATIONS[0]; if(first) tune(first); return; }
@@ -199,7 +198,7 @@ audio.addEventListener("playing",()=>{
 });
 audio.addEventListener("pause",()=>{ setBeacon(""); setPlayIcon(false); setStatus("paused"); markPlaying(false); });
 audio.addEventListener("waiting",()=>setBeacon("buffering"));
-audio.addEventListener("error",()=>{ if(!current)return; setStatus("stream error"); setMeta("Stream unavailable","try another preset",""); });
+audio.addEventListener("error",()=>{ if(!current)return; if(!audio.src)return; /* ignore spurious empty-src/teardown errors */ setStatus("stream error"); setMeta("Stream unavailable","try another preset",""); });
 
 $("play").addEventListener("click",togglePlay);
 $("mplay").addEventListener("click",togglePlay);
