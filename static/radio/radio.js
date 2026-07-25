@@ -97,8 +97,8 @@ function card(s,g){
   b.className="preset"; b.id="preset-"+s.id;
   const nameLang=(g.id==="kn"||g.id==="hi")?` lang="${g.lang}"`:"";
   b.innerHTML=
-    `<span class="p-logo" style="${logoStyle(s)}" aria-hidden="true">${logoText(s)}</span>`+
-    `<span class="p-txt"><span class="p-name"${nameLang}>${s.name}</span><span class="p-desc">${s.desc}</span></span>`+
+    `<span class="p-name font-${g.id}"${nameLang}>${s.name}</span>`+
+    `<span class="p-desc">${s.desc}</span>`+
     `<button class="p-fav${isFav(s.id)?" on":""}" aria-label="Toggle favorite" title="Favorite">${isFav(s.id)?"★":"☆"}</button>`+
     `<span class="p-eq" aria-hidden="true"><span></span><span></span><span></span></span>`;
   b.addEventListener("click",e=>{
@@ -108,19 +108,21 @@ function card(s,g){
   return b;
 }
 
-/* ---------- station logo tiles ---------- */
-function hashCode(str){ let h=0; for(let i=0;i<str.length;i++) h=(h*31+str.charCodeAt(i))>>>0; return h; }
-const BAND_HUE={kn:28, hi:352, rp:190, soma:266};
-function logoStyle(s){
-  const base=(s.grp in BAND_HUE)?BAND_HUE[s.grp]:hashCode(s.id)%360;
-  const h=(base + (hashCode(s.id)%36) - 18 + 360)%360;
-  return `background:linear-gradient(135deg,hsl(${h},58%,44%),hsl(${(h+20)%360},66%,30%))`;
+/* ---------- winamp-style spectrum (simulated) ---------- */
+function buildSpectrum(){ const el=$("spectrum"); if(!el)return; el.innerHTML=""; for(let i=0;i<16;i++){ const b=document.createElement("span"); b.className="bar"; el.appendChild(b);} }
+let eqTimer=null;
+function startEq(){
+  const el=$("spectrum"); if(!el) return;
+  $("tuner").classList.add("playing");
+  if(eqTimer) return;
+  const bars=[...el.querySelectorAll(".bar")];
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches){ bars.forEach(b=>b.style.height="55%"); return; }
+  eqTimer=setInterval(()=>{ for(const b of bars){ const r=Math.random()*Math.random(); b.style.height=(6+r*94).toFixed(0)+"%"; } },110);
 }
-function logoText(s){
-  const src=(s.desc||s.name).replace(/^RP\s*/,"");
-  const w=src.match(/[A-Za-z0-9]+/g)||[];
-  if(w.length>=2) return (w[0][0]+w[1][0]).toUpperCase();
-  return ((w[0]||"").slice(0,2)||"♪").toUpperCase();
+function stopEq(){
+  clearInterval(eqTimer); eqTimer=null;
+  const el=$("spectrum"); if(el) el.querySelectorAll(".bar").forEach(b=>b.style.height="6%");
+  const t=$("tuner"); if(t) t.classList.remove("playing");
 }
 
 /* ---------- favorites ---------- */
@@ -209,9 +211,9 @@ audio.addEventListener("playing",()=>{
   setPlayIcon(true);
   const g=current&&current.grp;
   setStatus(current&&current.type==="hls"?"HLS · AAC":(current&&current.meta==="rp"?"AAC 320":"LIVE"));
-  markPlaying(true);
+  markPlaying(true); startEq();
 });
-audio.addEventListener("pause",()=>{ setBeacon(""); setPlayIcon(false); setStatus("paused"); markPlaying(false); });
+audio.addEventListener("pause",()=>{ setBeacon(""); setPlayIcon(false); setStatus("paused"); markPlaying(false); stopEq(); });
 audio.addEventListener("waiting",()=>setBeacon("buffering"));
 audio.addEventListener("error",()=>{ if(!current)return; if(!audio.src)return; /* ignore spurious empty-src/teardown errors */ setStatus("stream error"); setMeta("Stream unavailable","try another preset",""); });
 
@@ -366,7 +368,7 @@ function tick(){ $("clock").textContent=new Date().toTimeString().slice(0,5); }
 tick(); setInterval(tick,15000);
 
 /* ---------- boot ---------- */
-buildChips(); render(); syncHeroFav();
+buildChips(); render(); syncHeroFav(); buildSpectrum();
 const lastId=load(LS.last,null);
 if(lastId){ const s=byId(lastId); if(s){ current=s; $("station-name").textContent=s.desc||s.name;
   $("badge").textContent=(s.grp==="kn"?"KANNADA":s.grp==="hi"?"HINDI":s.grp==="rp"?"PARADISE":"SOMAFM");
