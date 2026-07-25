@@ -170,18 +170,21 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 }
 .band-label .native{font-family:inherit;letter-spacing:normal;text-transform:none;color:var(--amber-dim);font-size:13px}
 .band-label::after{content:"";flex:1;height:1px;background:var(--panel-edge)}
-.presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:11px}
+.presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(186px,1fr));gap:11px}
 .preset{
-  position:relative;background:var(--panel);border:1px solid var(--panel-edge);
-  border-radius:var(--radius-sm);padding:15px 15px 14px;text-align:left;cursor:pointer;
+  position:relative;display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--panel-edge);
+  border-radius:var(--radius-sm);padding:11px 28px 11px 11px;text-align:left;cursor:pointer;
   color:var(--ink);font-family:'Archivo',sans-serif;overflow:hidden;
-  transition:border-color .18s,background .18s,transform .1s;min-height:66px;
+  transition:border-color .18s,background .18s,transform .1s;min-height:64px;
 }
 .preset:hover{border-color:var(--amber-dim);background:#241E18}
 .preset:active{transform:scale(.985)}
 .preset.active{border-color:var(--amber);background:#2A231B;box-shadow:0 0 0 1px var(--amber-dim) inset}
-.preset .p-name{font-size:14.5px;font-weight:600;line-height:1.25;padding-right:22px}
-.preset .p-desc{font-family:'Chivo Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:5px;letter-spacing:.02em}
+.p-logo{flex:0 0 auto;width:44px;height:44px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Chivo Mono',monospace;font-weight:500;font-size:15px;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.18), 0 2px 6px rgba(0,0,0,.35);text-shadow:0 1px 2px rgba(0,0,0,.45)}
+.preset.active .p-logo,.preset.playing .p-logo{box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 0 0 1px rgba(232,160,60,.55), 0 2px 8px rgba(0,0,0,.4)}
+.p-txt{min-width:0;display:flex;flex-direction:column}
+.preset .p-name{font-size:14px;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preset .p-desc{font-family:'Chivo Mono',monospace;font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .preset.active .p-desc{color:var(--amber-dim)}
 .p-fav{
   position:absolute;top:10px;right:10px;background:none;border:none;cursor:pointer;
@@ -231,7 +234,8 @@ footer kbd{font-family:'Chivo Mono',monospace;background:var(--panel);border:1px
   .art{width:78px;height:78px;font-size:26px}
   .fav-hero{align-self:center}
   #status{margin-left:auto}
-  .presets{grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:9px}
+  .presets{grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:9px}
+  .p-logo{width:38px;height:38px;font-size:13px}
 }
 @media (min-width:521px){ .mini{display:none} }
 </style>
@@ -299,6 +303,6 @@ footer kbd{font-family:'Chivo Mono',monospace;background:var(--panel);border:1px
 
 <audio id="audio" preload="none"></audio>
 
-<script src="radio.js?v=2"></script>
+<script src="radio.js?v=3"></script>
 </body>
 </html>
