@@ -1,8 +1,7 @@
-
 ---
 title: "Vibecoding 009 — KaggaBot: Automating Daily Verse Posts With GitHub Actions"
 date: 2026-03-25
-tags: ["GitHub Actions", "Mastodon", "Automation", "VibeCoding"]
+tags: ["vibecoding", "github-actions", "mastodon", "automation"]
 aliases: ["/writing/vibecoding-day009-bot-to-autopost-kannada-poetry-verses/", "/writing/vibecoding-009-kaggabot-github-actions/"]
 description: "KaggaBot uses GitHub Actions as a free scheduler to post two Mankutimmana Kagga verses to Mastodon every day — no server, no cost, no babysitting."
 ---
@@ -12,7 +11,7 @@ description: "KaggaBot uses GitHub Actions as a free scheduler to post two Manku
 
 ### What's Mankutimmana Kagga
 
-Mankutimmana Kagga — often called the Kannada Gita — is a collection of 945 philosophical verses by D.V. Gundappa (DVG). Written in the 1940s, it wrestles with life's biggest questions with a rare combination of humility and depth. It deserves a wider audience.
+Mankutimmana Kagga — often called the Kannada Gita — is a collection of 945 philosophical verses by D.V. Gundappa (DVG). Written in the 1940s, it takes on questions about duty, death, and doubt, and does it without preaching. It deserves a wider audience.
 
 ### KaggaBot
 
@@ -26,14 +25,14 @@ A script picks from this collection and formats each verse for posting. GitHub A
 
 Verses in .py file  →  bot script  →  GitHub Actions cron  →  Mastodon post
 
-### The scheduling magic
+### How the scheduling works
 
 A GitHub Actions workflow file defines two daily triggers — morning and evening. When the schedule fires, GitHub spins up a clean environment, checks out the code, and runs the bot. That's the entire pipeline. No cloud bill. No server to maintain. No babysitting.
 
 ### Why Mastodon?
 Mastodon is open, ad-free, and has a clean API — ideal for a bot that exists purely to share literature, not to game an algorithm. The posts are public and readable by anyone, no account needed.
 
-### What Broke
+### What broke
 
 **GitHub Actions cron doesn't mean "exactly at this time."** The workflow is scheduled for 6am and 6pm, but GitHub runs scheduled workflows when capacity is available — which during busy periods can mean a delay of 15–30 minutes. For a poetry bot, that's fine. For anything time-sensitive, it would be a problem worth knowing about upfront.
 
@@ -46,7 +45,7 @@ Mastodon is open, ad-free, and has a clean API — ideal for a bot that exists p
 ### Why this matters
 At two posts a day, it takes over a year to work through all 945 verses of Mankutimmana Kagga.
 
-That's the right pace for philosophy — slow enough to sit with, regular enough to build a habit. KaggaBot transforms reading a classic Kannada text into a daily practice, entirely on autopilot.
+That's the right pace for philosophy: slow enough to sit with, regular enough to build a habit. Two verses a day, on autopilot.
 
 The whole project is open source. If you want to adapt it — for a different text, a different language, a different platform — the bones are all there.
 

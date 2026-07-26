@@ -14,7 +14,7 @@ I wanted to do the same thing with Hacker News.
 
 HN headlines have a particular texture. They're dense with jargon, proper nouns, and compressed meaning. "Smol machines." "PanicLock." "Casus Belli." "Hyperscalers." These aren't ordinary words — they carry whole worlds of context. When you strip away the surrounding noise, you sometimes find something strange and resonant.
 
-The tool fetches the top 20 stories from the HN API, sends the headlines to an LLM with a blackout-poet prompt, and asks it to pick 10–15 words that form a poem. Everything else gets blacked out — animated with a CSS marker-stroke effect, word by word. The survivors appear on the right as a found poem with a title.
+The tool fetches the top 20 stories from the HN API, sends the headlines to an LLM with a blackout-poet prompt, and asks it to pick 10–15 words that form a poem. Everything else gets blacked out, animated with a CSS marker-stroke effect, word by word. The survivors appear on the right as a found poem with a title.
 
 ## The output
 
@@ -42,7 +42,7 @@ It's a single HTML file — same pattern as [yaraweave](/vibecoding/vibecoding-0
 
 The LLM prompt asks the model to act as a blackout poet in the style of Austin Kleon. It must return exactly the words as they appear in the headlines (preserving capitalisation), output valid JSON, prefer unexpected juxtapositions, and avoid mundane connectives. The JSON comes back as `{ "title": "...", "poem": ["word1", "word2", ...] }`.
 
-Then there's a tokenizer that splits every headline into word tokens. A matcher finds each poem word in the token list — exact match first, then case-insensitive, then strip-punctuation fallback. Non-matching tokens get blacked out with a staggered CSS animation (a `marker-stroke` keyframe that sweeps from transparent to black). The poem words slide in on the right panel one by one, timed to appear partway through the blackout animation.
+Then there's a tokenizer that splits every headline into word tokens. A matcher finds each poem word in the token list: exact match first, then case-insensitive, then strip-punctuation fallback. Non-matching tokens get blacked out with a staggered CSS animation (a `marker-stroke` keyframe that sweeps from transparent to black). The poem words slide in on the right panel one by one, timed to appear partway through the blackout animation.
 
 The whole thing runs against the HN Firebase API (public, no key needed) and either Groq (`llama-3.3-70b-versatile`) or Gemini Flash 2.0. Both have free tiers. Keys are stored in `localStorage`.
 
@@ -56,7 +56,7 @@ The masthead reads: *Words found. Meaning made. The rest, erased.*
 
 ## What surprised me
 
-The LLM is genuinely good at this. I expected it to pick safe, obvious words. Instead it goes for the strange ones — the proper nouns, the tech jargon that sounds almost mythological when isolated. "PanicLock" next to "Slop" next to "Hyperscalers" reads like a dispatch from a dystopia we're already living in.
+The LLM is genuinely good at this. I expected it to pick safe, obvious words. Instead it goes for the strange ones: the proper nouns, the tech jargon that sounds almost mythological when isolated. "PanicLock" next to "Slop" next to "Hyperscalers" reads like a dispatch from a dystopia we're already living in.
 
 Each run is different. The headlines change daily, and even with the same headlines, temperature 0.9 produces different selections. Some runs are better than others. The bad ones are forgettable. The good ones feel like they found something real.
 
@@ -79,11 +79,11 @@ Theme choice persists in `localStorage`. The coloured dots in the settings bar s
 
 Added client-side throttling to prevent API abuse.
 
-**30-second cooldown.** After each generation the button switches to a live countdown (`Wait 28s…`) and blocks further clicks. The cooldown survives a page refresh — it's stored in `localStorage` against a timestamp, so reopening the tab mid-cooldown picks up where it left off.
+**30-second cooldown.** After each generation the button switches to a live countdown (`Wait 28s…`) and blocks further clicks. The cooldown survives a page refresh. It's stored in `localStorage` against a timestamp, so reopening the tab mid-cooldown picks up where it left off.
 
 **Daily limit of 10 poems per provider.** Groq and Gemini are tracked separately, each with their own counter keyed to the current date. The counter resets automatically at midnight. A usage badge in the settings bar shows the current count (`3 / 10 today`), turns amber above 70%, and red at the limit. The status bar tells you how many poems remain after each successful generation.
 
-All of this is client-side — `localStorage` only, no backend. It won't stop a determined person from opening DevTools and clearing storage, but it stops accidental rapid-fire clicking and keeps casual use within free-tier API limits.
+All of this is client-side: `localStorage` only, no backend. It won't stop a determined person from opening DevTools and clearing storage, but it stops accidental rapid-fire clicking and keeps casual use within free-tier API limits.
 
 ## Source
 

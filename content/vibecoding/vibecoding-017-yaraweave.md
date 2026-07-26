@@ -8,7 +8,7 @@ aliases: ["/writing/vibecoding-017-yaraweave/"]
 
 ![YaraWeave — Threat Intel to YARA Rule Generator](/images/writing/vibecoding-017-yaraweave.jpg)
 
-## The Itch
+## The itch
 
 Every SOC I've ever worked with has the same gap.
 
@@ -22,7 +22,7 @@ That's what YaraWeave is. A tool for closing that gap, fast.
 
 ---
 
-## The Idea
+## The idea
 
 The brief was simple: accept a SHA256 hash or a malware family name, hit multiple open-source threat intel sources in parallel, and use Gemini to synthesise a YARA rule from everything that came back.
 
@@ -34,7 +34,7 @@ Up to five intel sources, one LLM call to generate, one to explain. That's the e
 
 ---
 
-## The Build
+## The build
 
 ### Sources
 
@@ -50,7 +50,7 @@ The tool queries up to five sources in parallel using `Promise.all`:
 
 MalwareBazaar, URLhaus, and OTX are enabled by default; ThreatFox is available but unchecked. The three abuse.ch sources (MalwareBazaar, URLhaus, ThreatFox) support browser-direct requests with open CORS policies — no proxy needed. That's what made a single-file deployment viable.
 
-### The Gemini Prompt
+### The Gemini prompt
 
 The YARA generation prompt is doing more work than it looks like. It doesn't just say "write a YARA rule for Emotet." It sends the full raw JSON from every source that returned data, plus an enriched summary with family, file type, first-seen, tags, detection rate, and OTX pulse count. Gemini then generates against that full context.
 
@@ -62,7 +62,7 @@ The rule requirements are explicit in the prompt:
 
 The second call — the explanation — parses the generated rule and produces five structured sections: `THREAT_CONTEXT`, `RULE_LOGIC`, `STRING_RATIONALE`, `DEPLOYMENT_NOTES`, and `CONFIDENCE`. That last one is important. A generated rule with `CONFIDENCE: LOW` should be treated very differently from one with `CONFIDENCE: HIGH` — and both are more useful than a rule with no confidence signal at all.
 
-### API Config
+### API config
 
 All keys — Gemini, VirusTotal, OTX — are configured through a modal and stored in `localStorage`. Nothing is hardcoded. Nothing is sent to a backend. The browser talks directly to each API. This was a deliberate choice: the tool needed to be deployable as a static file without a server, and it needed to be trustworthy enough that I'd hand the URL to a security professional without them wondering where their API keys were going.
 
@@ -70,11 +70,11 @@ The Gemini model is also configurable (`gemini-1.5-flash` by default, but you ca
 
 ---
 
-## What Vibecoding This Felt Like
+## What vibecoding this felt like
 
 This one was a different kind of build. Most vibe coding sessions involve a lot of UI iteration — getting the layout right, fixing the interactions, making it feel like a real tool rather than a prototype. YaraWeave had all of that, but the interesting work was in the prompts.
 
-Getting a language model to produce a *good* YARA rule — not a plausible-looking one, but one that a detection engineer would actually deploy — required being very specific about what "good" meant. The first few iterations produced rules that were syntactically correct but operationally useless: generic strings, trivially bypassable conditions, metadata with placeholder values.
+Getting a language model to produce a *good* YARA rule required being very specific about what "good" meant. Not a plausible-looking rule: one a detection engineer would actually deploy. The first few iterations produced rules that were syntactically correct but operationally useless: generic strings, trivially bypassable conditions, metadata with placeholder values.
 
 The fix was to treat the prompt like a spec doc. Every requirement was explicit. The model stopped guessing what I wanted and started delivering what I asked for.
 
@@ -82,7 +82,7 @@ The explanation pipeline was the part I hadn't planned for at the start. But onc
 
 ---
 
-## Try It
+## Try it
 
 - **Claude Artifact:** [Run YaraWeave in your browser](https://claude.ai/public/artifacts/8c198f5f-e4db-4765-9ee2-b88ee0b35a1f)
 - **GitHub:** [github.com/mr-dinesh/yaraweave](https://github.com/mr-dinesh/yaraweave)

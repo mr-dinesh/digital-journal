@@ -18,7 +18,7 @@ This post explains how I built three reference spreadsheets — one each for boo
 
 ---
 
-## The Source Data
+## The source data
 
 Every EiE episode on YouTube has a description that looks roughly like this:
 
@@ -30,11 +30,11 @@ Every EiE episode on YouTube has a description that looks roughly like this:
 
 A numbered list. Title, separator (`--` or `—`), author or artist, then a URL. Sometimes the URL comes right after a colon with no separator line. Sometimes it's a tinyurl. The format isn't perfectly consistent across 128 episodes, but it's consistent *enough* to parse with regex.
 
-I used `yt-dlp` to pull all episode metadata into a JSON file — 128 objects, one per episode, each containing the full description text. That became my working dataset.
+I used `yt-dlp` to pull all episode metadata into a JSON file: 128 objects, one per episode, each containing the full description text. That became my working dataset.
 
 ---
 
-## Extracting Books
+## Extracting books
 
 The primary pattern I was looking for:
 
@@ -58,13 +58,13 @@ The most recommended book? *Seeing Like a State* by James C. Scott — mentioned
 
 ---
 
-## Extracting Music
+## Extracting music
 
 Music entries follow the same `Title -- Artist` format as books, but the URL points to Spotify or YouTube instead of Amazon. The harder problem: YouTube links appear for *both* songs and podcast episodes. "Seen and the Unseen Episode 247" and "Moondance" look identical in format.
 
-My solution: classify each YouTube item by its artist field. If the "artist" was something like "Seen and the Unseen", "Jack of All Knowledge", or contained the word "episode" — it's a podcast, not music. If it matched a known artist name or followed the short-name pattern typical of musicians, it was classified as music.
+My solution: classify each YouTube item by its artist field. If the "artist" was something like "Seen and the Unseen", "Jack of All Knowledge", or contained the word "episode", it's a podcast, not music. If it matched a known artist name or followed the short-name pattern typical of musicians, it was classified as music.
 
-Spotify links were easier — I only kept `album/`, `artist/`, `track/`, and `playlist/` paths, rejecting `episode/` paths which are podcast episodes.
+Spotify links were easier. I only kept `album/`, `artist/`, `track/`, and `playlist/` paths, rejecting `episode/` paths which are podcast episodes.
 
 **Final count: 65 music recommendations.**
 
@@ -74,9 +74,9 @@ One name conspicuously absent from the data: Bruce Springsteen. He never appears
 
 ---
 
-## Extracting Articles and Essays
+## Extracting articles and essays
 
-This was the hardest of the three. Articles point to every kind of URL — academic papers on JSTOR, blog posts on Substack, news pieces on The Hindu, essays on paulgraham.com, poetry on poetryfoundation.org. The format is the same but the content type varies enormously.
+This was the hardest of the three. Articles point to every kind of URL: academic papers on JSTOR, blog posts on Substack, news pieces on The Hindu, essays on paulgraham.com, poetry on poetryfoundation.org. The format is the same but the content type varies enormously.
 
 My approach was domain-based classification. I built a dictionary mapping ~50 known domains to content types:
 
@@ -89,9 +89,9 @@ My approach was domain-based classification. I built a dictionary mapping ~50 kn
 | `poetryfoundation.org` | Poetry |
 | `orwellfoundation.com` | Literary / Arts Essay |
 
-The genuinely hard case was tinyurl — many links are shortened, making domain lookup impossible. For those I fell back to author-based inference: items by Ajay Shah or Renuka Sane skew Policy/Academic; items by Amit Varma skew Essay/Blog Post.
+The genuinely hard case was tinyurl: many links are shortened, which makes domain lookup impossible. For those I fell back to author-based inference: items by Ajay Shah or Renuka Sane skew Policy/Academic; items by Amit Varma skew Essay/Blog Post.
 
-The articles spreadsheet also has a topic taxonomy — 14 topics, assigned by keyword matching on the title, author, and episode title. Topics include Economics & Markets, India & Policy, Philosophy & Ethics, Sports, Technology, and others. Every article gets a primary topic so the "By Topic" sheet groups them into colour-coded sections.
+The articles spreadsheet also has a topic taxonomy: 14 topics, assigned by keyword matching on the title, author, and episode title. Topics include Economics & Markets, India & Policy, Philosophy & Ethics, Sports, Technology, and others. Every article gets a primary topic so the "By Topic" sheet groups them into colour-coded sections.
 
 **Final count: 486 articles and essays.**
 
@@ -99,7 +99,7 @@ Top contributor by far: Amit Varma with 115 pieces. Ajay Shah follows with 48. T
 
 ---
 
-## The Spreadsheets
+## The spreadsheets
 
 Three files, each with multiple sheets:
 
@@ -122,11 +122,11 @@ All three are on the GitHub repo linked above, along with the source JSON and ex
 
 ---
 
-## What I Found Interesting
+## What I found interesting
 
 A few things stood out while building this:
 
-The book recommendations are remarkably consistent. *Seeing Like a State* nine times. Scott's other work appears repeatedly. James C. Scott is clearly canonical on this podcast.
+The book recommendations are consistent. *Seeing Like a State* nine times. Scott's other work appears repeatedly. James C. Scott is clearly canonical on this podcast.
 
 The music selections are personal in a way the books aren't. Van Morrison, Joni Mitchell, Bruce Springsteen — there's a very specific sensibility here that feels like Amit Varma's personal listening rather than curation for the audience. Which makes it more interesting, not less.
 

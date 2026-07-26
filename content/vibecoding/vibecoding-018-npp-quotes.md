@@ -8,28 +8,28 @@ aliases: ["/writing/vibecoding-018-npp-quotes/"]
 
 ![Notepad++ Quotes Extraction](/images/writing/vibecoding-018-npp-quotes.png)
 
-## The Itch
+## The itch
 
 Notepad++ has a hidden easter egg most people never find. Type the word `random` anywhere in the editor, select it, and press F1. A small window pops up with a single quote — a random one, drawn from a list of 247 buried in the source code. Sometimes it's a programming aphorism. Sometimes it's dark humour. Sometimes it's completely unhinged.
 
 > *"Always code as if the guy who ends up maintaining your code will be a violent psychopath who knows where you live."*
 > — Martin Golding
 
-I stumbled on this years ago and kept triggering it when I wanted a laugh. Then one day I actually wanted to find a specific quote I'd seen — and realised I had no way to. The window appears, shows one quote, and closes. There's no index. No searchable list. The only way to find any given quote is to keep hitting the easter egg and hope.
+I stumbled on this years ago and kept triggering it when I wanted a laugh. Then one day I actually wanted to find a specific quote I'd seen, and realised I had no way to. The window appears, shows one quote, and closes. There's no index. No searchable list. The only way to find any given quote is to keep hitting the easter egg and hope.
 
 That felt like a solvable problem.
 
 ---
 
-## The Idea
+## The idea
 
-The Notepad++ source code is public. The quotes live in a single file — a long list of attribution + text pairs, with `\n` as literal line breaks inside each entry. The format is consistent enough that a parser could extract every quote cleanly.
+The Notepad++ source code is public. The quotes live in a single file: a long list of attribution + text pairs, with `\n` as literal line breaks inside each entry. The format is consistent enough that a parser could extract every quote cleanly.
 
 The goal: pull all of them out, clean up the escape sequences, and have a proper flat file I could actually use.
 
 ---
 
-## The Build
+## The build
 
 The raw file had 274 lines. Each line follows this pattern:
 
@@ -73,7 +73,7 @@ The output is two files: `npp_quotes_raw.txt` (one quote per line, attribution i
 
 ---
 
-## What You Can Do With 247 Quotes
+## What you can do with 247 quotes
 
 The extraction is the easy part. What makes it worthwhile is everything downstream.
 
@@ -87,7 +87,7 @@ shuf -n 1 ~/npp_quotes.txt
 
 Every new terminal session greets you with a random quote. Takes ten seconds to set up.
 
-### 2. Mastodon / Social Bot
+### 2. Mastodon / social bot
 
 The `kagga_bot` skeleton in this same repo was built for exactly this kind of data. Swap in the quotes file, set a posting schedule, and you have a daily Notepad++ quote bot. The quotes are short enough to fit comfortably within character limits, and varied enough that you could post one a day for eight months without repeating.
 
@@ -110,15 +110,15 @@ pathlib.Path("quotes.json").write_text(json.dumps(quotes, indent=2, ensure_ascii
 
 Host `quotes.json` on any static file server. Any page can fetch a random one with a single `fetch()` call and no backend.
 
-### 4. Hugo Shortcode for This Blog
+### 4. Hugo shortcode for this blog
 
 A `random-quote` shortcode that reads from the JSON at build time — or a small JS snippet that fetches it client-side — would let any Vibecoding post pull in a contextually relevant quote without me having to look one up manually.
 
-### 5. Screensaver / Wallpaper Generator
+### 5. Screensaver / wallpaper generator
 
 Feed the quotes into something like [quote-wallpaper](https://github.com/bbbenji/quote-wallpaper) or a simple Pillow script. Rotating desktop wallpaper with a new quote each morning. The ones with ASCII art (Space Invaders, the xkcd snippet) render surprisingly well in monospace.
 
-### 6. Random Quote Widget
+### 6. Random quote widget
 
 All 247 quotes are embedded below. A random one loads each time — hit the button to cycle through them.
 
@@ -131,11 +131,11 @@ All 247 quotes are embedded below. A random one loads each time — hit the butt
 
 ---
 
-## What Vibecoding This Felt Like
+## What vibecoding this felt like
 
 This one was tiny by project standards — maybe two hours from "I wonder if these are extractable" to clean output file. No server, no API, no framework. Just a text file, a small parser, and a satisfying flat list at the end.
 
-But there's something worth noting about small extractions like this. The quotes don't live anywhere useful in their original form. They're buried in C++ source, rendered once in a dialog box, and effectively inaccessible. Extracting them doesn't create anything new — it just makes something already real actually findable. A lot of useful work is exactly this shape: not building something from scratch, but rescuing something that exists but can't be reached.
+But there's something worth noting about small extractions like this. The quotes don't live anywhere useful in their original form. They're buried in C++ source, rendered once in a dialog box, and effectively inaccessible. Extracting them doesn't create anything new; it makes something already real findable. A lot of useful work is exactly this shape: rescuing something that already exists but can't be reached.
 
 The `kagga_bot` project earlier in this series did the same thing for Kannada poetry. Same instinct. Make the thing findable. Give it a URL or a flat file or a JSON key. The value was always there — you just had to open a door.
 
