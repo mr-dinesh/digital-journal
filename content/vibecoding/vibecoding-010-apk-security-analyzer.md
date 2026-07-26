@@ -1,18 +1,11 @@
 ---
 title: "Vibecoding 010 — The APK Analyzer That Runs on Your Machine and Tells No One"
 date: 2026-03-31
-tags: ["Security", "Android", "Flask", "Python", "VibeCoding"]
+tags: ["vibecoding", "security", "android", "flask", "python"]
 aliases: ["/writing/vibecoding-day010-offline-apk-security-analyzer/", "/writing/vibecoding-010-apk-security-analyzer/"]
 description: "A local Flask tool for APK security analysis — parses permissions, scans for secrets, fingerprints SDKs, and checks crypto usage. Nothing leaves your machine."
 ---
 ![image](/images/writing/vibecoding-010-apk-analyzer.png)
-
-
-### Building an Offline APK Security Analyzer in Flask
-
-*Project #10 of the 100 Vibe Coding Projects challenge*
-
----
 
 I've been doing APK security analysis manually for years — pulling the file, running jadx, grepping through decompiled source, eyeballing the manifest. It works, but it's slow and the output lives in a terminal window that disappears the moment you close it.
 
@@ -20,7 +13,7 @@ This week's project: wrap that entire methodology into a local web tool. Upload 
 
 ---
 
-### Why Offline?
+## Why offline?
 
 The obvious question when you hear "web tool for APK analysis" is: why not just use MobSF or one of the online scanners?
 
@@ -28,9 +21,7 @@ Two reasons. First, the APKs worth analyzing carefully are often the ones you'd 
 
 Second, building it yourself means you control the logic. Every SDK detection rule, every secret pattern, every risk classification — you wrote it, you understand it, you can explain it. That matters when you're presenting findings to someone.
 
----
-
-### The Architecture
+## The architecture
 
 The tool is deliberately simple: a browser upload goes into Flask, which hands the APK to an Android analysis library and the standard ZIP reader, and the results are rendered as an HTML report. No database, no queue, no JavaScript framework.
 
@@ -42,33 +33,25 @@ Five analysis modules run sequentially on the uploaded APK:
 4. **Crypto analyzer** — control and weakness detection
 5. **Network security config parser** — pinning, cleartext, CA trust
 
----
-
-### The Interesting Technical Problem: DEX Class Extraction
+## The interesting technical problem: DEX class extraction
 
 The first version of the SDK fingerprinter searched the APK's ZIP contents for file paths like `smali/com/dynatrace/...`. That works if you have a smali-format APK, but standard Play Store APKs don't contain smali files — the code is compiled into a binary format called DEX.
 
-The fix was directing androguard to parse that bytecode directly and pull out class names — each in the format `com/dynatrace/android/agent` — which can then be matched against a known SDK map. The extraction runs once and feeds both the SDK fingerprinter and the crypto analyzer, so the binary only gets parsed once.
+The fix was directing androguard to parse that bytecode directly and pull out class names, each in the format `com/dynatrace/android/agent`, which can then be matched against a known SDK map. The extraction runs once and feeds both the SDK fingerprinter and the crypto analyzer, so the binary only gets parsed once.
 
----
+## SDK detection: curating the map
 
-### SDK Detection: Curating the Map
+The SDK map does most of the work. Each of the 30+ entries carries a name, category, risk level, and a specific security note. A hit on Dynatrace is rated HIGH, and the note says why: its default setting enables full session replay, so on a banking app account balances and transaction history may be recorded. It also tells you what to look for and verify.
 
-The SDK map is the heart of the tool. Each of the 30+ entries carries a name, category, risk level, and a specific security note — so a hit on Dynatrace doesn't just say HIGH, it tells you *why*: its default setting enables full session replay, and the note tells you exactly what to look for and verify. On a banking app, that means account balances and transaction history may be recorded.
+Security controls get a GOOD classification. The tool distinguishes between "this SDK sends data to a third party" and "this SDK provides a security control that should be present."
 
-Security controls get a GOOD classification — the tool distinguishes between "this SDK sends data to a third party" and "this SDK provides a security control that should be present."
+## The network security config check
 
----
+The most actionable finding the tool surfaces is expired certificate pinning. Android lets developers set an expiry date on certificate pinning. When that date passes, Android silently falls back to trusting all system certificates. Pinning stops working without a single log message or error.
 
-### The Network Security Config Check
+This is a finding I've seen in real-world production apps. It's a five-minute fix once identified (remove the expiration date or update it), but it's completely invisible unless you're specifically looking for it.
 
-The most actionable finding the tool surfaces is expired certificate pinning. Android lets developers set an expiry date on certificate pinning — and when that date passes, Android silently falls back to trusting all system certificates. Pinning stops working without a single log message or error.
-
-This is a finding I've seen in real-world production apps. It's a five-minute fix once identified — remove the expiration date or update it — but it's completely invisible unless you're specifically looking for it.
-
----
-
-### Secret Scanning: Text Resources Only
+## Secret scanning: text resources only
 
 The secrets scanner searches all text-format files inside the APK ZIP — XML resources, JSON configs, JS bundles, properties files. It won't find secrets compiled into bytecode (you need JADX for that), but it catches a surprising amount:
 
@@ -78,23 +61,17 @@ The secrets scanner searches all text-format files inside the APK ZIP — XML re
 - Razorpay/Stripe live keys in resource files
 - Dynatrace beacon URLs that reveal your monitoring infrastructure
 
-The tool is honest about this limitation — it tells you in the report that bytecode requires JADX for full coverage.
+The tool is honest about this limitation: the report says that bytecode requires JADX for full coverage.
 
----
-
-### The Flask Routing
+## The Flask routing
 
 The upload route saves the file to a temp location, runs analysis, then deletes it in a cleanup step that runs regardless of whether analysis succeeded or failed. The 150MB upload limit handles most APKs.
 
----
+## Risk scoring
 
-### Risk Scoring
+The report generates a letter grade (A–F) based on finding counts: start at 100, subtract 20 for every critical finding, 10 for every high, and 3 for every medium. An app with no critical or high findings gets an A regardless. The grade is a conversation starter, not a compliance verdict. The real value is in the specific findings.
 
-The report generates a letter grade (A–F) based on finding counts: start at 100, subtract 20 for every critical finding, 10 for every high, and 3 for every medium. An app with no critical or high findings gets an A regardless. The grade is a conversation starter, not a compliance verdict — the real value is in the specific findings.
-
----
-
-### What Broke
+## What broke
 
 **androguard v4 broke every tutorial on the internet.** The first version of the DEX extractor was written against androguard v3, which is what every Stack Overflow answer references. In v4, the import paths moved and the class iteration API changed entirely. The code imported without errors but returned empty results — no SDKs detected, no crypto findings, nothing. Took a while to realise the library had changed underneath.
 
@@ -106,16 +83,13 @@ The report generates a letter grade (A–F) based on finding counts: start at 10
 
 **The APK deletion didn't always work.** The analysis library holds a file handle open while it works. On Windows, trying to delete a file while a handle is open throws an error. The fix was wrapping the cleanup in a try/except so it handles both platforms gracefully.
 
----
+## What's next
 
-### What's Next
+The natural next step is JADX integration: run the decompiler automatically and search the output for high-value patterns. That would close the gap between what static resource scanning catches and what method-level analysis reveals.
 
-The natural next step is JADX integration — running the decompiler automatically and searching the output for high-value patterns. That would close the gap between what static resource scanning catches and what method-level analysis reveals.
-
-A diff mode would also be useful — upload two versions of the same APK and see what SDKs were added or removed between releases. That's how you catch a marketing team quietly adding a tracking SDK between app updates.
+A diff mode would also be useful. Upload two versions of the same APK and see what SDKs were added or removed between releases. That's how you catch a marketing team quietly adding a tracking SDK between app updates.
 
 ---
 
-### Code
-[Access it at github.com](https://github.com/mr-dinesh/Offline-APK-Analyzer)
-[Part of the 100 Vibe Coding Projects series](https://mrdee.in)
+**[github.com/mr-dinesh/Offline-APK-Analyzer](https://github.com/mr-dinesh/Offline-APK-Analyzer)**  
+*Part of the [100 Vibe Coding Projects](https://mrdee.in/vibecoding/) series.*

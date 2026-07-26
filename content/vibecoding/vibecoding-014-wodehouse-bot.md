@@ -18,7 +18,7 @@ The result posts to **[@pgwodehousebot.bsky.social](https://bsky.app/profile/pgw
 
 ---
 
-## The Format Rotation
+## The format rotation
 
 A bot that just posts quotes gets boring quickly. What made Wodehouse worth returning to is variety — the way a simile lands differently from a dialogue exchange, which lands differently from a narrator's aside. So the week has a structure:
 
@@ -36,7 +36,7 @@ Wednesday's dialogue format is the most technically interesting. Bluesky threads
 
 ---
 
-## The Code
+## The code
 
 Four files:
 
@@ -65,7 +65,7 @@ Credentials come from environment variables only — `BSKY_HANDLE` and `BSKY_APP
 
 ---
 
-## Zero-Server Scheduling
+## Zero-server scheduling
 
 GitHub Actions fires the script twice a day:
 
@@ -83,7 +83,7 @@ No VPS, no always-on process, no bill at the end of the month. The runner spins 
 
 ---
 
-## Bluesky Only
+## Bluesky only
 
 The bot started with both Mastodon and Bluesky wired up. Removing Mastodon was a clean three-file change: drop the `post_mastodon()` function and its import from `poster.py`, remove `Mastodon.py` from `requirements.txt`, and drop the two Mastodon secrets from the workflow env block. The `publish()` function went from twelve lines to five.
 
@@ -91,7 +91,7 @@ The Mastodon account will come back when a separate instance account is set up f
 
 ---
 
-## What Vibecoding This Felt Like
+## What vibecoding this felt like
 
 The build was fast — a single session. The interesting decisions were about structure, not code.
 

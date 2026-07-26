@@ -1,14 +1,14 @@
 ---
 title: "Vibecoding 008 — I Asked AI to Help Me Build a Home Radio Server"
 date: 2026-03-22
-tags: ["Self-Hosted", "Media", "Docker", "VibeCoding"]
+tags: ["vibecoding", "self-hosted", "media", "docker"]
 aliases: ["/writing/vibecoding-008-building-a-home-media-streaming-and-player/", "/writing/vibecoding-008-home-radio-server/"]
 description: "Tried to build a home Icecast radio server to stream MP3s to my phone. What actually happened: four Docker containers, a Mega.nz dead-end, and a surprisingly working result."
 ---
 ![image](/images/writing/vibecoding-008-home-radio.png)
 
 
-### I Asked an AI to Help Me Build a Home Radio Server. Here's What Actually Happened.
+### I asked an AI to help me build a home radio server. Here's what actually happened.
 
 I have a few hundred MP3s sitting in a folder on my laptop — old Kannada film songs,
 some Tamil classics, a few English albums I ripped years ago. I wanted to stream
@@ -21,7 +21,7 @@ So I opened Claude and said: build me an Icecast server that streams from Mega.n
 
 ---
 
-### The First Pushback 
+### The first pushback
 
 The AI didn't just start writing config files. It pointed out something I hadn't
 thought through: Mega.nz uses end-to-end encryption. There's no public URL you
@@ -37,7 +37,7 @@ blocking, upload speed as the listener ceiling. Things most tutorials skip.
 
 ---
 
-### The Build 
+### The build
 
 The stack ended up being four Docker containers:
 
@@ -52,7 +52,7 @@ broadcast console and a text editor.
 
 ---
 
-### What Broke During Deployment
+### What broke during deployment
 
 A lot, in sequence.
 
@@ -71,7 +71,7 @@ asked for the logs and diagnosed from there.
 
 ---
 
-### The Navidrome Addition
+### The Navidrome addition
 
 Icecast is radio — everyone hears the same thing, you can't click individual
 tracks. When I asked for that, the AI explained the distinction clearly and
@@ -93,7 +93,7 @@ I wish I'd done this years ago for other things.
 
 ---
 
-### What Vibecoding Is
+### What vibecoding is
 
 People use the word to mean different things. For me, on this project, it meant:
 I described what I wanted in plain language, reviewed what came back, corrected
@@ -109,7 +109,7 @@ Same as most collaborators.
 
 ---
 
-### The code, If You Want It
+### The code, if you want it
 
 Everything is on GitHub — docker-compose, configs, the web UI, scripts for
 generating playlists and fetching cover art automatically. It runs on any Linux

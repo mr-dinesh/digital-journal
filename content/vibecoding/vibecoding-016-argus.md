@@ -18,7 +18,7 @@ The name is from Greek mythology. Argus was the hundred-eyed giant who saw every
 
 ---
 
-## What It Does
+## What it does
 
 Paste a claim, a URL, or an article. Argus auto-detects the input type and produces three panels.
 
@@ -50,7 +50,7 @@ The `/fetch` route is what enables URL mode. Browsers block cross-origin fetches
 
 ---
 
-## The Prompt Is the Product
+## The prompt is the product
 
 The UI took an afternoon. The model is someone else's. The prompt is the only thing that makes Argus different from a generic pros-and-cons generator.
 
@@ -66,7 +66,7 @@ Four constraints that matter:
 
 ---
 
-## What Vibecoding This Felt Like
+## What vibecoding this felt like
 
 The API roulette problem is real. Anthropic (no free tier), OpenRouter (free models deprecated) — the original build landed on Cloudflare Workers AI. That worked until it didn't: Workers AI quota silently stopped responding, breaking the live site. Tried Gemini next; the free tier returns `limit: 0` from India. Landed on Groq (llama-3.3-70b-versatile), which is fast, has a generous free quota, and produces noticeably better analysis than the original Llama 8B. The lesson: when building a free personal tool, your API choice is a constraint, not a preference — and you will revisit it more than once.
 

@@ -13,7 +13,7 @@ The result is JuiceSec: ten interactive challenges covering the OWASP Top 10, wi
 
 ## The challenges
 
-All ten run entirely in the browser — there's no real backend to attack, but the simulations are faithful enough to teach the actual mechanics:
+All ten run entirely in the browser. There's no real backend to attack, but the simulations are faithful enough to teach the actual mechanics:
 
 | # | Challenge | OWASP 2021 |
 |---|---|---|
@@ -28,7 +28,7 @@ All ten run entirely in the browser — there's no real backend to attack, but t
 | 09 | SSRF | A10 — SSRF |
 | 10 | Stored XSS | A03 — Injection |
 
-The SQL injection challenge shows the query being constructed in real time as you type — you can watch exactly what happens to the `WHERE` clause when you inject `' OR '1'='1`. The JWT challenge gives you a live token decoder and encoder, so you can swap `alg: HS256` for `alg: none` and escalate your role from user to admin. The SSRF challenge accepts any URL and shows what the server "fetches" — point it at `169.254.169.254` and watch it hand over AWS IAM credentials.
+The SQL injection challenge shows the query being constructed in real time as you type: you can watch exactly what happens to the `WHERE` clause when you inject `' OR '1'='1`. The JWT challenge gives you a live token decoder and encoder, so you can swap `alg: HS256` for `alg: none` and escalate your role from user to admin. The SSRF challenge accepts any URL and shows what the server "fetches". Point it at `169.254.169.254` and watch it hand over AWS IAM credentials.
 
 Each challenge is solved, not explained. You have to find the exploit yourself.
 
@@ -53,7 +53,7 @@ POST /tutor   → Workers AI (llama-3.1-8b-instruct)
 
 The challenge logic runs entirely in browser JavaScript. A simulated `ORDER_DB` object backs the IDOR challenge. A `commentStore` array backs the stored XSS comment board. The JWT challenge uses `btoa`/`atob` in the browser to encode and decode tokens. None of this is real — but the vulnerability patterns are.
 
-One thing that bit me: all the challenge JavaScript lives inside a template literal (`const HTML = \`...\``) in the worker. JavaScript template literals silently strip backslashes from unrecognised escape sequences — so every regex using `\w`, `\s`, `\S`, `\b` in the challenge code was broken at runtime. `/on\w+=/` was arriving in the browser as `/onw+=/`. Fixed by doubling every backslash in the template: `\\w`, `\\s`, etc. The kind of bug that only shows up when you're testing the live app.
+One thing that bit me: all the challenge JavaScript lives inside a template literal (`const HTML = \`...\``) in the worker. JavaScript template literals silently strip backslashes from unrecognised escape sequences, so every regex using `\w`, `\s`, `\S`, `\b` in the challenge code was broken at runtime. `/on\w+=/` was arriving in the browser as `/onw+=/`. Fixed by doubling every backslash in the template: `\\w`, `\\s`, etc. The kind of bug that only shows up when you're testing the live app.
 
 ## What it looks like
 

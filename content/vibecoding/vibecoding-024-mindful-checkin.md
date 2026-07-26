@@ -7,7 +7,7 @@ aliases: ["/writing/vibecoding-024-mindful-checkin/"]
 weight: -24
 ---
 
-I wanted a check-in tool that matched how I actually think about a mindfulness practice: not a mood tracker with sliding scales, not a journal app with blank pages, but three specific questions asked at specific times of day.
+I wanted a check-in tool that matched how I actually think about a mindfulness practice: three specific questions, asked at specific times of day. Not a mood tracker with sliding scales, and not a journal app with a blank page.
 
 **Live:** [mindful.mrdinesh.workers.dev](https://mindful.mrdinesh.workers.dev) · **Public stats:** [mindful.mrdinesh.workers.dev?public=1](https://mindful.mrdinesh.workers.dev?public=1)
 
@@ -15,7 +15,7 @@ I wanted a check-in tool that matched how I actually think about a mindfulness p
 
 The check-in captures three things each session:
 
-- **Breath** — a quick body scan. Chip options (deep, shallow, held, irregular, easy) plus a free-text override. The question is "how's your breath right now?" rather than "rate your stress 1–10," because the breath answer is immediate and honest.
+- **Breath** — a quick body scan. Chip options (deep, shallow, held, irregular, easy) plus a free-text override. The question is "how's your breath right now?" instead of "rate your stress 1–10," because the breath answer is immediate and honest.
 - **Mind** — mental state. Chips: calm, focused, busy, scattered, anxious, foggy. Again, overridable. The goal is pattern recognition over time, not journaling.
 - **Shift** — one micro-action. A free-text field. What's one small thing you can do right now? Not a goal, not a task — a single concrete shift.
 
@@ -59,7 +59,7 @@ CREATE TABLE checkins (
 );
 ```
 
-One row per slot per day. `UNIQUE(date, slot) ON CONFLICT REPLACE` handles re-saves cleanly — editing a morning check-in just replaces the row.
+One row per slot per day. `UNIQUE(date, slot) ON CONFLICT REPLACE` handles re-saves cleanly: editing a morning check-in just replaces the row.
 
 ## Stats screen
 
@@ -74,9 +74,9 @@ Streak calculation happens server-side: fetch all distinct dates, walk them in o
 
 ## One sharp edge: template literal escaping
 
-The Worker inlines the full HTML as a JavaScript template literal. Inside that literal, the app's own JavaScript uses single-quoted strings. Any `\'` written in the template literal becomes just `'` in the rendered HTML — the backslash is dropped as an identity escape.
+The Worker inlines the full HTML as a JavaScript template literal. Inside that literal, the app's own JavaScript uses single-quoted strings. Any `\'` written in the template literal becomes just `'` in the rendered HTML. The backslash is dropped as an identity escape.
 
-This means `onclick="enterSlot(\'morning\')"` in the template literal becomes `onclick="enterSlot('morning')"` in the browser — which is valid HTML but **not** valid JavaScript inside a single-quoted string literal like `'<button onclick="enterSlot(\'morning\')">...'`.
+This means `onclick="enterSlot(\'morning\')"` in the template literal becomes `onclick="enterSlot('morning')"` in the browser, which is valid HTML but **not** valid JavaScript inside a single-quoted string literal like `'<button onclick="enterSlot(\'morning\')">...'`.
 
 The fix: use `data-*` attributes instead of string arguments in inline onclick handlers.
 
@@ -100,7 +100,7 @@ wrangler secret put MINDFUL_PIN
 wrangler deploy
 ```
 
-PIN lives as a Worker secret — never in the code, never in the URL. The frontend prompts once, stores in localStorage, and sends as an `X-Pin` header on every API request.
+PIN lives as a Worker secret: never in the code, never in the URL. The frontend prompts once, stores in localStorage, and sends as an `X-Pin` header on every API request.
 
 ---
 
@@ -125,7 +125,7 @@ async function handlePublicStats(request, env) {
 }
 ```
 
-The `MINDFUL_PUBLIC_STATS` env var acts as an opt-in switch — sharing is off by default.
+The `MINDFUL_PUBLIC_STATS` env var acts as an opt-in switch. Sharing is off by default.
 
 ```bash
 wrangler secret put MINDFUL_PUBLIC_STATS
@@ -136,7 +136,7 @@ The public view renders the same stats but replaces the back button with a "mind
 
 ### Daily Verbal Judo tip
 
-I've been reading *Verbal Judo* by George Thompson and wanted something to nudge me toward applying it day-to-day rather than just reading it. A rotating one-liner now appears below the slot grid on the main screen, labelled "verbal judo."
+I've been reading *Verbal Judo* by George Thompson and wanted something to nudge me toward applying it day-to-day instead of just reading it. A rotating one-liner now appears below the slot grid on the main screen, labelled "verbal judo."
 
 Twenty tips, one per day across the year (day-of-year mod 20):
 
@@ -146,7 +146,7 @@ Twenty tips, one per day across the year (day-of-year mod 20):
 
 > *Always give people a way out that preserves their dignity.*
 
-Same tip all day. No interaction required — just a prompt.
+Same tip all day. No interaction required, just a prompt.
 
 ### Weekly practice screen
 

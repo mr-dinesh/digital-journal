@@ -18,7 +18,7 @@ This week I built something to find out.
 
 ---
 
-## The Build
+## The build
 
 The first conversation with Claude was vague: *how do I create an Excel sheet of all links from a WhatsApp group chat?*
 
@@ -28,7 +28,7 @@ That was the moment I like best about vibecoding. The entire OAuth layer evapora
 
 ---
 
-## Parsing WhatsApp Exports
+## Parsing WhatsApp exports
 
 WhatsApp exports are messier than they look. The format varies by operating system (Android vs iOS), locale (date order), and time convention (12h vs 24h). A message that starts a new line without a timestamp is a continuation of the previous message, not a new one.
 
@@ -38,7 +38,7 @@ Date parsing required ten different format variations to handle all the combinat
 
 ---
 
-## Categorising 4,094 Links
+## Categorising 4,094 links
 
 Once the extraction was working, the obvious next step was categories. The data was telling a clear story by domain — `open.substack.com` dominated, followed by `youtu.be`, `x.com`, `youtube.com`. The question was how many distinct buckets made sense.
 
@@ -85,7 +85,7 @@ The whole thing runs on vanilla HTML, CSS, and JavaScript — no React, no build
 
 ---
 
-## What Vibecoding This Felt Like
+## What vibecoding this felt like
 
 The iterations on this project were all about refinement, not direction.
 
