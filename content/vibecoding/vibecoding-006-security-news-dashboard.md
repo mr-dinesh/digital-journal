@@ -37,7 +37,7 @@ The app is a single Cloudflare Worker (`worker.js`) that does three things:
 - `POST /fetch` — server-side RSS proxy with an allowlist of 7 domains; no browser CORS issues
 - `POST /groq` — runs inference via **Cloudflare Workers AI** (`llama-3.1-8b-instruct`); no external API key
 
-The AI runs through Cloudflare's `[ai]` binding, the same mechanism used in [JuiceSec](/vibecoding/vibecoding-005-owasp-juice-shop-training/). No account needed beyond the Cloudflare deployment itself.
+The AI runs through Cloudflare's `[ai]` binding, the same mechanism used in [JuiceSec](/vibecoding/vibecoding-020-juicesec/). No account needed beyond the Cloudflare deployment itself.
 
 ---
 
