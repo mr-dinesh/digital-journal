@@ -34,7 +34,7 @@ Then added persistence and stats. The final stack:
 | Auth | PIN stored as a Worker secret |
 | Frontend | Vanilla HTML/CSS/JS, no framework |
 
-The Worker serves the full app HTML inline (same pattern as [Argus](/writing/vibecoding-012-argus/) and [JuiceSec](/writing/vibecoding-020-juicesec/)), then handles three API routes:
+The Worker serves the full app HTML inline (same pattern as [Argus](/vibecoding/vibecoding-016-argus/) and [JuiceSec](/vibecoding/vibecoding-020-juicesec/)), then handles three API routes:
 
 - `POST /api/pin-check` — verify PIN before first access
 - `POST /api/checkin` — upsert an entry into D1
