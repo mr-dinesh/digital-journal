@@ -4,7 +4,7 @@ date: 2026-04-18
 layout: "single"
 ---
 
-*A [/now page](https://nownownow.com/about). Last updated May 2026.*
+*A [/now page](https://nownownow.com/about), [listed on nownownow.com](https://nownownow.com/p/218L). Last updated 1 August 2026.*
 
 ---
 
