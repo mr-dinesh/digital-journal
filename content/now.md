@@ -4,23 +4,27 @@ date: 2026-04-18
 layout: "single"
 ---
 
-*A [/now page](https://nownownow.com/about), [listed on nownownow.com](https://nownownow.com/p/218L). Last updated 1 August 2026.*
+*A [/now page](https://nownownow.com/p/218L), [in the sense Derek Sivers meant](https://nownownow.com/about). Updated 1 August 2026.*
 
 ---
 
 ## Building
 
-Somewhere around project 17 of the Vibecoding series. The pace has slowed from one-a-day to one-when-it's-ready, which I think is the right call — the point was never the count.
+Project 26 of the Vibecoding series. The pace slowed from one-a-day to one-when-it's-ready, which was the right call — the point was never the count.
 
-Recent things: a browser-only OWASP vulnerability lab with an AI tutor, a blackout poetry generator from Hacker News headlines, a Wodehouse quote bot on Bluesky that posts twice a day. The Kagga bot is live too — posting DVG verses to Mastodon twice daily.
+The last few: an internet radio station running at [/radio](/radio/), a URL shortener on [s.mrdee.in](https://s.mrdee.in/), a privacy-first article reader that strips trackers, a mood check-in PWA that stores nothing it doesn't need. Two bots keep posting without me — DVG verses to Mastodon, Wodehouse to Bluesky, twice a day each.
 
-Also gave this site a custom 404 page. Hit a broken URL and you get a random Rajnikanth joke. The heading reads *Error 404 — Rajnikanth downloaded the entire internet*.
+This site also has a custom 404 page. Hit a broken URL and you get a random Rajnikanth joke.
+
+## Learning
+
+The kernel. I spent years wanting to contribute and never having a safe place to break things, so in July I finished a stalled Debian 13 upgrade, stood up KVM, and built a custom kernel that boots in QEMU in about a second. Now I'm working through a 90-day plan toward a first patch — [the note is here](/notes/kernel-lab-and-90-day-plan/).
+
+Alongside that: fuzzing. AFL++ harnesses against curl and parts of the Bitwarden SDK. Reading curl's source was what started it — it's been running on nearly every computer since 1998 and most people treat it as furniture.
 
 ## Reading
 
-Working through the curl source code, slowly. It's been running on virtually every computer since 1998 and most people treat it like a given. I wanted to know what's actually in there.
-
-On the book side: dipping in and out of *Mankutimmana Kagga* by DVG. 945 verses of Kannada philosophy written in the 1940s. The kind of book that rewards returning to.
+*Mankutimmana Kagga* by DVG, dipped into rather than read. 945 verses of Kannada philosophy from the 1940s. The kind of book that rewards returning to.
 
 ## At work
 
