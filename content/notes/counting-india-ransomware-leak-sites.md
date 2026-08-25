@@ -15,7 +15,9 @@ Over twelve weeks, two ransomware leak-site aggregators produced 113 records tha
 
 That distinction is the whole point of this note.
 
-I built a small pipeline for this. It pulls victim claims from ransomware.live and RansomLook, normalises them into DuckDB, and works out which ones are in India. Metadata only. No archives, no onion sites, no magnet links. The repository stays private and no victim is named here.
+I built a small pipeline for this. It pulls victim claims from ransomware.live and RansomLook, normalises them into DuckDB, and works out which ones are in India. Metadata only. No archives, no onion sites, no magnet links.
+
+The code is public: [github.com/mr-dinesh/digital-notebook](https://github.com/mr-dinesh/digital-notebook/tree/master/leaksite-india-monitor). The classified victim data isn't, and no victim is named here. The two hand-maintained files that carry the verdicts and the categories stay on my machine.
 
 ## The counting problem comes first
 
