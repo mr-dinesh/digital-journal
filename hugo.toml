@@ -27,6 +27,10 @@ disableHugoGeneratorInject = true
   enableCodeCopy = true
   goatcounter = "mrdee"
 
+  # Sections feeding the homepage "Recent" list. Without this Hugo defaults to the
+  # single section holding the most pages — vibecoding — which silently hid notes.
+  mainSections = ["vibecoding", "notes"]
+
   [params.author]
     name = "Mr.Dee"
     headline = "Security by day, shipping ideas by night. Bengaluru-based."
