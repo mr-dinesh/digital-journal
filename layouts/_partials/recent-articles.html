@@ -1,0 +1,10 @@
+{{ if .Site.Params.homepage.showRecent | default false }}
+  <h2 class="mt-8 text-2xl font-extrabold">{{ i18n "shortcode.recent_articles" | emojify }}</h2>
+  {{/* Newest first. Many posts carry a date with no time, so sort by file path descending
+       first (vibecoding-020 above -018) and let the stable date sort keep that as the
+       same-day tie-break. */}}
+  {{ $pages := sort (where .Site.RegularPages "Type" "in" .Site.Params.mainSections) "File.Path" "desc" }}
+  {{ range first (.Site.Params.homepage.recentLimit | default 5) (sort $pages "Date" "desc") }}
+    {{ partial "article-link.html" . }}
+  {{ end }}
+{{ end }}

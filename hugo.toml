@@ -48,7 +48,7 @@ disableHugoGeneratorInject = true
   [params.homepage]
     layout = "page"
     showRecent = true
-    recentLimit = 8
+    recentLimit = 5
 
   [params.article]
     showDate = true
