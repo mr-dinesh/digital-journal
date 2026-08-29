@@ -1,6 +1,6 @@
 ---
 title: "About"
-date: 2026-03-31
+date: 2026-08-29
 layout: "single"
 ---
 
