@@ -38,7 +38,7 @@ Outside work I read a lot — history, economics, long-form journalism. I have a
 
 ## Find me elsewhere
 
-- **Email** — dinesh(AT)mrdee.in
+- **Email** — dinesh(AT)mrdee.in — PGP key below if you want it encrypted
 - **GitHub** — [mr-dinesh](https://github.com/mr-dinesh) — all the project code, warts and all
 - **Mastodon** — [@mrd@infosec.exchange](https://infosec.exchange/@mrd) — military roots, nerd, tinkerer, babbling about tech
 - **X** — [@m_r_dinesh](https://x.com/m_r_dinesh)
@@ -46,6 +46,24 @@ Outside work I read a lot — history, economics, long-form journalism. I have a
 - **Tumblr** — [h1r0protagonist](https://www.tumblr.com/h1r0protagonist)
 - **Raindrop.io** — [mrdinesh](https://raindrop.io/mrdinesh) — bookmarks and reading list
 - **RSS** — [/index.xml](/index.xml) — for people who remember what RSS is
+
+---
+
+## PGP
+
+For encrypted email or to verify anything signed by me.
+
+- **UID** — `Dinesh <dinesh@mrdee.in>`
+- **Fingerprint** — `74D1 401C F5F3 686B 1C0E  9BA3 FFF5 0738 4D08 768B`
+- **Type** — ed25519 (sign/certify) + cv25519 (encrypt), expires 2028-08-28
+- **Download** — [dinesh-mrdee-in.asc](/pgp/dinesh-mrdee-in.asc)
+
+Verify the fingerprint against this page over TLS before trusting the key.
+
+```
+curl -s https://mrdee.in/pgp/dinesh-mrdee-in.asc | gpg --import
+gpg --fingerprint dinesh@mrdee.in
+```
 
 ---
 
