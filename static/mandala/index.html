@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mandala Studio</title>
+<meta name="description" content="Draw with radial symmetry, or generate a mandala from 19 motif types, 24 palettes and 9 colour harmonies. One page, nothing saved, no accounts.">
+<meta name="author" content="Mr.Dee">
+<meta name="theme-color" content="#0e0d12">
+<link rel="canonical" href="https://mrdee.in/mandala/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="mrdee.in">
+<meta property="og:url" content="https://mrdee.in/mandala/">
+<meta property="og:title" content="Mandala Studio">
+<meta property="og:description" content="Draw with radial symmetry, or generate a mandala from 19 motif types, 24 palettes and 9 colour harmonies. One page, nothing saved, no accounts.">
+<meta property="og:image" content="https://mrdee.in/og/mandala.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Mandala Studio: a circular canvas showing a generated mandala in gold and saffron on a dark ground, with the drawing controls beneath it.">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@m_r_dinesh">
+<meta name="twitter:title" content="Mandala Studio">
+<meta name="twitter:description" content="Draw with radial symmetry, or generate a mandala from 19 motif types, 24 palettes and 9 colour harmonies. One page, nothing saved, no accounts.">
+<meta name="twitter:image" content="https://mrdee.in/og/mandala.png">
+<meta name="twitter:image:alt" content="Mandala Studio: a circular canvas showing a generated mandala in gold and saffron on a dark ground, with the drawing controls beneath it.">
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<style>
+  :root{--ink:#0e0d12;--panel:#17161d;--line:#2a2833;--text:#d8d3c8;--dim:#8a8578;--saffron:#e0a63c}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ink);color:var(--text);font-family:Georgia,serif;font-size:18px;
+    display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:20px 14px 34px}
+  header{text-align:center;margin-bottom:14px}
+  header h1{font-weight:600;font-size:clamp(26px,5vw,38px);letter-spacing:.04em;color:var(--saffron)}
+  header p{font-style:italic;color:var(--dim);font-size:16px}
+  .stage{position:relative;width:min(92vw,560px)}
+  canvas#board{width:100%;display:block;border-radius:50%;background:#121118;
+    box-shadow:0 0 0 1px var(--line),0 0 60px rgba(224,166,60,.06);cursor:crosshair;touch-action:none}
+  .guides{position:absolute;inset:0;border-radius:50%;pointer-events:none;opacity:.45;transition:opacity .3s}
+  .guides.hidden{opacity:0}
+  .caption{margin-top:9px;text-align:center;color:var(--dim);font-size:15px;font-style:italic;min-height:20px}
+  .controls{width:min(92vw,560px);margin-top:10px;background:var(--panel);border:1px solid var(--line);
+    border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+  .row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .row label.name{min-width:86px;color:var(--dim);font-size:16px}
+  input[type=range]{flex:1;appearance:none;height:3px;border-radius:2px;background:var(--line);outline:none;min-width:110px}
+  input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:var(--saffron);border:2px solid var(--ink);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--saffron);border:2px solid var(--ink);cursor:pointer}
+  .val{width:34px;text-align:right;font-variant-numeric:tabular-nums;color:var(--saffron)}
+  select{flex:1;min-width:140px;font-family:inherit;font-size:16px;color:var(--text);background:var(--ink);
+    border:1px solid var(--line);border-radius:8px;padding:7px 9px;cursor:pointer}
+  select:focus-visible{outline:2px solid var(--saffron)}
+  .swatches{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .inkwell{flex:1;display:flex;flex-direction:column;gap:9px;min-width:200px}
+  .inkgroup{display:flex;flex-direction:column;gap:5px}
+  .inkgroup h4{font-weight:500;font-size:14px;font-style:italic;color:var(--dim);letter-spacing:.02em}
+  .inkrow{display:flex;gap:7px;flex-wrap:wrap}
+  .swatch{width:30px;height:30px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .12s}
+  .swatch:hover{transform:scale(1.12)}
+  .swatch.active{border-color:var(--text)}
+  .swatch:focus-visible{outline:2px solid var(--saffron);outline-offset:2px}
+  input[type=color]{width:32px;height:32px;padding:0;border:1px solid var(--line);border-radius:50%;background:none;cursor:pointer}
+  .buttons{display:flex;gap:9px;flex-wrap:wrap}
+  button{font-family:inherit;font-size:17px;padding:8px 16px;border-radius:9px;cursor:pointer;background:transparent;
+    color:var(--text);border:1px solid var(--line);transition:border-color .15s,color .15s}
+  button:hover{border-color:var(--saffron);color:var(--saffron)}
+  button:focus-visible{outline:2px solid var(--saffron);outline-offset:2px}
+  button.primary{background:var(--saffron);color:var(--ink);border-color:var(--saffron);font-weight:600}
+  button.primary:hover{background:#f0b854;color:var(--ink)}
+  .toggle{display:flex;align-items:center;gap:7px;color:var(--dim);font-size:16px;cursor:pointer}
+  .toggle input{accent-color:var(--saffron);width:16px;height:16px;cursor:pointer}
+  .hint{color:var(--dim);font-size:15px;font-style:italic;text-align:center}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Mandala Studio</h1>
+  <p>Draw one stroke — the circle completes it.</p>
+</header>
+
+<div class="stage">
+  <canvas id="board"></canvas>
+  <svg class="guides" id="guides" viewBox="0 0 100 100"></svg>
+</div>
+<div class="caption" id="caption"></div>
+
+<div class="controls">
+  <div class="row">
+    <label class="name" for="palette">Palette</label>
+    <select id="palette"></select>
+  </div>
+  <div class="row">
+    <label class="name" for="colormode">Colour</label>
+    <select id="colormode">
+      <option value="auto">Auto — mix it up</option>
+      <option value="solid">Solid per ring</option>
+      <option value="radial">Radial gradient rings</option>
+      <option value="sweep">Conic sweep</option>
+      <option value="ramp">Ramp centre → rim</option>
+      <option value="duotone">Duotone alternating</option>
+      <option value="prism">Full prism</option>
+    </select>
+  </div>
+  <div class="row">
+    <label class="name" for="sym">Symmetry</label>
+    <input type="range" id="sym" min="3" max="36" step="1" value="12">
+    <span class="val" id="symVal">12</span>
+  </div>
+  <div class="row">
+    <label class="name" for="dense">Density</label>
+    <input type="range" id="dense" min="3" max="14" step="1" value="8">
+    <span class="val" id="denseVal">8</span>
+  </div>
+  <div class="row">
+    <label class="name" for="size">Brush</label>
+    <input type="range" id="size" min="1" max="16" step="1" value="4">
+    <span class="val" id="sizeVal">4</span>
+  </div>
+  <div class="row" style="align-items:flex-start">
+    <label class="name" style="padding-top:4px">Ink</label>
+    <div class="inkwell" id="swatches"></div>
+  </div>
+  <div class="row">
+    <label class="name" for="inkstyle">Nib</label>
+    <select id="inkstyle">
+      <option value="solid">Solid line</option>
+      <option value="glow">Glow</option>
+      <option value="fade">Fade to rim</option>
+      <option value="dotted">Dotted</option>
+      <option value="spray">Spray</option>
+      <option value="double">Double line</option>
+      <option value="taper">Tapered</option>
+    </select>
+    <input type="color" id="custom" value="#e0a63c" aria-label="Custom colour">
+  </div>
+  <div class="row">
+    <label class="name" for="opacity">Opacity</label>
+    <input type="range" id="opacity" min="10" max="100" step="5" value="100">
+    <span class="val" id="opacityVal">100</span>
+  </div>
+  <div class="row" style="justify-content:space-between">
+    <label class="toggle"><input type="checkbox" id="mirror" checked> Mirror</label>
+    <label class="toggle"><input type="checkbox" id="lockSym"> Lock symmetry</label>
+    <label class="toggle"><input type="checkbox" id="showGuides" checked> Guides</label>
+  </div>
+  <div class="buttons">
+    <button class="primary" id="generate">Generate mandala</button>
+    <button id="reColor">Recolour</button>
+    <button id="undo">Undo</button>
+    <button id="clear">Clear</button>
+    <button id="download">Download PNG</button>
+  </div>
+  <p class="hint">Recolour keeps the geometry and re-runs the palette. Inks below are for drawing — metallics and gradient inks shift colour as the stroke travels outward.</p>
+</div>
+
+<script src="app.js?v=1"></script>
+
+</body>
+</html>

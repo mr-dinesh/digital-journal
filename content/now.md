@@ -4,15 +4,15 @@ date: 2026-04-18
 layout: "single"
 ---
 
-*A [/now page](https://nownownow.com/p/218L), [in the sense Derek Sivers meant](https://nownownow.com/about). Updated 1 August 2026.*
+*A [/now page](https://nownownow.com/p/218L), [in the sense Derek Sivers meant](https://nownownow.com/about). Updated 5 September 2026.*
 
 ---
 
 ## Building
 
-Project 26 of the Vibecoding series. The pace slowed from one-a-day to one-when-it's-ready, which was the right call — the point was never the count.
+Project 27 of the Vibecoding series. The pace slowed from one-a-day to one-when-it's-ready, which was the right call — the point was never the count.
 
-The last few: an internet radio station running at [/radio](/radio/), a URL shortener on [s.mrdee.in](https://s.mrdee.in/), a privacy-first article reader that strips trackers, a mood check-in PWA that stores nothing it doesn't need. Two bots keep posting without me — DVG verses to Mastodon, Wodehouse to Bluesky, twice a day each.
+The last few: a mandala tool at [/mandala](/mandala/), an internet radio station running at [/radio](/radio/), a URL shortener on [s.mrdee.in](https://s.mrdee.in/), a privacy-first article reader that strips trackers, a mood check-in PWA that stores nothing it doesn't need. Two bots keep posting without me — DVG verses to Mastodon, Wodehouse to Bluesky, twice a day each.
 
 This site also has a custom 404 page. Hit a broken URL and you get a random Rajnikanth joke.
 
