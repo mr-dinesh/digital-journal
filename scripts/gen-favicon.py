@@ -12,6 +12,7 @@ so the text goes through HarfBuzz once and the shaped outlines become paths;
 nothing depends on a font at view time.
 
 Dependencies:  pip install uharfbuzz fonttools cairosvg pillow
+It also writes tools/og/glyph.svg, the bare lockup the social card reuses.
 The font (Noto Sans Kannada, variable) is fetched from google/fonts into
 scripts/.fonts/ on first run; that directory is gitignored.
 
@@ -34,6 +35,9 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 STATIC = ROOT / "static"
+# The bare lockup (no tile) is also written here for the social card, so
+# tools/og/render.mjs draws exactly the mark the favicon uses.
+OG_GLYPH = ROOT / "tools" / "og" / "glyph.svg"
 FONT_URL = (
     "https://raw.githubusercontent.com/google/fonts/main/ofl/notosanskannada/"
     "NotoSansKannada%5Bwdth%2Cwght%5D.ttf"
@@ -141,11 +145,18 @@ def compose(tt, data):
             scale,
         )
 
-    return (
+    mark = f"{place(top, y)}\n{place(bottom, y + line_h + gap)}"
+    tile = (
         f'<svg viewBox="0 0 {SVG_SIZE} {SVG_SIZE}" xmlns="http://www.w3.org/2000/svg">\n'
         f'<rect width="{SVG_SIZE}" height="{SVG_SIZE}" rx="{CORNER}" ry="{CORNER}" fill="{BG}"/>\n'
-        f"{place(top, y)}\n{place(bottom, y + line_h + gap)}\n</svg>\n"
+        f"{mark}\n</svg>\n"
     )
+    # viewBox cropped to the lockup's ink box: left edge at PAD, top line spans `inner`
+    bare = (
+        f'<svg viewBox="{PAD} {y:.2f} {inner} {2 * line_h + gap:.2f}" xmlns="http://www.w3.org/2000/svg">\n'
+        f"{mark}\n</svg>\n"
+    )
+    return tile, bare
 
 
 def render_png(svg, size):
@@ -156,9 +167,11 @@ def render_png(svg, size):
 
 def main():
     tt, data = ensure_font()
-    svg = compose(tt, data)
+    svg, bare = compose(tt, data)
     (STATIC / "favicon.svg").write_text(svg, encoding="utf-8")
     print(f"  favicon.svg  ({len(svg)} bytes)")
+    OG_GLYPH.write_text(bare, encoding="utf-8")
+    print(f"  {OG_GLYPH.relative_to(ROOT)}  ({len(bare)} bytes)")
     for size, name in PNG_TARGETS.items():
         render_png(svg, size).save(STATIC / name, optimize=True)
         print(f"  {name}")
