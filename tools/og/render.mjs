@@ -5,9 +5,9 @@
  * The og:image / twitter:image tags come from `images = ["og.png"]` in
  * hugo.toml; this script draws the file those tags point at. It composes an
  * SVG (also written to tools/og/og.svg for review) and rasterizes it with
- * sharp. The logo glyph is the ಡಿ mark from tools/og/glyph.svg (the site's
- * original favicon); the favicon itself is now the ಎಂ.ಆರ್.ಡಿ. lockup from
- * scripts/gen-favicon.py.
+ * sharp. The logo is the ಎಂ.ಆರ್.ಡಿ. lockup from tools/og/glyph.svg, which
+ * scripts/gen-favicon.py writes alongside the favicon, so card and icon
+ * always carry the same mark.
  *
  * Usage:
  *   cd tools/og && npm install --no-save sharp && node render.mjs [--2x]
@@ -52,17 +52,22 @@ const TAGLINE = ["Cybersecurity.", "Small projects, shipped and written up hones
 const FONT = "'DejaVu Sans', system-ui, ui-sans-serif, sans-serif";
 const SIZE_BUDGET = 300 * 1024;
 
-function glyphPath() {
+// Returns the lockup's inner markup plus its viewBox, so it can be placed by
+// its own bounding box. Fills stay as authored (off-white letters, yellow
+// periods) -- the card background is the same green as the favicon tile.
+function glyph() {
   const svg = readFileSync(GLYPH_SRC, "utf8");
-  const m = svg.match(/<path[^>]*\sd="([^"]+)"/);
-  if (!m) throw new Error(`no <path d> in ${GLYPH_SRC}`);
-  return m[1];
+  const vb = svg.match(/viewBox="([^"]+)"/);
+  const inner = svg.match(/<svg[^>]*>([\s\S]*)<\/svg>/);
+  if (!vb || !inner) throw new Error(`unexpected markup in ${GLYPH_SRC}`);
+  const [x, y, w, h] = vb[1].split(/\s+/).map(Number);
+  return { x, y, w, h, inner: inner[1].trim() };
 }
 
 function compose() {
-  // The favicon path lives in a 0..~525 x 0..~530 box (before the favicon's
-  // own translate). Scaled by 0.3 it lands at ~158px square at the top-left.
-  const glyph = glyphPath();
+  // Lockup at the top-left, 160px tall (same band the old ಡಿ mark occupied).
+  const g = glyph();
+  const gs = 160 / g.h;
   const ruleY = 380;
   const tickY = H - 26;
   const ticks = [0, 36, 72]
@@ -75,9 +80,9 @@ function compose() {
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <rect width="${W}" height="${H}" fill="${GREEN}"/>
-  <!-- logo glyph: ಡಿ, from tools/og/glyph.svg -->
-  <g transform="translate(${MARGIN} 62) scale(0.3)">
-    <path fill="${YELLOW}" d="${glyph}"/>
+  <!-- logo: ಎಂ.ಆರ್.ಡಿ. lockup from tools/og/glyph.svg -->
+  <g transform="translate(${MARGIN} 62) scale(${gs.toFixed(5)}) translate(${-g.x} ${-g.y})">
+    ${g.inner}
   </g>
   <text x="${MARGIN}" y="350" font-family="${FONT}" font-size="110" font-weight="700" fill="${YELLOW}">mrdee.in</text>
   <!-- thin rule under the wordmark; the three ticks at the bottom edge repeat its 4px weight,
