@@ -5,8 +5,9 @@
  * The og:image / twitter:image tags come from `images = ["og.png"]` in
  * hugo.toml; this script draws the file those tags point at. It composes an
  * SVG (also written to tools/og/og.svg for review) and rasterizes it with
- * sharp. The logo glyph is lifted from static/favicon.svg at build time so the
- * card can never drift from the favicon.
+ * sharp. The logo glyph is the ಡಿ mark from tools/og/glyph.svg (the site's
+ * original favicon); the favicon itself is now the ಎಂ.ಆರ್.ಡಿ. lockup from
+ * scripts/gen-favicon.py.
  *
  * Usage:
  *   cd tools/og && npm install --no-save sharp && node render.mjs [--2x]
@@ -26,7 +27,7 @@ import sharp from "sharp";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, "..", "..");
-const FAVICON = resolve(ROOT, "static", "favicon.svg");
+const GLYPH_SRC = resolve(HERE, "glyph.svg");
 const SVG_OUT = resolve(HERE, "og.svg");
 const PNG_OUT = resolve(ROOT, "static", "og.png");
 const PNG_2X_OUT = resolve(HERE, "og@2x.png");
@@ -52,9 +53,9 @@ const FONT = "'DejaVu Sans', system-ui, ui-sans-serif, sans-serif";
 const SIZE_BUDGET = 300 * 1024;
 
 function glyphPath() {
-  const svg = readFileSync(FAVICON, "utf8");
+  const svg = readFileSync(GLYPH_SRC, "utf8");
   const m = svg.match(/<path[^>]*\sd="([^"]+)"/);
-  if (!m) throw new Error(`no <path d> in ${FAVICON}`);
+  if (!m) throw new Error(`no <path d> in ${GLYPH_SRC}`);
   return m[1];
 }
 
@@ -74,7 +75,7 @@ function compose() {
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <rect width="${W}" height="${H}" fill="${GREEN}"/>
-  <!-- logo glyph, reused from static/favicon.svg -->
+  <!-- logo glyph: ಡಿ, from tools/og/glyph.svg -->
   <g transform="translate(${MARGIN} 62) scale(0.3)">
     <path fill="${YELLOW}" d="${glyph}"/>
   </g>
