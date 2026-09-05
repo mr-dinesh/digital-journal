@@ -19,7 +19,7 @@ disableHugoGeneratorInject = true
   minifyOutput = true
 
 [params]
-  description = "Reading source code. Building projects. Taking notes. In public."
+  description = "Cybersecurity. Small projects, shipped and written up honestly."
   # Sitewide og:image / twitter:image. Hugo's embedded opengraph partial runs
   # this through absURL, giving the absolute URL link-preview crawlers require.
   images = ["og.png"]
@@ -36,7 +36,7 @@ disableHugoGeneratorInject = true
 
   [params.author]
     name = "Mr.Dee"
-    headline = "Security by day, shipping ideas by night. Bengaluru-based."
+    headline = "Cybersecurity. Small projects, shipped and written up honestly."
     links = [
       { github = "https://github.com/mr-dinesh" },
       { mastodon = "https://infosec.exchange/@mrd" },
