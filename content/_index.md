@@ -1,6 +1,6 @@
 ---
 title: "mrdee.in"
-description: "Security leader. Builder. Vibecoding."
+description: "Cybersecurity. Small projects, shipped and written up honestly."
 ---
 
 Works in cybersecurity. Builds things that may or may not be useful. Based in Bengaluru.
