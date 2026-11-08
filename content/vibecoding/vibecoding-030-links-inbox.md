@@ -4,6 +4,7 @@ date: 2026-11-08
 description: "Share a link from any app on the phone, add a line about why, and it shows up on mrdee.in/links that night. One Cloudflare Worker, a queue, and a nightly commit to this blog."
 tags: ["vibecoding", "cloudflare", "pwa", "indieweb"]
 weight: -30
+images: ["og/links-inbox.png"]
 ---
 
 I find a lot of good things on the web, and I lose most of them. They end up in a WhatsApp chat with myself, or in forty open tabs, or in a "read later" app I never open again.
