@@ -51,6 +51,20 @@ Then I used it. Nobody wants five taps of homework before they're allowed to rea
 
 Out it all went. The lamps light themselves now, left to right, about three-quarters of a second apart. The names went back under the message, and the buttons went in the bin. The one thing I added was a little glitter: a few gold stars that twinkle along the inside of the frame. Only a few. It's a greeting card, not a wedding baraat.
 
+## One for the office
+
+The family card says "one lamp for each of us" and lists five names. That's a bit much for someone in accounts. So there's a second version for colleagues and people I know less well: English only, signed "Dinesh & Family," and drawn in ASCII.
+
+![ASCII version of the card: a text border, HAPPY DEEPAVALI in block letters, five ASCII diyas lighting one by one, and a short greeting](/images/writing/vibecoding-029-deepavali-ascii.gif)
+
+It's a GIF, made by a Python script that draws each frame as a grid of coloured characters. The lamps are `\=====/` with a flickering `(*)` on top.
+
+WhatsApp broke it twice. The first GIF saved space by redrawing only the part of each frame that changed. Browsers play that fine. WhatsApp's converter didn't. The fixed GIF still came out smeared, because WhatsApp turns every GIF into a small, heavily compressed video. Thin strokes blur, gold text on maroon bleeds, and the soft glow behind the lamps turns into blocky bands.
+
+The version that works is an MP4 made for WhatsApp: bigger, bold text throughout, no glow, sent with the HD button on. Text that looks crisp on a monitor has to be drawn heavier to survive a phone.
+
+I then asked for something "more modern, professional and geeky, but subtle." Three design directions later, I stopped. It was already good enough.
+
 ## What I took away
 
 The code for each version took minutes. Deciding what the card should be took the afternoon.
