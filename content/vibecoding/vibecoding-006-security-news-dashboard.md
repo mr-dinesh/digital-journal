@@ -11,7 +11,7 @@ description: "SlashSec pulls live RSS from five trusted security sources and use
 
 ---
 
-I wanted a single place to read cybersecurity news from the sources I already trust — SANS ISC, Bruce Schneier's blog, Brian Krebs, Bleeping Computer, and Zack Whittaker's This Week in Security. I wanted something purpose-built for security, with AI-generated summaries short enough to scan quickly.
+I wanted a single place to read cybersecurity news from the sources I already trust — SANS ISC, Bruce Schneier's blog, Brian Krebs, Risky.Biz, and Zack Whittaker's This Week in Security. I wanted something purpose-built for security, with AI-generated summaries short enough to scan quickly.
 
 The result is **SlashSec**: a Cloudflare Worker that serves the full UI and handles RSS fetching and AI inference server-side. Open it and click Fetch Stories — no API keys, no setup.
 
@@ -84,4 +84,4 @@ Deploy with `wrangler deploy`. The `[ai]` binding is pre-configured in `wrangler
 
 ---
 
-*Update, 8 November 2026: Cloudflare retired `llama-3.1-8b-instruct` on 30 May 2026, which broke the summaries. SlashSec now uses `llama-3.3-70b-instruct-fp8-fast`. The same repair also fixed a bug where the page still fetched feeds through the old public CORS proxies instead of the Worker's own `/fetch` route, so every feed failed once those proxies went down.*
+*Update, 8 November 2026: Cloudflare retired `llama-3.1-8b-instruct` on 30 May 2026, which broke the summaries. SlashSec now uses `llama-3.3-70b-instruct-fp8-fast`. The same repair also fixed a bug where the page still fetched feeds through the old public CORS proxies instead of the Worker's own `/fetch` route, so every feed failed once those proxies went down. Bleeping Computer was also replaced with [Risky.Biz](https://news.risky.biz/), because Bleeping Computer's feed blocks requests from Cloudflare's servers.*
