@@ -35,7 +35,7 @@ The app is a single Cloudflare Worker (`worker.js`) that does three things:
 
 - `GET /` — serves the full HTML/CSS/JS UI inlined in the Worker
 - `POST /fetch` — server-side RSS proxy with an allowlist of 7 domains; no browser CORS issues
-- `POST /groq` — runs inference via **Cloudflare Workers AI** (`llama-3.1-8b-instruct`); no external API key
+- `POST /groq` — runs inference via **Cloudflare Workers AI** (`llama-3.3-70b-instruct-fp8-fast`); no external API key
 
 The AI runs through Cloudflare's `[ai]` binding, the same mechanism used in [JuiceSec](/vibecoding/vibecoding-020-juicesec/). No account needed beyond the Cloudflare deployment itself.
 
@@ -81,3 +81,7 @@ Deploy with `wrangler deploy`. The `[ai]` binding is pre-configured in `wrangler
 ---
 
 *Built iteratively with Claude Sonnet. The Worker is about 1,200 lines of vanilla HTML, CSS, and JavaScript embedded in a Cloudflare Worker.*
+
+---
+
+*Update, 8 November 2026: Cloudflare retired `llama-3.1-8b-instruct` on 30 May 2026, which broke the summaries. SlashSec now uses `llama-3.3-70b-instruct-fp8-fast`. The same repair also fixed a bug where the page still fetched feeds through the old public CORS proxies instead of the Worker's own `/fetch` route, so every feed failed once those proxies went down.*

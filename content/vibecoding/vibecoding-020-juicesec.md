@@ -34,7 +34,7 @@ Each challenge is solved, not explained. You have to find the exploit yourself.
 
 ## The AI tutor
 
-The right panel is a chat interface backed by Cloudflare Workers AI (`llama-3.1-8b-instruct`). It has two modes:
+The right panel is a chat interface backed by Cloudflare Workers AI (`llama-3.3-70b-instruct-fp8-fast`). It has two modes:
 
 **Hint mode** — Socratic. It never gives you the answer. Instead it asks questions that push you toward the right mental model: *"What do you think happens to the SQL query if your input contains a single quote?"* It's genuinely annoying in the best way.
 
@@ -48,7 +48,7 @@ Same pattern as [argus](/vibecoding/vibecoding-016-argus) — a single Cloudflar
 
 ```
 GET  /        → full HTML/CSS/JS app (inlined)
-POST /tutor   → Workers AI (llama-3.1-8b-instruct)
+POST /tutor   → Workers AI (llama-3.3-70b-instruct-fp8-fast, falls back to mistral-small-3.1-24b-instruct)
 ```
 
 The challenge logic runs entirely in browser JavaScript. A simulated `ORDER_DB` object backs the IDOR challenge. A `commentStore` array backs the stored XSS comment board. The JWT challenge uses `btoa`/`atob` in the browser to encode and decode tokens. None of this is real — but the vulnerability patterns are.
@@ -64,3 +64,7 @@ Three-pane layout: challenge list on the left (with OWASP category and difficult
 ## Source
 
 → [Try it live](https://juicesec.mrdinesh.workers.dev/) · [github.com/mr-dinesh/juicesec](https://github.com/mr-dinesh/juicesec)
+
+---
+
+*Update, 8 November 2026: Cloudflare retired `llama-3.1-8b-instruct` on 30 May 2026, and the tutor returned errors until it was swapped out. It now uses `llama-3.3-70b-instruct-fp8-fast`, and tries `mistral-small-3.1-24b-instruct` if that fails, so the next retirement won't take it down.*
