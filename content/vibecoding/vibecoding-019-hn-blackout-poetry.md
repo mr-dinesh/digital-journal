@@ -38,13 +38,13 @@ That's from an actual HN front page. "Hay fever" and "gunpowder" came from a his
 
 ## How it works
 
-It's a single HTML file — same pattern as [yaraweave](/vibecoding/vibecoding-017-yaraweave) and [argus](/vibecoding/vibecoding-016-argus). No backend, no build step. Open in a browser.
+It started as a single HTML file — same pattern as [yaraweave](/vibecoding/vibecoding-017-yaraweave) and [argus](/vibecoding/vibecoding-016-argus). No backend, no build step. Open in a browser.
 
 The LLM prompt asks the model to act as a blackout poet in the style of Austin Kleon. It must return exactly the words as they appear in the headlines (preserving capitalisation), output valid JSON, prefer unexpected juxtapositions, and avoid mundane connectives. The JSON comes back as `{ "title": "...", "poem": ["word1", "word2", ...] }`.
 
 Then there's a tokenizer that splits every headline into word tokens. A matcher finds each poem word in the token list: exact match first, then case-insensitive, then strip-punctuation fallback. Non-matching tokens get blacked out with a staggered CSS animation (a `marker-stroke` keyframe that sweeps from transparent to black). The poem words slide in on the right panel one by one, timed to appear partway through the blackout animation.
 
-The whole thing runs against the HN Firebase API (public, no key needed) and either Groq (`llama-3.3-70b-versatile`) or Gemini Flash 2.0. Both have free tiers. Keys are stored in `localStorage`.
+The original version ran against the HN Firebase API (public, no key needed) and either Groq (`llama-3.3-70b-versatile`) or Gemini Flash 2.0. Both have free tiers. Keys were stored in `localStorage`. (See Update 3: it now uses Workers AI and needs no key.)
 
 ## The design
 
@@ -84,6 +84,20 @@ Added client-side throttling to prevent API abuse.
 **Daily limit of 10 poems per provider.** Groq and Gemini are tracked separately, each with their own counter keyed to the current date. The counter resets automatically at midnight. A usage badge in the settings bar shows the current count (`3 / 10 today`), turns amber above 70%, and red at the limit. The status bar tells you how many poems remain after each successful generation.
 
 All of this is client-side: `localStorage` only, no backend. It won't stop a determined person from opening DevTools and clearing storage, but it stops accidental rapid-fire clicking and keeps casual use within free-tier API limits.
+
+## Update 3 — November 2026
+
+The page no longer asks for an API key. The bring-your-own-key setup meant most visitors saw a key field, didn't have a Groq or Gemini key, and left. Gemini 2.0 Flash is also being retired, so one of the two providers was about to stop working anyway.
+
+The LLM call now runs on Cloudflare Workers AI through a small Pages Function at `/api/poem`. The browser still fetches the headlines from the HN API, then posts them to that endpoint. The function builds the blackout-poet prompt on the server and returns the same `{ title, poem }` JSON as before. The tokenizer, matcher, animation and themes are unchanged.
+
+A few details:
+
+- **The prompt lives on the server.** The endpoint accepts only a list of headlines (up to 30, each capped at 300 characters), not a prompt. That keeps it from becoming a free general-purpose LLM proxy on my account.
+- **Two models, tried in order.** `llama-3.3-70b-instruct-fp8-fast` first, then `mistral-small-3.1-24b-instruct` if that fails. Workers AI retires models on a schedule, and this is the same fallback pattern I added to [juicesec](https://juicesec.mrdinesh.workers.dev/) after a retirement took its tutor down.
+- **Same origin.** The function is deployed with the page on Cloudflare Pages, so there's no CORS setup and no separate Worker to manage.
+
+The provider dropdown and key field are gone. The 30-second cooldown and 10-a-day limit stay, now as a single counter. They're still client-side only, so the real protection is the fixed prompt and the input caps.
 
 ## Source
 
