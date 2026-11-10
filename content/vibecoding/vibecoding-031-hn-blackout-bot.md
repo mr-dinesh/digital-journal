@@ -25,7 +25,7 @@ You can read it left to right: here's what the internet was talking about this m
 
 ## How it works
 
-It's a GitHub Action that runs at 09:00 IST, like the other two bots. It needs no server.
+It's a GitHub Action that runs at 09:00 IST, like my other two bots, [PGWodehouseBot](https://bsky.app/profile/pgwodehousebot.bsky.social) and the [Kagga bot](/vibecoding/vibecoding-009-kaggabot-github-actions/). It needs no server.
 
 The script opens Hacker News in a headless Chrome browser and screenshots it down to the twentieth story. It reads the headlines from that same page, so the screenshot and the poem can't drift apart if the rankings shift between two requests.
 
