@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bangalore Weather Daily</title>
+<meta name="description" content="Bangalore's daily highs, lows and rain against every year since 1981. Pick the window, any single day, the panels, and past years to compare.">
+<meta name="theme-color" content="#F3ECDD" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E1417" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://mrdee.in/weather/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Bangalore Weather Daily">
+<meta property="og:description" content="Daily highs, lows and rain against every year since 1981. Pick the window, a day, the panels, and years to compare.">
+<meta property="og:url" content="https://mrdee.in/weather/">
+<meta property="og:image" content="https://mrdee.in/og/weather.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg?v=1" type="image/svg+xml">
+<script src="theme.js?v=1"></script>
+<link rel="stylesheet" href="weather.css?v=1">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="titles">
+      <div class="kicker"><span class="t-almanac">The Bangalore Almanac</span><span class="t-instrument">BLR · 12.97°N 77.59°E</span></div>
+      <h1><span class="t-almanac">How’s the weather been?</span><span class="t-instrument">Weather station / daily</span></h1>
+      <div class="sub" id="sub">Daily highs, lows and rain since 1981</div>
+    </div>
+    <div class="theme-switch seg" role="group" aria-label="Look">
+      <button type="button" data-theme-btn="almanac">Almanac</button>
+      <button type="button" data-theme-btn="instrument">Instrument</button>
+    </div>
+  </header>
+
+  <nav class="controls" aria-label="View controls">
+    <div class="seg" role="group" aria-label="Date window" id="windows"></div>
+    <div class="custom" id="custom">
+      <label class="sr" for="from">From</label><input type="date" id="from">
+      <span>to</span>
+      <label class="sr" for="to">To</label><input type="date" id="to">
+    </div>
+    <span class="grow"></span>
+    <div class="compare" id="compare">
+      <label class="sr" for="cmp-add">Compare with year</label>
+      <select id="cmp-add"><option value="">+ Compare year</option></select>
+    </div>
+    <details class="menu" id="panels-menu">
+      <summary>Panels ▾</summary>
+      <div class="menu-body" id="panels-list"></div>
+    </details>
+  </nav>
+
+  <div class="status" id="status">Loading 45 years of Bangalore weather…</div>
+
+  <div class="layout" id="layout" hidden>
+    <main id="panels"></main>
+    <aside class="daycol">
+      <section class="card" id="daycard" aria-labelledby="day-h">
+        <h2 id="day-h">Pick a day</h2>
+        <div class="daynav">
+          <button type="button" id="day-prev" aria-label="Previous day">◀</button>
+          <label class="sr" for="day-input">Date</label>
+          <input type="date" id="day-input">
+          <button type="button" id="day-next" aria-label="Next day">▶</button>
+          <button type="button" id="day-latest">Latest</button>
+        </div>
+        <div id="day-body"></div>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Data: Oikolab hourly reanalysis for Bangalore, processed and published daily by Karthik S at
+      <a href="https://weather.karthiks.co/">weather.karthiks.co</a>
+      (<a href="https://github.com/skthewimp/bangalore-weather">source, MIT</a>). This page re-reads that file every few hours.</p>
+    <p><b>Normal</b> is the median high or low for that calendar date over 1981 to now, the same definition as the upstream chart. <b>Record</b> is the highest high or lowest low for that date in any other year. A <b>hot day</b> beats the 90th percentile of highs for dates within a week either side. A <b>rainy day</b> has at least 2.5 mm (the IMD definition). Normal rain is the mean for that date, smoothed over ±7 days.</p>
+    <p><a href="/">mrdee.in</a></p>
+  </footer>
+</div>
+<script src="weather.js?v=1"></script>
+</body>
+</html>
