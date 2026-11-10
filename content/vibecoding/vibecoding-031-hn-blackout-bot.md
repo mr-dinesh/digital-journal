@@ -1,13 +1,13 @@
 ---
 title: "Vibecoding 031 — A bot that posts a blackout poem from Hacker News every morning"
 date: 2026-11-09
-description: "Every day at 09:00 IST, a GitHub Action screenshots the Hacker News front page, has an AI black out all but a dozen words, and posts the result to Bluesky as three panels."
-tags: ["vibecoding", "bluesky", "github-actions", "workers-ai", "poetry", "hacker-news"]
+description: "Every day at 09:00 IST, a GitHub Action screenshots the Hacker News front page, has an AI black out all but a dozen words, and posts the result to Bluesky and Mastodon as three panels."
+tags: ["vibecoding", "bluesky", "mastodon", "github-actions", "workers-ai", "poetry", "hacker-news"]
 weight: -31
 images: ["og/hn-blackout.png"]
 ---
 
-[HN Blackout](/vibecoding/vibecoding-019-hn-blackout-poetry/) turns the Hacker News front page into a blackout poem. An AI picks ten to fifteen words from the headlines, and the page blacks out the rest. It was a page you had to visit. Now it also posts a poem to Bluesky every morning, the same way my [Kagga bot](https://mastodon.social/@browncoolie) posts a Kannada verse and my Wodehouse bot posts a quote.
+[HN Blackout](/vibecoding/vibecoding-019-hn-blackout-poetry/) turns the Hacker News front page into a blackout poem. An AI picks ten to fifteen words from the headlines, and the page blacks out the rest. It was a page you had to visit. Now it also posts a poem to Bluesky and Mastodon every morning, the same way my [Kagga bot](https://mastodon.social/@browncoolie) posts a Kannada verse and my Wodehouse bot posts a quote.
 
 **First post:** [bsky.app/profile/ishm0.bsky.social](https://bsky.app/profile/ishm0.bsky.social/post/3mztw724p4y2o)
 
@@ -55,7 +55,11 @@ Visitors to the website used to need their own Groq or Gemini API key, which mos
 
 The poem itself was the easy part; the site already did it. Most of the work was in making it readable as a single image in a feed. That meant the screenshot, the three panels, the alt text, and a title that isn't "Echoes".
 
-Mastodon is next. The code is there and waiting for a token.
+## Update, 10 November
+
+Mastodon is live. The poems now also go to [@browncoolie](https://mastodon.social/@browncoolie) on mastodon.social, the account the Kagga bot uses. The HN bot has its own app on that account, with permission to post and upload images and nothing else. Either bot can be cut off without touching the other.
+
+GitHub also skipped the 09:00 run on the second day. Scheduled Actions are best-effort, and a busy morning can delay or drop them. The workflow now has two backup slots, at 10:10 and 11:40 IST. Whichever run starts first posts. The others find the day already in the history file and stop.
 
 *Source: [github.com/mr-dinesh/hn-blackout](https://github.com/mr-dinesh/hn-blackout) · Live: [hn-blackout.pages.dev](https://hn-blackout.pages.dev/)*
 
