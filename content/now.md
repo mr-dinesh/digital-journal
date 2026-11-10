@@ -4,7 +4,7 @@ date: 2026-04-18
 layout: "single"
 ---
 
-*A [/now page](https://nownownow.com/p/218L), [in the sense Derek Sivers meant](https://nownownow.com/about). Updated 5 September 2026.*
+*A [/now page](https://nownownow.com/p/218L), [in the sense Derek Sivers meant](https://nownownow.com/about). Updated 10 November 2026.*
 
 {{< now-auto "refreshed" >}}
 
@@ -12,9 +12,13 @@ layout: "single"
 
 ## Building
 
-The Vibecoding series continues. The pace slowed from one-a-day to one-when-it's-ready, which was the right call — the point was never the count.
+The Vibecoding series continues. The pace slowed from one-a-day to one-when-it's-ready. That was the right call. The point was never the count.
 
 {{< now-auto "building" >}}
+
+September and October were quiet. The lab box kept resetting under load. It took a new CPU and a power cap to settle it. Then four projects shipped in the first week of November.
+
+Most of my AI projects now run on Cloudflare Workers AI. Visitors no longer need their own API key. A weekly check warns me before a model one of them uses is retired.
 
 Older ones still running: a mandala tool at [/mandala](/mandala/), an internet radio station at [/radio](/radio/), a URL shortener on [s.mrdee.in](https://s.mrdee.in/), a privacy-first article reader that strips trackers, a mood check-in PWA that stores nothing it doesn't need.
 
@@ -24,9 +28,11 @@ This site also has a custom 404 page. Hit a broken URL and you get a random Rajn
 
 ## Learning
 
-The kernel. I spent years wanting to contribute and never having a safe place to break things, so in July I finished a stalled Debian 13 upgrade, stood up KVM, and built a custom kernel that boots in QEMU in about a second. Now I'm working through a 90-day plan toward a first patch — [the note is here](/notes/kernel-lab-and-90-day-plan/).
+The kernel. In July I finished a stalled Debian 13 upgrade, stood up KVM, and built a custom kernel that boots in QEMU in about a second. The [90-day plan toward a first patch](/notes/kernel-lab-and-90-day-plan/) is on hold. The hardware trouble ate September and October.
 
-Alongside that: fuzzing. AFL++ harnesses against curl and parts of the Bitwarden SDK. Reading curl's source was what started it — it's been running on nearly every computer since 1998 and most people treat it as furniture.
+Fuzzing. AFL++ harnesses against curl, which started with reading its source. The Bitwarden SDK work is parked until the lab box can be trusted with long runs.
+
+Teaching, a little. AB has started a BA in English. A [Telegram study buddy](/vibecoding/vibecoding-028-study-buddy-bot/) sends him a short spoken lesson each morning and checks his answer in the evening.
 
 ## Reading
 
