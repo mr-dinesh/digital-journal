@@ -44,7 +44,7 @@ Outside work I read a lot — history, economics, long-form journalism. I have a
 - **X** — [@m_r_dinesh](https://x.com/m_r_dinesh)
 - **LinkedIn** — [dinesh-mr](https://www.linkedin.com/in/dinesh-mr)
 - **Tumblr** — [h1r0protagonist](https://www.tumblr.com/h1r0protagonist)
-- **Raindrop.io** — [mrdinesh](https://raindrop.io/mrdinesh) — bookmarks and reading list
+- **Raindrop.io** — [mrdinesh](https://mrdinesh.raindrop.page/) — public bookmarks: [Long-form Reading](https://mrdinesh.raindrop.page/public-long-form-reading-70639593) · [Tech & Code](https://mrdinesh.raindrop.page/public-tech-and-code-70639594) · [Writers & Blogs](https://mrdinesh.raindrop.page/public-writers-and-blogs-70639592)
 - **RSS** — [/index.xml](/index.xml) — for people who remember what RSS is
 
 ---
