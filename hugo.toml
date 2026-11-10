@@ -97,6 +97,11 @@ disableHugoGeneratorInject = true
     weight = 5
 
   [[menu.main]]
+    name = "Weather"
+    url = "/weather/"
+    weight = 6
+
+  [[menu.main]]
     name = "About"
     url = "/about/"
-    weight = 6
+    weight = 7
