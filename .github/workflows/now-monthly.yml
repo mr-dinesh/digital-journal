@@ -1,0 +1,61 @@
+name: Monthly /now refresh
+
+# 1. Rebuilds the site through a Cloudflare Pages deploy hook, so the auto-filled
+#    lists on /now (layouts/_shortcodes/now-auto.html) pick up new posts and bookmarks.
+# 2. Opens an issue when the hand-written "Updated <date>" line in content/now.md is
+#    more than 30 days old, and closes it again once the page is updated.
+
+on:
+  schedule:
+    - cron: "30 0 1 * *"   # 1st of each month, 00:30 UTC = 06:00 IST
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rebuild the site
+        env:
+          HOOK: ${{ secrets.PAGES_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "::warning::PAGES_DEPLOY_HOOK secret is not set, so the site was not rebuilt"
+            exit 0
+          fi
+          curl -fsS -X POST "$HOOK" -o /dev/null
+          echo "Cloudflare Pages rebuild triggered"
+
+      - name: Check how old the hand-written part is
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: "Time to update the /now page"
+        run: |
+          updated=$(grep -oP 'Updated \K[0-9]{1,2} [A-Z][a-z]+ [0-9]{4}' content/now.md | head -1)
+          if [ -z "$updated" ]; then
+            echo "::error::No 'Updated <day> <Month> <year>' line found in content/now.md"
+            exit 1
+          fi
+          age=$(( ( $(date +%s) - $(date -d "$updated" +%s) ) / 86400 ))
+          echo "/now was last updated by hand on $updated ($age days ago)"
+
+          open=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number --jq '.[0].number // empty')
+          if [ "$age" -gt 30 ]; then
+            if [ -z "$open" ]; then
+              gh issue create --title "$TITLE" --body "The hand-written sections of [/now](https://mrdee.in/now/) were last updated on **$updated**, $age days ago.
+
+          Edit \`content/now.md\` (Building, Learning, Reading, At work, Not doing) and change the \`Updated\` date. The lists (latest project, recent posts, bots, bookmarks) update by themselves.
+
+          This issue closes itself on the next monthly run after the date changes. To close it sooner, run the workflow by hand from the Actions tab."
+            else
+              echo "Reminder issue #$open is already open"
+            fi
+          elif [ -n "$open" ]; then
+            gh issue close "$open" --comment "/now was updated on $updated. Closing."
+          fi

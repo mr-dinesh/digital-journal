@@ -1,0 +1,24 @@
+# Facts the /now page renders through the now-auto shortcode.
+# Edit this file when a bot starts, stops, or moves.
+
+bots:
+  - name: Kagga bot
+    does: posts a verse of DVG's Mankutimmana Kagga to Mastodon twice a day
+    url: https://mastodon.social/@browncoolie
+    writeup: /vibecoding/vibecoding-009-kaggabot-github-actions/
+  - name: PGWodehouseBot
+    does: posts a P.G. Wodehouse quote to Bluesky twice a day
+    url: https://bsky.app/profile/pgwodehousebot.bsky.social
+    writeup: /vibecoding/vibecoding-014-wodehouse-bot/
+  - name: HN Blackout bot
+    does: posts a blackout poem from the Hacker News front page every morning
+    writeup: /vibecoding/vibecoding-031-hn-blackout-bot/
+
+# Public Raindrop collections. The feed URL is <page>/feed.
+raindrop:
+  profile: https://mrdinesh.raindrop.page/
+  collections:
+    - https://mrdinesh.raindrop.page/long-form-reading-70639593
+    - https://mrdinesh.raindrop.page/tech-and-code-70639594
+    - https://mrdinesh.raindrop.page/writers-and-blogs-70639592
+  show: 5

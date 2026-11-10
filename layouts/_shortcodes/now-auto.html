@@ -1,0 +1,71 @@
+{{- /*
+  Auto-filled parts of /now. Everything here is worked out when the site builds,
+  and a monthly GitHub Action (now-monthly.yml) rebuilds the site so it stays current.
+
+  Usage: {{< now-auto "building" >}}, {{< now-auto "bots" >}}, {{< now-auto "bookmarks" >}}
+*/ -}}
+{{- $part := .Get 0 -}}
+
+{{- if eq $part "building" -}}
+  {{- /* Same ordering as the homepage: same-day posts tie-break on file path (031 above 030). */ -}}
+  {{- $vc := where site.RegularPages "Section" "vibecoding" -}}
+  {{- $vc = sort (sort $vc "File.Path" "desc") "Date" "desc" -}}
+  {{- with index $vc 0 }}
+<p>Latest Vibecoding project: <a href="{{ .RelPermalink }}">{{ .Title }}</a> ({{ .Date.Format "2 January 2006" }}). {{ len $vc }} write-ups so far.</p>
+  {{- end }}
+  {{- $recent := where site.RegularPages "Type" "in" site.Params.mainSections -}}
+  {{- $recent = sort (sort $recent "File.Path" "desc") "Date" "desc" -}}
+  {{- /* The latest project already has its own line above. */ -}}
+  {{- $recent = $recent | complement (first 1 $vc) }}
+<p>Before that:</p>
+<ul>
+  {{- range first 5 $recent }}
+  <li><a href="{{ .RelPermalink }}">{{ .Title }}</a> <span class="text-neutral-500 dark:text-neutral-400">· {{ .Date.Format "2 Jan" }}</span></li>
+  {{- end }}
+</ul>
+
+{{- else if eq $part "bots" -}}
+  {{- $bots := site.Data.now.bots }}
+<p>{{ len $bots }} bots keep posting without me:</p>
+<ul>
+  {{- range $bots }}
+  <li>{{ if .url }}<a href="{{ .url }}">{{ .name }}</a>{{ else }}{{ .name }}{{ end }} {{ .does }}{{ with .writeup }} (<a href="{{ . }}">write-up</a>){{ end }}.</li>
+  {{- end }}
+</ul>
+
+{{- else if eq $part "bookmarks" -}}
+  {{- $rd := site.Data.now.raindrop -}}
+  {{- $items := slice -}}
+  {{- range $rd.collections -}}
+    {{- $feed := printf "%s/feed" . -}}
+    {{- with try (resources.GetRemote $feed) -}}
+      {{- with .Err -}}
+        {{- warnf "now-auto: could not fetch %s: %s" $feed . -}}
+      {{- else with .Value -}}
+        {{- $rss := . | transform.Unmarshal -}}
+        {{- $chan := $rss.channel -}}
+        {{- $list := $chan.item -}}
+        {{- if reflect.IsMap $list }}{{ $list = slice $list }}{{ end -}}
+        {{- range $list -}}
+          {{- $items = $items | append (dict "title" .title "link" .link "date" (time.AsTime .pubDate) "coll" $chan.title) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $items }}
+<p>Latest additions to my <a href="{{ $rd.profile }}">public bookmarks</a>:</p>
+<ul>
+    {{- range first ($rd.show | default 5) (sort $items "date" "desc") }}
+  <li><a href="{{ .link }}">{{ .title }}</a> <span class="text-neutral-500 dark:text-neutral-400">· {{ .coll }}, {{ .date.Format "2 Jan 2006" }}</span></li>
+    {{- end }}
+</ul>
+  {{- else }}
+<p>My public bookmarks are on <a href="{{ $rd.profile }}">Raindrop</a>.</p>
+  {{- end }}
+
+{{- else if eq $part "refreshed" -}}
+<p><em>The lists on this page refresh every month. Last refreshed {{ now.UTC.Format "2 January 2006" }}.</em></p>
+
+{{- else -}}
+  {{- errorf "now-auto: unknown part %q in %s" $part .Position -}}
+{{- end -}}
