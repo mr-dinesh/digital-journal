@@ -7,13 +7,19 @@ weight: -32
 images: ["og/weather.png"]
 ---
 
+Bangalore weather has been a good shorthand for things that were much desired in the past and are enshittified messes now.
+
+What if one looked back at the numbers from the past and compared them with now, instead of going on vague notions of how things actually were? Numbers probably don't lie. But let's not delude ourselves by cherry-picking the best and the worst. What other interesting insights can I glean from them?
+
+Open sesame: [mrdee.in/weather](https://mrdee.in/weather/)
+
+![The weather page in its Almanac look: a temperature chart for the last 45 days with 2016 and 2005 overlaid, and a day card for 9 November](/images/writing/vibecoding-032-bangalore-weather.jpg)
+
+## Where the numbers come from
+
 Karthik S runs [weather.karthiks.co](https://weather.karthiks.co/). Every morning his R script pulls hourly weather data for Bangalore back to 1981. It draws one chart for the year so far and asks Claude Haiku for three lines of commentary. It is a good chart. But it is one chart, and I kept wanting to ask it other questions. How has this monsoon gone? Was last Tuesday unusual? Is this October like 2005?
 
 His [repo](https://github.com/skthewimp/bangalore-weather) is MIT-licensed, and the daily run also publishes a small CSV. It has one row per day with the high, the low and the rain. That file is enough to answer all of those questions in the browser.
-
-**Live:** [mrdee.in/weather](https://mrdee.in/weather/)
-
-![The weather page in its Almanac look: a temperature chart for the last 45 days with 2016 and 2005 overlaid, and a day card for 9 November](/images/writing/vibecoding-032-bangalore-weather.jpg)
 
 ## What you can change
 
