@@ -102,3 +102,5 @@ The provider dropdown and key field are gone. The 30-second cooldown and 10-a-da
 ## Source
 
 → [Try it live](https://hn-blackout.pages.dev/) · [github.com/mr-dinesh/hn-blackout](https://github.com/mr-dinesh/hn-blackout)
+
+Another bot of mine: [PGWodehouseBot](https://bsky.app/profile/pgwodehousebot.bsky.social) posts a P.G. Wodehouse quote to Bluesky twice a day ([write-up](/vibecoding/vibecoding-014-wodehouse-bot/)).
