@@ -116,7 +116,7 @@ A `random-quote` shortcode that reads from the JSON at build time — or a small
 
 ### 5. Screensaver / wallpaper generator
 
-Feed the quotes into something like [quote-wallpaper](https://github.com/bbbenji/quote-wallpaper) or a simple Pillow script. Rotating desktop wallpaper with a new quote each morning. The ones with ASCII art (Space Invaders, the xkcd snippet) render surprisingly well in monospace.
+Feed the quotes into a wallpaper tool or a simple Pillow script. Rotating desktop wallpaper with a new quote each morning. The ones with ASCII art (Space Invaders, the xkcd snippet) render surprisingly well in monospace.
 
 ### 6. Random quote widget
 
