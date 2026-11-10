@@ -104,4 +104,5 @@ Claude Code handled the `atproto` thread reply reference without prompting — i
 ---
 
 **[@pgwodehousebot.bsky.social](https://bsky.app/profile/pgwodehousebot.bsky.social)**  
+Another bot of mine: the [HN Blackout bot](/vibecoding/vibecoding-031-hn-blackout-bot/) posts a blackout poem from the Hacker News front page every morning.  
 *Part of the [100 Vibe Coding Projects](https://mrdee.in/vibecoding/) series.*
