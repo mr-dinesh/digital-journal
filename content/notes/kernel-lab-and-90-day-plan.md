@@ -5,7 +5,9 @@ description: "Finishing a stalled Debian upgrade, standing up KVM, and a 1-secon
 tags: ["linux", "kernel", "debian", "qemu", "kvm", "learning", "notes"]
 ---
 
-I've wanted to contribute to the Linux kernel for a while. The gap was never desire — it was that I had no safe place to break things. This is the note of closing that gap in an afternoon, and the plan I wrote so the momentum doesn't evaporate.
+I've wanted to contribute to the Linux kernel, the core of the operating system that runs most of the internet, for a while. Wanting was never the problem. The problem was that I had nowhere safe to break things, and I break things a lot. This note is about building that safe place in an afternoon, and the plan I wrote so the enthusiasm doesn't evaporate by week three.
+
+*Fair warning: the middle of this note is a technical how-to, with the commands I ran. If that's not your thing, skip to "The harder part" near the end.*
 
 ---
 
@@ -13,7 +15,7 @@ I've wanted to contribute to the Linux kernel for a while. The gap was never des
 
 The lab box was supposed to be on Debian 13 (trixie). It wasn't — not really. `base-files` reported trixie, but `sources.list` still pointed at bookworm and **401 packages** were stranded at Debian 12 versions. A dist-upgrade had stalled partway and had its sources quietly reverted. A split-brain machine.
 
-The lesson I keep relearning with this box: **verify state from the box, never from memory.** The saved notes said "cleanly on trixie." The live `apt update` output said otherwise.
+The lesson I keep relearning with this box: **check the machine, not your memory.** My notes said "cleanly on trixie." The machine said otherwise. The machine was right. It usually is, annoyingly.
 
 The fix was a staged, dry-run-first upgrade:
 

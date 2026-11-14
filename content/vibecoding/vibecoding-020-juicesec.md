@@ -2,64 +2,55 @@
 title: "Vibecoding 020 — JuiceSec: OWASP Vulnerability Lab with AI Tutor"
 date: 2026-04-17
 weight: -20
-description: "An interactive OWASP Top 10 vulnerability lab where you exploit real attack patterns and an AI tutor guides you through the why — without giving away the answer."
+description: "A hands-on lab where you try ten of the most common website attacks yourself, with an AI tutor that nudges you along without giving away the answer."
 tags: ["vibecoding", "security", "owasp", "cloudflare", "workers-ai", "javascript"]
 aliases: ["/writing/vibecoding-020-juicesec/"]
 ---
 
-OWASP Juice Shop is the gold standard for learning web application security — a deliberately vulnerable Node.js app where you practice exploiting real vulnerabilities in a safe environment. I wanted to build something with the same spirit but without the setup: no Docker, no Node, no local install. Open a URL, start hacking.
+OWASP Juice Shop is the classic way to learn how websites get hacked. It's a deliberately broken online shop you're allowed to attack. The catch is that you have to install it first, and that's where most beginners give up. I wanted the same idea with no setup at all: open a link and start breaking things.
 
-The result is JuiceSec: ten interactive challenges covering the OWASP Top 10, with an AI tutor that coaches you through each one using the Socratic method.
+That's JuiceSec. Ten hands-on challenges based on the ten most common kinds of website weakness (the "OWASP Top 10"), with an AI tutor that coaches you by asking questions instead of handing over answers.
 
 ## The challenges
 
-All ten run entirely in the browser. There's no real backend to attack, but the simulations are faithful enough to teach the actual mechanics:
+Everything happens in your browser. Nothing real gets attacked, but the pretend versions behave closely enough to the real thing to teach you how the tricks work:
 
-| # | Challenge | OWASP 2021 |
+| # | Challenge | In plain words |
 |---|---|---|
-| 01 | SQL Injection | A03 — Injection |
-| 02 | Reflected XSS | A03 — Injection |
-| 03 | Broken Authentication | A07 — Auth Failures |
-| 04 | IDOR | A01 — Broken Access Control |
-| 05 | Security Misconfiguration | A05 — Misconfiguration |
-| 06 | Sensitive Data Exposure | A02 — Cryptographic Failures |
-| 07 | JWT None Algorithm | A02 — Cryptographic Failures |
-| 08 | Command Injection | A03 — Injection |
-| 09 | SSRF | A10 — SSRF |
-| 10 | Stored XSS | A03 — Injection |
+| 01 | SQL Injection | Typing something sneaky into a login box to fool the database |
+| 02 | Reflected XSS | Getting a website to run your code by tucking it into a search |
+| 03 | Broken Authentication | Guessing a weak password |
+| 04 | IDOR | Changing a number in the address bar to see someone else's order |
+| 05 | Security Misconfiguration | Finding a page that was meant to be hidden |
+| 06 | Sensitive Data Exposure | A list of users left open for anyone |
+| 07 | JWT None Algorithm | Forging your own "I'm the admin" pass |
+| 08 | Command Injection | Tricking a server into running your commands |
+| 09 | SSRF | Getting a server to fetch its own secrets for you |
+| 10 | Stored XSS | Leaving booby-trapped code in a comment box |
 
-The SQL injection challenge shows the query being constructed in real time as you type: you can watch exactly what happens to the `WHERE` clause when you inject `' OR '1'='1`. The JWT challenge gives you a live token decoder and encoder, so you can swap `alg: HS256` for `alg: none` and escalate your role from user to admin. The SSRF challenge accepts any URL and shows what the server "fetches". Point it at `169.254.169.254` and watch it hand over AWS IAM credentials.
+Some of them show you what's happening behind the scenes as you type. In the login challenge, you can watch your input quietly rewrite the question the website asks its database. In the "fetch" challenge, point the server at the right address and it cheerfully hands over its cloud passwords.
 
-Each challenge is solved, not explained. You have to find the exploit yourself.
+Nothing is explained up front. You have to find the trick yourself.
 
 ## The AI tutor
 
-The right panel is a chat interface backed by Cloudflare Workers AI (`llama-3.3-70b-instruct-fp8-fast`). It has two modes:
+On the right is a chat with an AI tutor. It works in two ways:
 
-**Hint mode** — Socratic. It never gives you the answer. Instead it asks questions that push you toward the right mental model: *"What do you think happens to the SQL query if your input contains a single quote?"* It's genuinely annoying in the best way.
+**Hint mode** never gives you the answer. It asks questions that steer your thinking: *"What do you think happens if your input contains a single quote?"* It's annoying in the best way, like every good teacher I had.
 
-**Explain mode** — fires automatically when you solve a challenge. It explains the root cause, gives a real-world example of the vulnerability being exploited, and describes the correct mitigation. This is the part that makes it educational rather than just a game.
+**Explain mode** kicks in once you've solved a challenge. It tells you why the weakness exists, gives a real-world example, and explains how to fix it. That's what makes it a lesson and not just a game.
 
-The system prompt is strict: the tutor is forbidden from revealing the exploit string until the challenge is solved. I tested this and it holds — even when you ask directly, it redirects to a guiding question.
+The tutor is under strict orders not to reveal the answer before you solve it. I tried to wheedle it out of it. It wouldn't budge.
 
-## Architecture
+## How it's built
 
-Same pattern as [argus](/vibecoding/vibecoding-016-argus) — a single Cloudflare Worker that serves the full app at `GET /` and handles the AI tutor at `POST /tutor`. No external API keys. No database. No build step.
-
-```
-GET  /        → full HTML/CSS/JS app (inlined)
-POST /tutor   → Workers AI (llama-3.3-70b-instruct-fp8-fast, falls back to mistral-small-3.1-24b-instruct)
-```
-
-The challenge logic runs entirely in browser JavaScript. A simulated `ORDER_DB` object backs the IDOR challenge. A `commentStore` array backs the stored XSS comment board. The JWT challenge uses `btoa`/`atob` in the browser to encode and decode tokens. None of this is real — but the vulnerability patterns are.
-
-One thing that bit me: all the challenge JavaScript lives inside a template literal (`const HTML = \`...\``) in the worker. JavaScript template literals silently strip backslashes from unrecognised escape sequences, so every regex using `\w`, `\s`, `\S`, `\b` in the challenge code was broken at runtime. `/on\w+=/` was arriving in the browser as `/onw+=/`. Fixed by doubling every backslash in the template: `\\w`, `\\s`, etc. The kind of bug that only shows up when you're testing the live app.
+It's one small program on Cloudflare, with Cloudflare's own AI running the tutor. No keys, no database. The challenges are all pretend, run by your browser, but the patterns are real.
 
 ## What it looks like
 
 {{< figure src="/images/vibecoding/juicesec.jpg" alt="JuiceSec showing the SQL Injection challenge with the live query display and AI tutor panel on the right" >}}
 
-Three-pane layout: challenge list on the left (with OWASP category and difficulty badge), the interactive playground in the centre, and the AI tutor on the right. Dark theme, terminal green accents, JetBrains Mono for code elements. Score and progress tracked in the header.
+Challenges on the left, the playground in the middle, the tutor on the right. Dark screen, hacker-green highlights, and a score at the top so you can feel smug.
 
 ## Source
 
@@ -67,4 +58,4 @@ Three-pane layout: challenge list on the left (with OWASP category and difficult
 
 ---
 
-*Update, 8 November 2026: Cloudflare retired `llama-3.1-8b-instruct` on 30 May 2026, and the tutor returned errors until it was swapped out. It now uses `llama-3.3-70b-instruct-fp8-fast`, and tries `mistral-small-3.1-24b-instruct` if that fails, so the next retirement won't take it down.*
+*Update, 8 November 2026: The AI model behind the tutor was retired, and the tutor stopped answering until I noticed. It now uses a newer model, with a backup, so the next retirement won't take it down.*

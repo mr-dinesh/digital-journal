@@ -27,29 +27,29 @@ He can also just talk to it. "Repeat." "Slower." "Simpler." "Stop for today." It
 
 ## How it's built
 
-The bot runs on Hermes, an open-source agent from Nous Research. It runs on my lab box at home and handles the Telegram side, the voice and the scheduling. The thinking is done by a language model through the Nous Portal.
+The bot is built on Hermes, a free, open-source AI assistant. It runs on an old computer at home and looks after the Telegram side, the voice and the timetable. An AI model does the thinking.
 
-The voice is a free text-to-speech service with an Indian English voice. When AB speaks, a small speech recogniser called Whisper turns it into text on my own machine. I gave Whisper a list of the hard names from his syllabus. Duryodhana. Mrichchhakatika. Cilappatikaram. Otherwise it hears "Dhuryo Donna" and the whole lesson goes sideways.
+The voice is a free reading-aloud service with an Indian English accent. When AB speaks, a small program on my own computer turns his voice into text. I gave it a list of the hard names from his syllabus. Duryodhana. Mrichchhakatika. Cilappatikaram. Otherwise it hears "Dhuryo Donna" and the whole lesson goes sideways.
 
 The course books are split into units. A small script decides what today's lesson is. It starts with the Mahabharata, because that has come up in every exam paper I could find. It moves forward one section a day. If my box is switched off on some day, he doesn't miss a lesson. It just picks up where it left off. The whole plan is 235 lessons long. We'll see.
 
 I also told the bot a few things it must never do. It doesn't do his assignments. It never counts his mistakes back to him. And it never makes anything up. If something isn't in his book, it says "that's not in your book" and stops there.
 
-## Things that went wrong
+## The bumps
 
-Quite a lot, honestly.
+Quite a few, honestly.
 
-**The books weren't there.** IGNOU's own download site has been broken for over a year. Every file comes back empty. I had to dig the books out of old copies on the Wayback Machine. One course has no material anywhere at all. The bot knows that and says so.
+**The books weren't there.** IGNOU's own download site has been broken for over a year. I had to dig the books out of old copies saved on the Internet Archive. One course has no material anywhere. The bot knows that and says so.
 
-**The computer kept dying.** My lab box reboots itself when it's pushed hard. The bot's installer pushed it hard. It crashed halfway through and left half-written files lying around. I capped the processor's power and tried again. It worked the second time.
+**The computer kept dying.** My old computer reboots itself when it works too hard, and the installer made it work very hard. Second try, with the computer told to take it easy, it went through.
 
-**I typed the password wrong.** Telegram gives each bot a key that's 46 random characters long. I typed it by hand. Telegram said no. I typed it again. Telegram said no again. Then I copy-pasted it like a sensible person, and it worked straight away.
+**I typed the password wrong.** Twice. It was 46 random characters long, and I typed it by hand. Then I copy-pasted it like a sensible person and it worked straight away.
 
-**The bot believed me when I lied.** While testing, I sent a message from my own phone saying it was AB. The bot replied, "Hi AB, I'm here whenever you're ready." Very sweet. Also completely wrong. It turns out the bot only sees your display name, not who you really are. So I fixed the rules.
+**The bot believed me when I lied.** While testing, I messaged it from my own phone saying I was AB. It replied, "Hi AB, I'm here whenever you're ready." Very sweet. Also completely wrong. I fixed the rules.
 
-**Telegram kept giving me the same account.** The plan was one account for him and one for me. Three tries later, every one had landed in the same account, mine. Telegram ties an account to a phone number, and I kept using the same number in different ways. In the end I gave up. The Telegram account is his now, and I get my weekly update by email.
+**Telegram kept giving me the same account.** The plan was one account for him and one for me. Three tries later, all three were mine. In the end I gave up. The Telegram account is his, and I get my weekly update by email.
 
-**The bot almost wrote to itself.** I wanted the weekly email sent to my own address. That's also the address the bot sends from. For a minute I pictured it reading its own report and politely replying to itself every fifteen seconds. Luckily, Hermes already ignores mail from itself. Someone had that bad day before me.
+**The bot almost wrote to itself.** The weekly email goes to the same address the bot sends from. For a minute I pictured it reading its own report and politely replying to itself every fifteen seconds. Luckily, Hermes already ignores mail from itself. Someone had that bad day before me.
 
 ## How it felt
 

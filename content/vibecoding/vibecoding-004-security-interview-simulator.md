@@ -3,68 +3,60 @@ title: "Vibecoding 004 — Building My Own Interview Coach for a Security Role"
 date: 2026-03-17
 tags: ["vibecoding", "security", "career", "ai"]
 aliases: ["/writing/vibecoding-004-interview_simulator_webapp/", "/writing/vibecoding-004-security-interview-simulator/"]
-description: "A browser-based flashcard simulator with 80+ cards for Director-level cybersecurity interview prep — covering risk, governance, STAR storytelling, and leadership vocabulary."
+description: "A flashcard app with 80+ cards for senior cybersecurity interview prep, covering risk, governance, storytelling and leadership language."
 ---
-### Prompt used
-Build an interview simulator, for an upcoming job interview for a senior cybersecurity role. Generate flashcards which will give me appropriate vocabulary for risk, governance, leader, team building, story-telling in STAR format, context-action-impact frameworks.
-The web-based app, should help me practice consistently by keep track of my effort in terms of practice time, weak areas, strengths and allow me to add sources for topics, content, role specific job descriptions if available. 
-Example Role: Director SOC
+### What I asked for
+Build an interview simulator for an upcoming interview for a senior cybersecurity role. Make flashcards that give me the right vocabulary for risk, governance, leadership, team building, and telling stories in the STAR format.
+The app should help me practise regularly by tracking my practice time, weak areas and strengths, and let me add my own sources and job descriptions.
+Example role: Director SOC
 
-Iteration2: Minor tweaks needed, some cards, the text is overflowing the card dimensions. Also provide a CSV upload capability to add new flashcards in addition to the existing manual mode of adding new cards.
+Second round: some card text spills off the edge, so fix that. Also let me upload a spreadsheet of new cards instead of typing them one at a time.
 
 ### The tool: CyberPrep
 
-A self-contained, browser-based flashcard simulator for senior cybersecurity interview preparation. No backend, no login — runs entirely from a single HTML file with persistent local storage. Open it, start practising.
+A flashcard app for senior security interviews. No sign-up, nothing to install. It's a single web page that remembers your progress. Open it and start practising.
 
 ### Why I built this
 
-Senior security interviews at the Director or Head-of-Security level are different from technical interviews. They're not asking you to whiteboard an algorithm or recite CVEs. They're testing whether you can talk about risk in business terms, lead a team under pressure, justify security investment to a board, and tell a coherent story about your experience using frameworks like STAR or CAR (Context-Action-Result).
+Interviews for senior security jobs aren't about technical trivia. They want to know if you can talk about risk the way a business does, lead a team when things are on fire, and explain to a board why they should spend money. And they want you to tell your stories in a tidy shape: what happened, what you did, how it turned out.
 
-The vocabulary matters. "We had an incident" lands differently than "we experienced a material breach that required board notification under our regulatory obligations." Same event. Very different signal about how you think.
+Words matter here. "We had an incident" and "we had a serious breach that we had to report to the board and the regulator" describe the same bad day. They say very different things about how you think.
 
-I needed a tool that would drill that vocabulary repeatedly until it felt natural. Nothing I found online was specific enough, so I built one.
+I needed something to drill that language until it came out naturally. Nothing I found was specific enough, so I built one. It was also a very productive way to avoid actually preparing.
 
 ### What the cards look like
 
-The 80+ cards span 7 categories. A few examples:
+There are 80-plus cards in seven groups. A few examples:
 
 #### Risk & Governance
 > Q: How do you communicate cyber risk to a non-technical board?
-> A: Translate technical risk into business impact — financial exposure, regulatory penalty, reputational cost, operational disruption. Use scenarios, not statistics. "A ransomware event of this type typically costs $X in downtime and $Y in recovery" lands better than "our CVSS score is 9.1."
+> A: Talk about business impact: money lost, fines, reputation, disruption. Use scenarios, not statistics. "An attack like this usually costs $X in downtime and $Y to recover" lands better than a technical severity score.
 
 #### STAR framework
 > Q: Describe a time you had to make a security decision with incomplete information.
-> A: Situation — [context]. Task — [your responsibility]. Action — [what you did and why, including what you didn't do]. Result — [outcome, ideally with a number or timeframe]. The interviewer is evaluating your reasoning process, not just the outcome.
+> A: Situation: the context. Task: your responsibility. Action: what you did and why, including what you chose not to do. Result: what happened, ideally with a number or a timeframe. They're judging how you think, not only how it ended.
 
 #### Leadership
 > Q: How do you build a security culture in an organisation that sees security as friction?
-> A: You don't mandate it. You make secure behaviour the path of least resistance. Start with wins that remove friction — SSO, password managers, automated patching. Then build on credibility.
+> A: You don't order it. You make the safe way the easy way. Start with things that remove hassle, like single sign-on, password managers and automatic updates. Then build on the goodwill.
 
-### How the weighted shuffle works
+### How it decides what to show you
 
-Every card starts with equal weight. When you rate a card:
-- **Easy** — weight decreases, card appears less frequently
-- **Medium** — weight unchanged
-- **Hard** — weight increases, card surfaces more in future sessions
-
-After 3-4 sessions, the deck self-organises around your weak spots. The cards you're confident on disappear into the background. The ones you keep stumbling on keep showing up. It's spaced repetition without a complex scheduling algorithm.
+After each card you mark it easy, medium or hard. Easy ones come up less often; hard ones come back more. After three or four sessions the deck is mostly made of the questions you keep fumbling, which is humbling but useful.
 
 ### What broke
 
-The first version had a card overflow problem — longer answers were spilling outside the card boundary on the flip side. Looked terrible. The fix was straightforward (proper overflow handling and dynamic font scaling) but it took a second iteration to get right.
-
-The second ask was CSV upload. Manually entering cards one by one was too slow when you want to add 20 role-specific questions from a job description. The CSV importer accepts `question,answer,category` rows and loads them directly into the deck alongside the pre-loaded cards.
+Long answers spilled off the card, which looked terrible. That took a second try to fix. Typing cards one by one was also too slow, so it now takes a spreadsheet.
 
 ### What I learned
 
-Flashcard apps are deceptively simple to describe and surprisingly fiddly to build. The 3D flip animation alone required careful CSS — `perspective`, `backface-visibility`, `transform-style: preserve-3d` — and it behaved differently in Safari than Chrome. Claude got it right on the second attempt.
+Flashcard apps sound simple and turn out to be fiddly. The card-flip animation alone took two attempts, and it behaved differently in different browsers.
 
-The more useful lesson: the act of *writing the cards* was more valuable than using the app. Forcing yourself to articulate a concise answer to "how do you manage a SOC team under sustained pressure" is the preparation. The app just makes you do it repeatedly.
+The bigger lesson: writing the cards was more useful than using the app. Making yourself put "how do you keep a stressed security team going?" into a few clear sentences *is* the preparation. The app just makes you do it again and again.
 
 ### Did it help?
 
-Yes. The vocabulary became more automatic. The STAR format stopped feeling like a template and started feeling like a natural way to structure an answer. Whether the interview goes well is still TBD, but the preparation is better than anything I've done before.
+Yes. The language started to feel normal instead of rehearsed, and telling stories in that tidy shape began to come naturally. Whether the interview goes well is still to be seen, but this is the best I've ever prepared.
 
 ### GitHub repo
 [github.com/mr-dinesh/Vibecoding-004-Interview-Simulator-Webapp](https://github.com/mr-dinesh/Vibecoding-004-Interview-Simulator-Webapp/tree/main)
-

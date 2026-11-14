@@ -15,23 +15,23 @@ You draw, and every stroke repeats around the centre at whatever fold count you 
 
 ## What's in it
 
-The generator has 19 motif types, 24 palettes, 9 colour harmony generators and 7 gradient modes. The drawing side has an inkwell of metallic, gradient and classic inks, and 7 nib styles. One HTML file plus one JS file. No backend, no build step, and nothing fetched from anywhere else.
+The generator has 19 kinds of shape, 24 colour palettes, 9 ways of picking colours that go together, and 7 kinds of colour blend. The drawing side has an inkwell of metallic, blended and classic inks, and 7 pen nibs. It's a single page, and it doesn't fetch anything from anywhere else.
 
 ## How it got there
 
-Four passes. Each one started from something already on the screen.
+Four rounds. Each one started from something already on the screen.
 
-The first pass was a working generator. It produced mandalas. They were fine.
+The first round was a working generator. It made mandalas. They were fine. Just fine.
 
-Then I told it the patterns were repetitive. That was the whole instruction. It pushed the motif count from 5 to 19, and it introduced per-ring symmetry multipliers so the inner rings could run at a different fold count from the outer ones. The second change was the one that mattered. The repetition came from every ring marching in step.
+Then I said the patterns were repetitive. That was the whole instruction. It went from 5 kinds of shape to 19, and it let each ring of the mandala repeat a different number of times, so the inner rings no longer had to march in step with the outer ones. The second change was the one that mattered. The sameness came from every ring moving in lockstep, like a school drill.
 
-The third pass was colour: fixed palettes, then harmony generation, then gradient modes that shift along a stroke.
+The third round was colour: fixed palettes, then colours worked out to go together, then colours that shift along a stroke.
 
 The fourth was the drawing side. Nibs and inks, so a hand-drawn line has some weight to it.
 
 Here's the part worth writing down. Every one of those four rounds was a critique of output. None of them was a specification.
 
-"The patterns are repetitive" is not a feature request. It doesn't say what to build. Getting from that sentence to per-ring symmetry multipliers was the actual work, and the hard half of it was mine: looking at the thing, working out precisely what was wrong, and then saying it precisely.
+"The patterns are repetitive" is not a feature request. It doesn't say what to build. Getting from that sentence to "let each ring repeat differently" was the actual work, and the hard half of it was mine: looking at the thing, working out precisely what was wrong, and then saying it precisely.
 
 That's a different skill from writing requirements in advance. You need the output in front of you first. Then you have to be exact about the failure. Vague dissatisfaction gets you vague changes.
 

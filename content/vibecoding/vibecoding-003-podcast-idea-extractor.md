@@ -3,33 +3,31 @@ title: "Vibecoding 003 — Extracting One Usable Idea From Every Podcast Episode
 date: 2026-03-16
 tags: ["vibecoding", "automation", "podcast", "python"]
 aliases: ["/writing/vibecoding-003-webscraping/", "/writing/vibecoding-003-podcast-idea-extractor/"]
-description: "Scraped 165+ episodes of Think Fast, Talk Smart and used an LLM to distil each guest's core advice into 7 words or less, then assembled it into a video montage."
+description: "Collected 165+ episodes of Think Fast, Talk Smart and used AI to boil each guest's core advice down to seven words or less, then turned it into a video montage."
 ---
 ### One usable idea from every episode
 
 *Project #3 of the 100 Vibe Coding Projects challenge*
 
-*Think Fast, Talk Smart* is Matt Abrahams' podcast on communication — 270+ episodes, each guest offering their best advice on how to speak, listen, and connect more effectively. The problem: that advice is scattered across hundreds of hours of audio. Nobody's reading the back catalogue.
+*Think Fast, Talk Smart* is Matt Abrahams' podcast about communication. There are 270-odd episodes, and every guest shares their best advice on speaking, listening and getting along with people. The catch is that it's spread over hundreds of hours of audio. I was never going to listen to all of it. Let's be honest, neither are you.
 
-The prompt was: extract the core advice from each episode, compress it to 7 words or less, and put it on a screen.
+So I asked an AI to pull the main piece of advice out of each episode, squeeze it into seven words or fewer, and put it on screen.
 
-The result is a 6-minute video montage covering 165 episodes — each card showing the episode number, topic category, guest name, and their advice in large bold type, colour-coded by theme (teal for Communication, red for Conflict, purple for Mindset, gold for Feedback).
+The result is a six-minute video of 165 episodes. Each card shows the episode, the guest and their advice in big bold letters, colour-coded by theme: teal for communication, red for conflict, purple for mindset, gold for feedback.
 
 ### Version 2
 
-The first version worked but felt clinical. Version 2 rebuilt the music from scratch: warmer, more orchestral, closer to a podcast about human connection than to a product demo. The backgrounds became illustrative rather than blank: each category got its own abstract image (sound waves for listening episodes, mountain silhouettes for leadership, a neural-network pattern for mindset). Transitions slowed down and softened.
+The first version worked, but it felt like a spreadsheet with music. Version 2 got warmer, gentler music, a background picture for each theme, and slower transitions.
 
-The honest verdict: technically better, emotionally closer. Still not perfect — a human voice reading the advice would transform it from a slideshow into something worth watching twice.
+My honest verdict: better made, and closer to the feeling I wanted. Still not there. A human voice reading the advice would turn it from a slideshow into something you'd watch twice.
 
 ### Takeaways
 
-Narrative needs to stitch together all of this advice. A string of bullet points across 165 slides is data, not a story. The raw material is good; the frame around it still needs work.
+165 pieces of good advice in a row isn't a story. It's a list. The material is good; the way it's presented still needs work. That goes for a lot of my presentations too.
 
 ### The security angle
 
-Extracting structured insight from unstructured text across 165 podcast episodes is the same pipeline used in threat intelligence processing: take raw text (blog posts, threat reports, OSINT feeds) and pull specific signals out of it. The difference is the signal type — guest advice instead of indicators of compromise.
-
-The technique is identical. If you can prompt an LLM to extract "the advice each guest shares in 7 words or less," you can prompt it to extract "the malware family, affected platforms, and recommended mitigations" from a threat report. Same pattern, different domain. This project was a useful reminder that the automation skills transfer directly.
+Pulling a few useful facts out of a mountain of text is exactly what threat-intelligence teams do with security reports. Swap "the guest's advice" for "which malware, who it hits, and how to stop it" and it's the same job. A podcast was a fun place to practise.
 
 ### Montage
 [Version 1](https://github.com/mr-dinesh/Vibecoding_003_Webscraping-Podcast-/blob/main/ThinkFastTalkSmart_Montage.mp4) · [Version 2](https://github.com/mr-dinesh/Vibecoding_003_Webscraping-Podcast-/blob/main/ThinkFastTalkSmart_Montage_v2.mp4)

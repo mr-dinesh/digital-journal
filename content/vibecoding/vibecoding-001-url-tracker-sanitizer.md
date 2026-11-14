@@ -9,45 +9,36 @@ description: "Built a browser extension with Gemini that strips tracking paramet
 
 
 ### Two big ideas here
-- Idea#1: Use an LLM, to create something, anything
-- Idea#2: Do it for a 100 days
-- A third, meta idea, is to write about what I've done (aside: why is this a meta-idea, will write about it later)
+- Idea #1: Use an AI to make something, anything.
+- Idea #2: Do it a hundred times.
+- A third idea: write about each one. (Why that counts as a bigger idea I'll explain later, assuming I remember.)
 
-### Today's vibe-coding idea: create a browser extension for a URL sanitizer.
+### Today's idea: a browser add-on that cleans up links
 
-It removes all tracking parameters from the link before rendering it in a new tab.
-Tool of choice: Gemini - got this idea from [S Ananand's talk](https://www.youtube.com/watch?v=mCJLNML7FrE)
+You know those long links with `?utm_source=...` and a string of gibberish on the end? That gibberish mostly tells some company where you clicked from. PureLink chops it off before the page opens.
 
-What struck me as amazing, was the ease of creating and how close the outcome was, to what I'd expected.
-And what was also equally amazing, was that it worked. I also got the LLM to create an icon and name it.
+Tool of choice: Gemini. I got the idea from [S Anand's talk](https://www.youtube.com/watch?v=mCJLNML7FrE).
 
+What surprised me was how easy it was, and how close the result came to what I'd pictured. What surprised me more was that it actually worked. I even got the AI to name it and draw an icon.
 
 ### Some caveats
-- I'm not sure how effective the URL sanitization actually is.
-- Also, there are tons of similar addons, so what makes PureLink any better / different / good ?
-- Need to spend some more time validating the results, but I was happy with the initial outcomes and will eventually do a bit more study and analysis of the inner working of the code.
+- I'm not sure how well the cleaning really works.
+- There are lots of add-ons that already do this, so why mine? Honestly, because it was day one and I wanted to see if I could.
+- I need to spend more time checking the results and reading the code it wrote.
 
 ### What broke
 
-The first version caught the obvious tracking parameters — `utm_source`, `utm_medium`, `utm_campaign` — but missed more obscure ones like `fbclid`, `gclid`, and Microsoft's `ocid` parameter. Gemini generated a solid `rules.json` skeleton but the actual list of parameters to strip needed manual research and validation. The icon it generated was also… let's call it a first draft. Functional, not beautiful.
-
-The deeper issue: Gemini built the extension structure correctly on the first try. The boilerplate — `manifest.json`, `background.js`, `popup.html` — all worked. The weakness was the business logic. The list of tracking params isn't something an LLM can confidently enumerate; it changes as ad platforms update their attribution schemes. That validation has to be done by a human.
+The first version caught the obvious trackers and missed the sneakier ones that Facebook, Google and Microsoft add. The AI built the add-on itself perfectly well. It just didn't know the full list of things to remove, and nobody really does, because the advertising companies keep inventing new ones. The icon was also, let's say, a first draft.
 
 ### What I learned
 
-Let the LLM handle structure, be more careful about the specific rules it generates. Browser extension scaffolding is exactly the kind of repetitive, well-documented boilerplate that LLMs do well. The actual logic — which parameters are trackers, which are functional — requires domain knowledge and current sources. [CleanURLs](https://github.com/ClearURLs/Addon) has been maintaining that list for years. PureLink should probably just use it.
+The AI is great at the boring setup work. The actual judgement, deciding what counts as a tracker, still needs a human checking current sources. [ClearURLs](https://github.com/ClearURLs/Addon) has kept that list for years. PureLink should probably just borrow it.
 
 ### The security angle
 
-I think about tracking and attribution in a professional context: how attackers pivot between identities, how campaigns are correlated. That makes the tracking parameter problem more interesting than it first appears. A `utm_source` tag on a phishing link tells a defender which campaign the click came from. Stripping those before you click protects your privacy, and it also removes attribution data that could matter in an incident investigation.
+In my day job those tracking tags can be useful. On a scam link, they can show investigators which campaign a click came from. Stripping them protects your privacy, and it also removes clues someone might want later. Fine at home; worth knowing at work.
 
-PureLink strips indiscriminately. That's fine for personal browsing, but worth knowing if you're using it in a work context where link provenance matters.
-
-### Additional reading
-- [CleanURLs](https://github.com/ClearURLs/Addon) — the serious, maintained version of this idea
-- [URL Cleaner by Jibin](https://chromewebstore.google.com/detail/url-cleaner/dffbjiomnajbmlhjelpipfldgkijdemn) — Chrome store alternative
-- [PureLink source](https://github.com/mr-dinesh/Vibecoding001-PureLink_browser_addon) — the Day 1 version, warts and all
-
-
-
-
+### Further reading
+- [ClearURLs](https://github.com/ClearURLs/Addon): the serious, maintained version of this idea
+- [URL Cleaner by Jibin](https://chromewebstore.google.com/detail/url-cleaner/dffbjiomnajbmlhjelpipfldgkijdemn): a Chrome alternative
+- [PureLink source](https://github.com/mr-dinesh/Vibecoding001-PureLink_browser_addon): the day-one version, warts and all

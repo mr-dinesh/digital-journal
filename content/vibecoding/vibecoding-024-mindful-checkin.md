@@ -1,144 +1,60 @@
 ---
 title: "Vibecoding 024 — Mindful Check-in: A Personal Practice Tracker"
 date: 2026-04-26
-description: "A daily mindfulness check-in tool with breath, mind, and shift logging — Cloudflare Workers + D1. Now with anytime check-ins, public stats sharing, and a weekly Verbal Judo practice screen."
+description: "A tiny daily mindfulness check-in: how's your breath, how's your mind, and one small thing to shift. Now with anytime check-ins, shareable stats and a weekly Verbal Judo practice."
 tags: ["vibecoding", "javascript", "cloudflare", "d1", "mindfulness", "workers"]
 aliases: ["/writing/vibecoding-024-mindful-checkin/"]
 weight: -24
 ---
 
-I wanted a check-in tool that matched how I actually think about a mindfulness practice: three specific questions, asked at specific times of day. Not a mood tracker with sliding scales, and not a journal app with a blank page.
+I wanted a check-in tool that matches how I actually think about mindfulness: three simple questions at set times of day. Not a mood tracker with sliders, and not a journal app with a scary blank page.
 
 **Live:** [mindful.mrdinesh.workers.dev](https://mindful.mrdinesh.workers.dev) · **Public stats:** [mindful.mrdinesh.workers.dev?public=1](https://mindful.mrdinesh.workers.dev?public=1)
 
-## The three dimensions
+## Three questions
 
-The check-in captures three things each session:
+- **Breath:** how's your breathing right now? Tap deep, shallow, held, irregular or easy, or type your own. I ask about breath instead of "rate your stress from 1 to 10" because the breath answer is instant and honest. Ask me to rate my stress and I'll say 4, every time, whatever the truth is.
+- **Mind:** calm, focused, busy, scattered, anxious or foggy. Or your own word. The point is to notice patterns over time, not to write an essay.
+- **Shift:** one tiny thing you can do right now. Not a goal or a task. One small change.
 
-- **Breath** — a quick body scan. Chip options (deep, shallow, held, irregular, easy) plus a free-text override. The question is "how's your breath right now?" instead of "rate your stress 1–10," because the breath answer is immediate and honest.
-- **Mind** — mental state. Chips: calm, focused, busy, scattered, anxious, foggy. Again, overridable. The goal is pattern recognition over time, not journaling.
-- **Shift** — one micro-action. A free-text field. What's one small thing you can do right now? Not a goal, not a task — a single concrete shift.
+There are four times of day: morning, midday, evening and night. Each has its own bookmark, so it's one tap from your home screen.
 
-Four time slots (Morning / Midday / Evening / Night) with URL hash shortcuts (`#evening`, etc.) so you can bookmark each one separately and get there in one tap.
+## How it's built
 
-## Architecture
+It started as a single web page that saved everything on my phone. Then I wanted it on all my devices, plus some stats, so it now saves to a small database on Cloudflare too. It still saves on the phone first, so it's quick and works offline, then quietly syncs. A little note tells you which happened: "✓ synced" or "saved locally".
 
-Started as a pure localStorage app — single HTML file, no server, deploy to Cloudflare Pages.
+A PIN keeps it private, and the PIN lives with Cloudflare, not in the code.
 
-Then added persistence and stats. The final stack:
+## Stats
 
-| Layer | Tech |
-|---|---|
-| Hosting + routing | Cloudflare Workers |
-| Database | Cloudflare D1 (SQLite) |
-| Auth | PIN stored as a Worker secret |
-| Frontend | Vanilla HTML/CSS/JS, no framework |
+The stats page shows:
 
-The Worker serves the full app HTML inline (same pattern as [Argus](/vibecoding/vibecoding-016-argus/) and [JuiceSec](/vibecoding/vibecoding-020-juicesec/)), then handles three API routes:
+- **Your streak**, current and longest: days in a row with at least one check-in
+- **A 30-day grid** of squares, darker on days you checked in more
+- **Which time of day** you check in most
+- **Your most common** breath and mind states
 
-- `POST /api/pin-check` — verify PIN before first access
-- `POST /api/checkin` — upsert an entry into D1
-- `GET /api/stats` — return streaks, heatmap, slot frequency, top states
+Numbers that tell you, gently, how mindful you've actually been, as opposed to how mindful you think you've been.
 
-Every save goes to localStorage immediately (so it's always fast and works offline), then syncs to D1 in the background. The confirmation screen shows "✓ synced" or "↯ offline — saved locally" depending on the result.
+## The one annoying bug
 
-## D1 schema
-
-```sql
-CREATE TABLE checkins (
-  id           INTEGER PRIMARY KEY AUTOINCREMENT,
-  date         TEXT NOT NULL,
-  slot         TEXT NOT NULL,
-  saved_at     TEXT NOT NULL,
-  breath_chip  TEXT NOT NULL DEFAULT '',
-  breath_custom TEXT NOT NULL DEFAULT '',
-  mind_chip    TEXT NOT NULL DEFAULT '',
-  mind_custom  TEXT NOT NULL DEFAULT '',
-  shift        TEXT NOT NULL DEFAULT '',
-  UNIQUE(date, slot) ON CONFLICT REPLACE
-);
-```
-
-One row per slot per day. `UNIQUE(date, slot) ON CONFLICT REPLACE` handles re-saves cleanly: editing a morning check-in just replaces the row.
-
-## Stats screen
-
-The stats view pulls from D1 and shows:
-
-- **Current streak** and **longest streak** — consecutive days with at least one check-in
-- **30-day heatmap** — 10×3 grid of squares, coloured by check-in count (0 to 4+)
-- **Slot frequency** — which time of day you check in most, as CSS bar charts
-- **Top breath and mind states** — ranked by frequency over all time
-
-Streak calculation happens server-side: fetch all distinct dates, walk them in order, track consecutive runs, compare the last run's end date against today/yesterday.
-
-## One sharp edge: template literal escaping
-
-The Worker inlines the full HTML as a JavaScript template literal. Inside that literal, the app's own JavaScript uses single-quoted strings. Any `\'` written in the template literal becomes just `'` in the rendered HTML. The backslash is dropped as an identity escape.
-
-This means `onclick="enterSlot(\'morning\')"` in the template literal becomes `onclick="enterSlot('morning')"` in the browser, which is valid HTML but **not** valid JavaScript inside a single-quoted string literal like `'<button onclick="enterSlot(\'morning\')">...'`.
-
-The fix: use `data-*` attributes instead of string arguments in inline onclick handlers.
-
-```js
-// broken
-'<button onclick="enterSlot(\'' + s + '\')">...'
-
-// works
-'<button data-slot="' + s + '" onclick="enterSlot(this.dataset.slot)">...'
-```
-
-Same fix for `selectChip` (already had `data-group` and `data-value`) and `showScreen` (added `data-screen`). Apostrophes in text content switched to `&apos;` HTML entities.
-
-## Deployment
-
-```bash
-wrangler d1 create mindful
-# paste database_id into wrangler.toml
-wrangler d1 execute mindful --remote --file=schema.sql
-wrangler secret put MINDFUL_PIN
-wrangler deploy
-```
-
-PIN lives as a Worker secret: never in the code, never in the URL. The frontend prompts once, stores in localStorage, and sends as an `X-Pin` header on every API request.
+The buttons stopped working because of a punctuation mix-up: apostrophes and quote marks getting confused somewhere between my code and your browser. The fix was to stop passing words around inside the button code at all. Fiddly, but done.
 
 ---
 
-## v2 — Four updates
+## Version 2: four additions
 
-### Anytime check-in
+### Check in any time
 
-The original four slots (Morning / Midday / Evening / Night) were anchored to parts of the day. That left a gap: a moment of friction or clarity at 2pm on a Tuesday doesn't fit neatly into any of them.
+The four fixed times left a gap. A moment of stress or clarity at 2pm on a Tuesday doesn't fit into "morning" or "evening". So there's now a fifth button, **Now ⏱**, that logs a check-in for that exact minute. In the stats, these all count together as "Anytime".
 
-There's now a fifth button — **Now ⏱** — that generates a time-stamped slot (`now_HHMM`) on the spot. The UNIQUE `(date, slot)` constraint in D1 handles dedup naturally: tapping Now twice at the same minute just replaces the earlier entry. In the stats screen, all `now_*` entries aggregate under a single "Anytime" row in the slot frequency chart.
+### Shareable stats
 
-### Public stats — shareable read-only view
+There's now a **share ↗** link that copies a read-only view of the stats: streaks, grid, patterns. Anyone with the link can see the numbers but not the check-ins themselves or anything else. It's switched off unless I turn it on.
 
-The stats screen now has a **share ↗** link for the account owner. It copies a `?public=1` URL to the clipboard. Anyone opening that URL skips the PIN screen entirely and lands on a read-only view of the same stats — streaks, heatmap, patterns.
+### A daily Verbal Judo tip
 
-On the worker side, a new route handles this:
-
-```js
-async function handlePublicStats(request, env) {
-  if (!env.MINDFUL_PUBLIC_STATS) return json({ error: 'Not enabled' }, 403);
-  return json(await fetchStats(env));
-}
-```
-
-The `MINDFUL_PUBLIC_STATS` env var acts as an opt-in switch. Sharing is off by default.
-
-```bash
-wrangler secret put MINDFUL_PUBLIC_STATS
-# enter: true
-```
-
-The public view renders the same stats but replaces the back button with a "mindful check-in" credit and hides the share button.
-
-### Daily Verbal Judo tip
-
-I've been reading *Verbal Judo* by George Thompson and wanted something to nudge me toward applying it day-to-day instead of just reading it. A rotating one-liner now appears below the slot grid on the main screen, labelled "verbal judo."
-
-Twenty tips, one per day across the year (day-of-year mod 20):
+I've been reading *Verbal Judo* by George Thompson, and I wanted a nudge to actually use it, not just nod along while reading. So a one-line tip now appears on the main screen each day. There are twenty, taking turns:
 
 > *Paraphrase before you reply — prove you listened.*
 
@@ -146,15 +62,11 @@ Twenty tips, one per day across the year (day-of-year mod 20):
 
 > *Always give people a way out that preserves their dignity.*
 
-Same tip all day. No interaction required, just a prompt.
+The same tip all day. Nothing to tap. Just a reminder, which I clearly need.
 
-### Weekly practice screen
+### A weekly practice
 
-Tapping **practice** in the footer opens a dedicated screen for the current week's Verbal Judo chapter. Fifteen chapters, rotating by ISO week number.
-
-Each week shows:
-- A single **snippet** — one striking sentence from the chapter, displayed as a blockquote
-- A **practice card** — one concrete action to carry into the week
+Tap **practice** at the bottom and you get this week's chapter of the book: one striking sentence from it, and one thing to try that week. Fifteen chapters, one a week.
 
 ```
 Week 17 · Chapter 2 of 15
@@ -172,4 +84,4 @@ Words as Your Most Powerful Tools
 Next chapter in 3 days
 ```
 
-The goal was low friction: open the app, see the week's focus, close it. No reading required — just the one thing to try.
+The idea is that it takes no effort: open it, see this week's focus, close it, try the one thing.

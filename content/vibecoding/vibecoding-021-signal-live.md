@@ -1,44 +1,39 @@
 ---
 title: "Vibecoding 021 — SIGNAL/live: A Real-Time Infosec Feed"
 date: 2026-04-23
-description: "One search box. Two social networks. A live stream of what the infosec community is talking about right now."
+description: "One search box, two social networks, and a live stream of what the security community is talking about right now."
 tags: ["vibecoding", "security", "cloudflare", "javascript", "mastodon", "bluesky"]
 aliases: ["/writing/vibecoding-021-signal-live/"]
 weight: -21
 ---
 
-I have a tab problem. Two social networks — Bluesky and Mastodon — that actually have useful security conversations happening on them, and I kept switching between them to track what was moving. CVE drops, breach coverage, threat intel, people arguing about something Crowdstrike did. Two feeds, two refresh cycles, one set of eyes.
+I have a tab problem. Two social networks, Bluesky and Mastodon, have genuinely useful security conversations, and I kept flipping between them to keep up: new vulnerabilities, breaches, people arguing about whatever Crowdstrike did this week. Two feeds, two refresh buttons, one tired pair of eyes.
 
-SIGNAL/live is the obvious fix: one search box that watches both at once.
+SIGNAL/live is the obvious fix: one search box that watches both.
 
 ## What it does
 
-Type a keyword — `ransomware`, `CVE-2025`, `#threatintel` — and it pulls matching posts from both networks, merges them by time, and shows you a single feed. It re-checks every 20 seconds without prompting. There's an auto-scroll mode if you want to leave it running on a side monitor, which is how I actually use it.
+Type a word, like `ransomware` or `#threatintel`, and it pulls matching posts from both networks into a single feed, newest first. It checks again every 20 seconds by itself. There's an auto-scroll mode for leaving it running on a second screen, which is how I use it. It makes me look busy.
 
-The design borrows from late-night control room aesthetics — phosphor green on near-black, faint scanlines, JetBrains Mono throughout. It looks like something that should be displaying satellite telemetry.
+It's styled like a late-night control room: glowing green text on black, faint scan lines. It looks like it should be tracking satellites. It's tracking people complaining about passwords.
 
-## The proxy problem
+## The middleman
 
-Social APIs are public in spirit but awkward in practice. Both Bluesky and Mastodon serve their data freely, but browsers have rules about fetching from third-party domains — a security feature that turns into a bureaucratic hurdle when you're just trying to read public posts.
+Both networks share their posts freely, but browsers have rules about one website reading another's data. Those rules are good for security and a nuisance when all you want is to read public posts.
 
-The fix is a small Cloudflare Worker that sits between the page and the APIs. It passes your request through and adds the right headers. It's allow-listed to exactly two hosts — the two it's supposed to talk to — so it can't be turned into a general-purpose relay.
+So there's a small go-between program on Cloudflare that fetches the posts and hands them to the page. It will only talk to those two networks, so nobody can use it for anything else.
 
-One small detour along the way: Bluesky's public API endpoint returns a 403 for Indian IP addresses. The same data is available through a different endpoint, which has no such restriction. It took about ten minutes to find and longer to stop wondering what I'd done wrong.
+One detour: Bluesky's usual address turned away visitors from India. A different address had the same posts and no such problem. It took ten minutes to find, and rather longer to stop wondering what I'd done wrong.
 
-## Architecture
+## How it's built
 
-Two Cloudflare deployments that together cost nothing to run:
-
-- **Worker** — handles the API calls, sits invisibly between the page and the two networks
-- **Pages** — the frontend, a single HTML file with no build step and no dependencies
-
-The JavaScript polls both APIs on a timer, deduplicates posts by ID, and re-renders sorted by time. If one source fails, the other keeps running — the status indicator says `partial` rather than going blank.
+Two free pieces on Cloudflare: the go-between and the page itself. If one network has a bad moment, the other keeps going, and a little light says `partial` instead of the whole feed going blank.
 
 ## What I'd change
 
-The Mastodon side is slightly compromised. infosec.exchange now requires authentication for most of its API endpoints, so keyword searches only work as hashtag lookups there. For plain terms like `malware` you get Bluesky results only, and Mastodon sits out.
+The Mastodon side is a bit lopsided. The security-focused Mastodon server now wants a login for most searches, so plain words only search Bluesky. Hashtags still work on both.
 
-A proper fix is a Mastodon API token — free, takes two minutes — but that means the Worker needs to hold a secret, which means configuration, which undermines the "just deploy it" simplicity. Left it as-is for now. It still works, just not symmetrically.
+Getting a Mastodon login is free and takes two minutes. But then the go-between has to look after a password, and the whole thing stops being "just put it online". So I've left it. It works, just not evenly.
 
 ## What it looks like
 

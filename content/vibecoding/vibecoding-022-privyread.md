@@ -1,46 +1,41 @@
 ---
 title: "Vibecoding 022 — PrivyRead: Read Anything, Leave Nothing Behind"
 date: 2026-04-23
-description: "A privacy-first reader that strips trackers, follows redirects server-side, and hands you clean article text before any of that noise touches your browser."
+description: "A private reader that strips out trackers and hands you just the article text, before any of the tracking junk reaches your phone."
 tags: ["vibecoding", "privacy", "cloudflare", "javascript", "pwa", "readability"]
 aliases: ["/writing/vibecoding-022-privyread/"]
 weight: -22
 ---
 
-Every time you click a link in a newsletter, three things happen before you've read a single word: the link redirector logs that you clicked, the UTM parameters tell the destination who sent you, and the tracking pixel in the email confirms you opened it. None of this is secret — it's just how email marketing works. But knowing it happens and having to participate in it are different things.
+Every time you click a link in a newsletter, three things happen before you read a word. The link notes that you clicked. Tags on the end of the link tell the website who sent you. And a tiny invisible image in the email has already told the sender you opened it. None of this is secret; it's just how email marketing works. But knowing it happens and having to take part are different things.
 
-PrivyRead is the opt-out.
+PrivyRead is my way of opting out.
 
 ## What it does
 
-Paste a URL — or share one directly from your phone — and PrivyRead hands you the article with none of the overhead. Tracking parameters are stripped before the request goes out. Redirects are followed on the server, not in your browser, so the intermediate link shortener fires against a Cloudflare worker IP instead of yours. The page is fetched and parsed with Mozilla Readability, and what arrives in your browser is clean text: title, byline, body, reading time. Images don't load at all — not because they can't, but because they often contain tracking pixels and I'd rather not.
+Paste a link, or share one straight from your phone, and PrivyRead gives you just the article. The tracking tags come off before anything is fetched. Any detours through link-shortening services happen on my little server, not your phone, so they see the server, not you. Then it pulls out the article itself, the same way Firefox's Reader View does: title, author, text and reading time. Pictures don't load at all, because pictures are where trackers like to hide.
 
-It's installable as a PWA and registers as a share target on Android. From any app — email, Substack, Twitter — long-press a link, tap Share, and PrivyRead appears in the sheet. The article opens directly. The newsletter never knows you read it.
+On Android you can install it like an app, and it shows up when you press Share. From email, Substack, anywhere: long-press a link, tap Share, pick PrivyRead, and the article opens. The newsletter never finds out you read it. Sorry, newsletter.
 
-## The interesting part: Readability in a Worker
+## The fiddly bit
 
-Mozilla's Readability library — the same thing that powers Firefox Reader View — expects a real DOM. It was written for browsers. Running it in a Cloudflare Worker means you have JavaScript but no document object.
+The tool that pulls out the article was built to run inside a browser. My server isn't a browser. A clever helper library pretends to be one, well enough that the article tool doesn't notice. It's not perfect, but for articles it works well, and quickly.
 
-The fix is [linkedom](https://github.com/WebReflection/linkedom), a server-side DOM implementation. You feed it raw HTML and get back a `document` object that Readability is happy with. It's not perfect — a few edge cases differ from browser DOM behaviour — but for article extraction it works well. The combination is lightweight enough that the Worker cold starts in around 7 ms.
+## Trackers removed
 
-## Tracking params stripped
+It strips about thirty kinds of tracking tag: the familiar Google and Facebook ones, plus a long tail from marketing companies, Twitter, LinkedIn, Pinterest, TikTok and Substack itself. If a link had any, a little badge says **TRACKERS STRIPPED**. If it didn't, it says nothing.
 
-The list covers the obvious ones — `utm_source`, `utm_medium`, `utm_campaign`, `fbclid`, `gclid` — and a longer tail most people haven't seen: `mkt_tok` (Marketo), `_hsenc` (HubSpot), `twclid`, `li_fat_id`, `epik` (Pinterest), `ttclid` (TikTok), `substack_referral`. Thirty parameters in total. If a URL has them, the pill says **TRACKERS STRIPPED**. If it doesn't, nothing is shown — no noise about noise.
+## How it's built
 
-## Architecture
+Two free pieces on Cloudflare: the server that does the fetching and cleaning (the only thing that ever touches the original website), and the page you read on.
 
-Two Cloudflare deployments, zero cost to run:
-
-- **Worker** — `privyread.mrdinesh.workers.dev` — fetches, redirects, strips, parses. The only thing that ever touches the target site.
-- **Pages** — `privyread.pages.dev` — a single HTML file. No framework, no build step, no dependencies loaded at runtime.
-
-The frontend keeps a session counter: articles read and trackers stripped. It resets when you close the tab, which is intentional — I didn't want to store anything.
+The page counts how many articles you've read and how many trackers it removed, then forgets it all when you close the tab. I didn't want to keep anything.
 
 ## What I'd change
 
-Substack paywalls articles properly and Readability can't extract what the server doesn't send. That's expected. What's more annoying is sites that require JavaScript to render their content — server-side fetching gets the raw HTML but misses anything added dynamically. A headless browser would solve it but defeats the point of running in a Worker.
+It can't get past paywalls, which is fair enough. More annoying are websites that build their text bit by bit inside your browser. My server only sees the empty shell. Fixing that means running a full browser on the server, which defeats the point of keeping it small.
 
-The share target only registers after installing as a PWA, which requires visiting the site in a browser first. Not a hard step, but not zero either.
+And you have to install it from the website once before it shows up in the Share menu. Not hard, but not nothing.
 
 ## What it looks like
 

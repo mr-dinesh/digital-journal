@@ -1,52 +1,45 @@
 ---
 title: "Vibecoding 023 — AFL Masterclass: Coverage-Guided Fuzzing From First Principles"
 date: 2026-04-25
-description: "A gamified self-paced learning module covering AFL/AFL++ from first principles — edge coverage, the bitmap, mutation stages, adversarial critique, and a 30-day practice roadmap."
+description: "A self-paced course, with points and progress, on AFL: the tool that finds bugs by throwing millions of slightly-wrong inputs at a program and watching what breaks."
 tags: ["vibecoding", "security", "fuzzing", "afl", "javascript", "cloudflare"]
 aliases: ["/writing/vibecoding-023-afl-masterclass/"]
 weight: -23
 ---
 
-Coverage-guided fuzzing is one of those topics where the gap between "I've heard of AFL" and "I understand what AFL actually does" is larger than it appears. This is an attempt to close that gap in a structured way.
+"Fuzzing" means finding bugs by throwing huge amounts of slightly broken input at a program and seeing what makes it fall over. Imagine a toddler hammering every button on a TV remote, millions of times a second, and writing down every combination that makes the TV crash. AFL is the best-known tool for doing this, and the gap between "I've heard of AFL" and "I understand what it's doing" is wider than it looks.
+
+So I built a course to get across it.
 
 **Live:** [afl-masterclass.pages.dev](https://afl-masterclass.pages.dev)
 
-## What the document covers
+## What it covers
 
-Ten sections, in sequence:
+Ten sections, in order.
 
-The opening section starts with a question that shapes everything else: why was AFL a step-change and not an incremental improvement? The answer is economic, not algorithmic. Before AFL, the two available approaches — blind random fuzzing and grammar-based generation — forced a choice between scale and domain knowledge. Coverage feedback removes that tradeoff. The fuzzer learns the structure of the target without anyone specifying it.
+It starts with a question: why was AFL such a big leap? The answer isn't clever maths. Before AFL you had two choices. Throw pure random junk, which is fast and mostly useless. Or carefully describe what valid input looks like, which works but takes ages. AFL watches which parts of the program each input reaches and keeps the inputs that get somewhere new. It learns the shape of the input on its own. The toddler gets smarter.
 
-From there, the document works through the instrumentation (edge coverage, the XOR bitmap, hit count buckets), the mutation pipeline (deterministic stages before havoc, splice as genetic crossover), the systems engineering decisions (why 64KB — it's an L2 cache sizing decision, not arbitrary), and the adversarial critique — the cases where AFL structurally cannot make progress without external help.
+From there it walks through how AFL keeps track of where it's been, how it mangles inputs, and some of the clever engineering choices behind it. Then comes the honest part: where AFL gets stuck. Some programs check for a secret password-like value, or a checksum, or need a long sequence of steps before anything interesting happens. AFL struggles with those without help, and knowing where it breaks matters as much as knowing where it works.
 
-The adversarial critique section is probably the most practically useful. Magic bytes, checksums, deep state machines, structured grammars — these are the normal operating environment for anything worth fuzzing. Understanding where AFL breaks is as important as understanding where it works.
+The last section busts seven common myths. The one I hear most: "We ran it for a day and found nothing, so the code is probably fine." That reasoning can go wrong in five separate ways, and the section walks through each.
 
-The final content section is myth cards — seven common misconceptions with explicit rebuttals. The one that recurs most in practitioner conversations: "AFL found no crashes in 24 hours, so the code is probably clean." That reasoning has five independent failure modes. The section makes each one concrete.
+## How it's meant to be used
 
-## Structure and intent
+It's for people who want to actually *do* this, not just know the words. Each section says how long it takes and how hard it is. There's a seven-day hands-on plan and a 30-day roadmap.
 
-The document is designed for someone who wants working knowledge, not familiarity with the terminology. Each section has a time estimate and difficulty rating. There's a 7-day hands-on curriculum with specific daily tasks, and a 30-day roadmap with concrete weekly deliverables.
+The roadmap has one rule: at the end of week one you should have a crash, not notes about crashes. Knowing about something and being able to do it are different things.
 
-The key constraint the roadmap tries to enforce: the deliverable at the end of week one is a crash, not notes about crashes. Category-level understanding and working knowledge are different things. The structure is designed to push toward the latter.
+## Points and progress
 
-## Progress tracking
+To keep me going, it has a little game built in. You get points for finishing sections, for completing each practice day, and for each myth you understand. There's a progress bar at the top and three colour themes. It remembers where you got to. Yes, I gamified my own homework.
 
-The document is a single HTML file with no build step and no external dependencies. It has a lightweight progress system built in:
+## What it can't teach
 
-- Sticky progress bar with XP counter
-- "Mark Complete" on every section (50 XP)
-- "Done" on each of the 7 curriculum days (20 XP)
-- "I understand this" on each of the 7 myth cards (10 XP)
-- Three themes: Dark / Light / Sepia
-- State persists to localStorage
-
-## What the document doesn't cover
-
-Writing a good fuzzing harness is a deep reading skill, not a fuzzer skill. It requires understanding which entry points are callable without the full application stack, what state needs initialising, what needs stubbing, how to avoid the OOM spiral from leaked allocations. That takes practice. The 7-day curriculum is designed to force that practice early, but the document can't substitute for it.
+The hard part of fuzzing isn't the tool. It's working out where to aim it: which piece of a big program you can test on its own, and what it needs set up first. That only comes with practice. The seven-day plan pushes you into that practice early, but no document can do it for you.
 
 ## References
 
-The references section links to the primary sources: Zalewski's `technical_details.txt`, the AFLFast paper (Böhme et al., CCS 2016), the REDQUEEN paper (Aschermann et al., NDSS 2019) that underpins AFL++'s CMPLOG feature, and the AFL++ design paper (Fioraldi et al., WOOT 2020). If you're going to use this as a starting point, those are the natural next things to read.
+For the curious, the course links to the original AFL write-up by Michał Zalewski and the key research papers that improved on it. Those are the natural next reads.
 
 ---
 

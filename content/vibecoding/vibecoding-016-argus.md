@@ -1,16 +1,16 @@
 ---
 title: "Vibecoding 016 — Argus: Steelman Any Argument Before You Commit to It"
 date: 2026-04-14
-description: "A single-file Cloudflare Workers app that stress-tests any claim, URL, or article from every angle — steelman, strawman, synthesis."
+description: "A small web app that stress-tests any claim or article: the strongest case for it, the weakest version, and a balanced verdict."
 tags: ["vibecoding", "cloudflare", "groq", "llm", "tools", "reasoning"]
 aliases: ["/writing/vibecoding-016-argus/"]
 ---
 
-I read a lot. Substacks, security advisories, policy papers, op-eds. And I noticed a pattern in myself — I'd read something that confirmed my existing view and move on, or dismiss something that challenged it without really engaging with it. Neither is rigorous thinking.
+I read a lot: newsletters, security warnings, policy papers, opinion pieces. And I noticed something about myself. If an article agreed with me, I'd nod and move on. If it disagreed, I'd wave it away without really thinking about it. Neither counts as thinking. It's just agreeing with myself with extra steps.
 
-Argus was built to fix that. The premise: before you commit to a position, stress-test it. Force yourself to see the strongest version of the argument you disagree with, and the weakest version of the one you're inclined to accept.
+Argus is my attempt to fix that. Before you settle on an opinion, test it. Look at the strongest version of the argument you disagree with, and the weakest version of the one you're inclined to believe.
 
-The name is from Greek mythology. Argus was the hundred-eyed giant who saw everything from every angle.
+The name comes from Greek myth: Argus was the giant with a hundred eyes, who saw everything from every side.
 
 → **[github.com/mr-dinesh/argus](https://github.com/mr-dinesh/argus)**
 
@@ -20,61 +20,41 @@ The name is from Greek mythology. Argus was the hundred-eyed giant who saw every
 
 ## What it does
 
-Paste a claim, a URL, or an article. Argus auto-detects the input type and produces three panels.
+Paste in a claim, a link or an article. Argus gives you three views.
 
-**Steelman** — The strongest possible version of the argument. Assumes the most informed, serious defender. If it would embarrass a real expert, the model rewrites it.
+**Steelman:** the strongest possible version of the argument, as its smartest, most serious defender would make it.
 
-**Strawman** — The weakest, most attackable version. What a hostile critic actually dismantles. What gets left out, exaggerated, or silently assumed.
+**Strawman:** the weakest version, the one critics love to knock down. What gets left out, blown up or quietly assumed.
 
-**Synthesis** — What a rigorous, disinterested thinker concludes. Includes the real crux — the single question that separates believers from sceptics — what evidence would flip the conclusion, and one actionable implication.
-
----
-
-## Architecture
-
-Everything runs on Cloudflare. No external API keys. No backend server. No database.
-
-```
-Browser
-  +-- Cloudflare Worker (argus-proxy.mrdinesh.workers.dev)
-        +-- GET /         → serves the HTML app
-        +-- POST /fetch   → proxies URL fetch (solves CORS)
-        +-- POST /analyse → calls Groq API (llama-3.3-70b-versatile)
-```
-
-Single Worker, three routes. The HTML is embedded directly in the Worker — no separate hosting, no Pages project, no CDN configuration. One deployment, one URL.
-
-Inference runs via Groq's free tier (llama-3.3-70b-versatile) — fast, generous daily quota, no credit card required. The Worker calls the Groq REST API directly with the `GROQ_API_KEY` worker secret. The model returns structured JSON which gets parsed and rendered into the three panels client-side.
-
-The `/fetch` route is what enables URL mode. Browsers block cross-origin fetches. The Worker fetches server-side and returns the HTML, which the client strips to plain text before sending to the AI.
+**Synthesis:** what a fair, level-headed thinker would conclude. It includes the real sticking point (the one question that splits believers from sceptics), what evidence would change the verdict, and one practical takeaway.
 
 ---
 
-## The prompt is the product
+## How it's built
 
-The UI took an afternoon. The model is someone else's. The prompt is the only thing that makes Argus different from a generic pros-and-cons generator.
+It's one small program hosted on Cloudflare, with a free AI service doing the thinking. There's no database and nothing to look after. If you paste a link, the program fetches the article for you, because browsers won't let one website read another website's pages directly.
 
-Four constraints that matter:
+---
 
-**Structured JSON only.** No prose, no preamble, exact schema enforced by instruction. If the model returns anything else, the parser catches it.
+## The instructions are the product
 
-**No validation.** "Do NOT validate or agree with the input." Without this, LLMs reliably flatter the user. This one instruction changes the output character entirely.
+The page took an afternoon. The AI is someone else's. The only thing that makes Argus different from a generic pros-and-cons list is the instructions I give the AI. Four of them matter most:
 
-**Steelman quality check.** "If your steelman would embarrass a serious defender, rewrite it." Dramatically improves output on the first try.
+**Answer in a fixed format**, so the page can lay it out neatly.
 
-**Specific crux.** "The single resolvable question separating believers from sceptics. Not 'it depends'." The crux field is the most intellectually honest output in the whole tool. In a client meeting, naming the crux ends 40-minute debates in 4 minutes.
+**Don't agree with me.** Without this, AI flatters you every time. This one line changes everything.
+
+**Make the steelman worthy of a real expert.** If it would embarrass a serious defender, rewrite it.
+
+**Name the actual sticking point.** One question that could be settled. Not "it depends". This is the most honest part of the whole tool. In a client meeting, naming the sticking point can turn a 40-minute debate into a 4-minute one.
 
 ---
 
 ## What vibecoding this felt like
 
-The API roulette problem is real. Anthropic (no free tier), OpenRouter (free models deprecated) — the original build landed on Cloudflare Workers AI. That worked until it didn't: Workers AI quota silently stopped responding, breaking the live site. Tried Gemini next; the free tier returns `limit: 0` from India. Landed on Groq (llama-3.3-70b-versatile), which is fast, has a generous free quota, and produces noticeably better analysis than the original Llama 8B. The lesson: when building a free personal tool, your API choice is a constraint, not a preference — and you will revisit it more than once.
+Finding a free AI that stays free is a game of musical chairs. One had no free option. Another dropped its free models. The first one I used quietly stopped answering one day and broke the site. The next turned out not to work from India at all. I landed on Groq, which is fast and generous and gives better answers than the original. Lesson: for a free hobby tool, your choice of AI isn't really a choice. And you'll be making it again.
 
-CORS is always the first wall. Every URL-fetching tool hits this. The right fix is always a server-side proxy — not allorigins.win, not corsproxy.io. Own your proxy.
-
-Single-file deployments are underrated. Embedding the HTML in the Worker means zero infrastructure to maintain, zero cold starts, zero separate deployments to keep in sync.
-
-Prompt engineering compounds. Each of the four prompt constraints above was added after seeing a failure mode in the output. You can't design these constraints upfront — you discover them by running real inputs and noticing where the model flinches.
+Each of those four instructions was added after I saw the AI do something silly with a real article. You can't plan them ahead. You find them by trying real examples and noticing where it wobbles.
 
 ---
 

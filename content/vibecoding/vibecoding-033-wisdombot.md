@@ -11,7 +11,7 @@ Some days go sideways. A meeting goes badly. Someone says something that stays w
 
 On those days I don't want a self-help article. I want one good sentence from someone who has been there. Marcus Aurelius ran an empire through a plague and a war. Seneca wrote letters to a friend about fear, anger, money and getting old. Epictetus was born a slave. Between them they covered most of what goes wrong in a day.
 
-So I built a bot I can text when something is bothering me. It answers with one line from one of them, and one thing to do about it.
+So I built a bot I can text when something is bothering me. It answers with one line from one of them, and one thing to do about it. It's cheaper than therapy and considerably more ancient.
 
 ## What it looks like
 
@@ -42,7 +42,7 @@ So the bot never lets the model write a quote. It works like this:
 
 1. I collected public-domain translations: George Long's Meditations and Epictetus, and Richard Gummere's translation of Seneca's letters.
 2. A script cut them into short pieces of one or two sentences, between 12 and 40 words. It cuts only where a sentence ends, so every piece is the translator's exact words.
-3. When I send a problem, the bot finds the 20 pieces that are closest in meaning to what I wrote.
+3. When I send a problem, the bot finds the 20 pieces closest in meaning to what I wrote. Not matching words, matching meaning, so "my boss ignored me" can find a line about being slighted.
 4. The model reads those 20 and picks the number of the one that fits best. It also writes the "Do:" line.
 5. The bot prints the stored text for that number, with its book and section.
 
@@ -66,7 +66,7 @@ Those passages are removed before the bot ever sees them. They're listed by name
 
 The bot answers one Telegram account, mine. Anyone else who finds it gets silence. It doesn't keep what I tell it. It remembers my last question for an hour, so `/more` works, and then forgets it.
 
-It runs on a Cloudflare Worker, on the free tier. Workers AI does the matching and the choosing, and Vectorize stores the 7,000 lines. There's no server for me to look after.
+It runs on Cloudflare's free plan, with Cloudflare's own AI doing the matching and choosing. There's no server for me to look after, which is good, because I'd forget.
 
 ## What I took away
 

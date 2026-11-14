@@ -1,7 +1,7 @@
 ---
 title: "Vibecoding 017 — YaraWeave: From Threat Intel to YARA in One Click"
 date: 2026-04-16
-description: "A single-file browser tool that queries MalwareBazaar, VirusTotal, OTX and more — then uses Gemini to generate a production-quality YARA rule with a condition-by-condition explanation."
+description: "A browser tool that looks up a piece of malware in several public databases, then has AI write a rule to detect it and explain that rule line by line."
 tags: ["vibecoding", "security", "yara", "threat-intelligence", "gemini", "soc"]
 aliases: ["/writing/vibecoding-017-yaraweave/"]
 ---
@@ -10,13 +10,13 @@ aliases: ["/writing/vibecoding-017-yaraweave/"]
 
 ## The itch
 
-Every SOC I've ever worked with has the same gap.
+Every security team I've worked with has the same gap.
 
-They have threat intelligence. Feeds, platforms, subscriptions — often more than they know what to do with. And they have YARA. Most mature detection teams have some rules, usually inherited, rarely updated, authorship long forgotten.
+They have plenty of information about the latest malware, often more than they can read. And they have YARA, a kind of "wanted poster" format that tells computers what a piece of malware looks like so they can spot it. Most teams have a few of these rules, usually inherited, rarely updated, author long forgotten.
 
-What they almost never have is the middle part: someone who can look at a MalwareBazaar entry for a new Emotet variant and turn it into a deployable detection rule within the same morning. That skill — translating raw intel into working YARA — sits at the intersection of malware analysis, detection engineering, and threat intelligence. It's genuinely rare. And it's exactly the kind of operational gap that a language model is well-suited to bridge.
+What's missing is the step in between: someone who can read about a new strain of malware in the morning and have a working rule to catch it by lunch. That needs malware knowledge, detection skills and threat research all in one person. Those people are rare. It's the kind of gap AI might fill.
 
-That's what YaraWeave is. A tool for closing that gap, fast.
+That's what YaraWeave is for.
 
 → **[github.com/mr-dinesh/yaraweave](https://github.com/mr-dinesh/yaraweave)**
 
@@ -24,61 +24,45 @@ That's what YaraWeave is. A tool for closing that gap, fast.
 
 ## The idea
 
-The brief was simple: accept a SHA256 hash or a malware family name, hit multiple open-source threat intel sources in parallel, and use Gemini to synthesise a YARA rule from everything that came back.
+You give it either the unique fingerprint of a malware file or a malware family's name. It checks up to five free public databases at once, then asks an AI to write a rule from everything it found.
 
-Not a toy rule with `$str1 = "malware"`. A real one — with meaningful hex patterns, wide string variants, weighted conditions, and a metadata block that tells you when it was generated, what severity it carries, and what TLP applies.
+Not a toy rule that looks for the word "malware", but a real one, with the kind of patterns and conditions an expert would use, and a label saying when it was made and how serious the threat is.
 
-And then explain it. Section by section. Condition by condition. So a tier-1 analyst who didn't write the rule can still understand it, tune it, and deploy it with confidence.
-
-Up to five intel sources, one LLM call to generate, one to explain. That's the entire pipeline.
+Then it explains the rule, piece by piece, so a junior analyst who didn't write it can still understand it, adjust it and use it with confidence.
 
 ---
 
-## The build
+## Where the information comes from
 
-### Sources
-
-The tool queries up to five sources in parallel using `Promise.all`:
-
-| Source | What it adds | Key required |
+| Source | What it adds | Key needed |
 |---|---|---|
-| MalwareBazaar | Family name, file type, first seen, reporter tags | None |
-| URLhaus | Distribution URLs, payload context | None |
-| OTX AlienVault | Threat pulse count, community intelligence | Free |
-| VirusTotal | Detection rate across 70+ AV engines | Free |
-| ThreatFox | IOC context, additional tags | None |
+| MalwareBazaar | Family name, file type, when it was first seen | None |
+| URLhaus | Where it's being spread from | None |
+| OTX AlienVault | What the wider community has reported | Free |
+| VirusTotal | How many antivirus programs catch it | Free |
+| ThreatFox | Related clues and tags | None |
 
-MalwareBazaar, URLhaus, and OTX are enabled by default; ThreatFox is available but unchecked. The three abuse.ch sources (MalwareBazaar, URLhaus, ThreatFox) support browser-direct requests with open CORS policies — no proxy needed. That's what made a single-file deployment viable.
+Several of these let a web page ask them directly, which is why the whole tool fits in one file with no server.
 
-### The Gemini prompt
+## Two questions to the AI
 
-The YARA generation prompt is doing more work than it looks like. It doesn't just say "write a YARA rule for Emotet." It sends the full raw JSON from every source that returned data, plus an enriched summary with family, file type, first-seen, tags, detection rate, and OTX pulse count. Gemini then generates against that full context.
+The first asks for the rule. I spelled out exactly what a good one looks like: a sensible name, several meaningful patterns, and conditions that aren't trivially dodged. The AI gets everything the databases returned.
 
-The rule requirements are explicit in the prompt:
-- `detect_` prefix, snake_case name
-- Metadata with description, author, date, hash (if available), severity, TLP
-- At least 3–5 meaningful string patterns — hex patterns, ASCII, wide variants
-- A weighted condition: `(2 of ($str*)) and (1 of ($hex*))` — not `all of them`
+The second asks for the explanation: what the threat is, how the rule works, why each pattern was chosen, how to deploy it, and how confident it is. That last part matters. A rule marked "low confidence" should be treated very differently from a "high confidence" one, and both are better than a rule that tells you nothing.
 
-The second call — the explanation — parses the generated rule and produces five structured sections: `THREAT_CONTEXT`, `RULE_LOGIC`, `STRING_RATIONALE`, `DEPLOYMENT_NOTES`, and `CONFIDENCE`. That last one is important. A generated rule with `CONFIDENCE: LOW` should be treated very differently from one with `CONFIDENCE: HIGH` — and both are more useful than a rule with no confidence signal at all.
+## Your keys stay with you
 
-### API config
-
-All keys — Gemini, VirusTotal, OTX — are configured through a modal and stored in `localStorage`. Nothing is hardcoded. Nothing is sent to a backend. The browser talks directly to each API. This was a deliberate choice: the tool needed to be deployable as a static file without a server, and it needed to be trustworthy enough that I'd hand the URL to a security professional without them wondering where their API keys were going.
-
-The Gemini model is also configurable (`gemini-1.5-flash` by default, but you can switch to `gemini-2.0-flash-exp` or `gemini-1.5-pro` without touching the code).
+Any keys you add stay in your own browser. Nothing goes to a server of mine, because there isn't one. I wanted it to be something I could hand to a security person without them wondering where their keys were going. They would wonder. Security people always wonder.
 
 ---
 
 ## What vibecoding this felt like
 
-This one was a different kind of build. Most vibe coding sessions involve a lot of UI iteration — getting the layout right, fixing the interactions, making it feel like a real tool rather than a prototype. YaraWeave had all of that, but the interesting work was in the prompts.
+Most of my builds are about getting the page to look and feel right. This one was about the instructions.
 
-Getting a language model to produce a *good* YARA rule required being very specific about what "good" meant. Not a plausible-looking rule: one a detection engineer would actually deploy. The first few iterations produced rules that were syntactically correct but operationally useless: generic strings, trivially bypassable conditions, metadata with placeholder values.
+My first attempts got rules that looked fine and were useless: vague patterns, easy to dodge, labels full of placeholders. Basically a wanted poster that says "suspect has a face". The fix was to write the instructions like a proper specification. Once every requirement was spelled out, the AI stopped guessing and delivered.
 
-The fix was to treat the prompt like a spec doc. Every requirement was explicit. The model stopped guessing what I wanted and started delivering what I asked for.
-
-The explanation pipeline was the part I hadn't planned for at the start. But once the YARA output was solid, the natural question was: *who deploys this?* The analyst who generated it might understand it. The one on shift at 2am inheriting it needs the explanation too. That second Gemini call is cheap and it's the thing that makes the tool useful beyond a single session.
+The explanation step wasn't in the original plan. Once the rules were good, the obvious question was: who actually uses this? The analyst who made it might understand it. The person on the night shift who inherits it at 2am needs the explanation too.
 
 ---
 
@@ -87,12 +71,12 @@ The explanation pipeline was the part I hadn't planned for at the start. But onc
 - **Claude Artifact:** [Run YaraWeave in your browser](https://claude.ai/public/artifacts/8c198f5f-e4db-4765-9ee2-b88ee0b35a1f)
 - **GitHub:** [github.com/mr-dinesh/yaraweave](https://github.com/mr-dinesh/yaraweave)
 - Open `yaraweave.html` in any browser
-- Click **⚙ Configure**, add your Gemini key (free at [aistudio.google.com](https://aistudio.google.com))
-- Try `Emotet` in family mode — no other keys needed
+- Click **⚙ Configure** and add a free Gemini key (from [aistudio.google.com](https://aistudio.google.com))
+- Try `Emotet` in family mode. No other keys needed.
 
-VirusTotal and OTX keys are optional but add detection rate and pulse count context that meaningfully improves the generated rule.
+The VirusTotal and OTX keys are optional, but they give the AI more to go on.
 
 ---
 
 **[github.com/mr-dinesh/yaraweave](https://github.com/mr-dinesh/yaraweave)**  
-*Part of the [100 Vibe Coding Projects](https://mrdee.in/vibecoding/) series — building security tools to translate 25 years of practitioner experience into demonstrable artifacts.*
+*Part of the [100 Vibe Coding Projects](https://mrdee.in/vibecoding/) series: turning 25 years of security work into things you can actually try.*

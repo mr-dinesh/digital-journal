@@ -3,31 +3,29 @@ title: "Vibecoding 005 — Making a 30-Year-Old Codebase Approachable With AI"
 date: 2026-03-19
 tags: ["vibecoding", "open-source", "learning", "curl"]
 aliases: ["/writing/vibecoding-005-curl_source_explorer/", "/writing/vibecoding-005-curl-source-explorer/"]
-description: "A browser app that walks you through curl's internals — DNS, TLS, cookies, redirects — with AI explanations tuned to your experience level and progress tracking."
+description: "A browser app that walks you through how curl works inside, with AI explanations pitched at your level and a way to track your progress."
 ---
 ![image](/images/writing/vibecoding-005-curl-explorer.png)
 
 
-## Curl source explorer: learn a 30-year-old codebase without getting lost
+## A guided tour of a famous old program
 
-Curl has been running on virtually every computer on the planet since 1998. It's one of the most-used pieces of software ever written, and almost nobody who uses it daily has ever read a line of its source code.
+curl is a small program that fetches things from the internet. It's been around since 1998, and it's on nearly every computer, phone, car and smart TV you own. You've almost certainly used it without knowing. Almost nobody has read how it works.
 
-That's partly because diving into a mature C codebase is intimidating. There are no onboarding docs for the internals, no guided tour, no one to ask why a particular function was written the way it was. You're either grepping through 170,000 lines alone, or you're not reading it at all.
+That's because it's a big pile of old, careful code with no tour guide. Your choices are to dig through 170,000 lines on your own or not bother. I'd always picked "not bother".
 
-I built a small browser app to fix that.
+So I built a small app to make it less scary.
 
-## Curl source explorer
-The app lets you pick a module — the DNS resolver, the TLS handshake, the cookie engine, the HTTP redirect logic — and step through its key functions one by one. For each concept, you get the actual source code side-by-side with an AI-generated explanation tuned to your experience level. A complete beginner gets plain-English analogies. An experienced C programmer gets architecture notes, edge cases, and the tradeoffs baked into the implementation.
+## How it works
+You pick a part of curl: how it finds a website's address, how it sets up a secure connection, how it handles cookies, how it follows a link that's moved. Then you step through the important pieces one at a time. Each shows the real code next to an AI explanation pitched at your level. Beginners get everyday comparisons. Experienced programmers get the design choices and the edge cases.
 
-It also tracks your progress. You mark concepts as understood or flagged for review, jot notes directly on each function, and quiz yourself when you want to test retention. Everything persists locally across sessions.
+It also keeps track of what you've learned. You can mark things as understood or "come back to this", jot notes, and quiz yourself. It all stays on your own computer.
 
-The whole thing runs in the browser with no installation. Drop two files in a folder, spin up a local server, paste a free Groq API key, and you're reading curl internals with an expert looking over your shoulder.
+There's nothing to install beyond a free AI key. And it's honest about its limits: every snippet links to the real, current file, because curl changes almost daily and my copy will go out of date.
 
-It won't replace reading the code yourself, and it's honest about that. Every snippet has a direct link to the live GitHub file, with a clear disclaimer that the embedded code is a snapshot and curl commits almost daily. The goal is to make the source approachable enough that you actually open it.
+The point isn't to replace reading the code. It's to make the code friendly enough that you actually open it.
 
-Built with React, Groq (Llama 3.3 70B), and real curl source from github.com/curl/curl.
-
-### Prompt used
+### What I asked for
 
 > *Build a browser-based learning app for the curl source code. The app should let a user select a module — DNS resolver, TLS handshake, cookie engine, HTTP redirect logic — and step through its key functions one by one. For each function, show the actual source code alongside an AI-generated explanation tuned to the user's experience level. Beginners should get plain-English analogies. Experienced C programmers should get architecture notes, edge cases, and implementation tradeoffs. The app should track progress: users mark concepts as understood or flagged for review, add notes, and quiz themselves. Everything should persist across sessions. Use React and the Groq API (Llama 3.3 70B). Every code snippet must link directly to the live file on GitHub, with a disclaimer that the embedded code is a snapshot.*
 

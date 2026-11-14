@@ -1,18 +1,18 @@
 ---
 title: "Vibecoding 015 — A Timed Communication Drill for Security Leaders"
 date: 2026-04-12
-description: "I built a timed communication drill for security leaders — 26 scenarios across three modes, with LLM coaching on jargon, clarity, and business framing."
+description: "A timed speaking drill for security leaders: 26 tricky situations across three modes, with AI feedback on jargon, clarity and talking like a business person."
 tags: ["vibecoding", "python", "flask", "security", "llm", "tools"]
 aliases: ["/writing/vibecoding-015-ciso-articulator/"]
 ---
 
 ![CISO Articulator](/images/writing/vibecoding-015-ciso-articulator.jpg)
 
-There's a specific failure mode for CISOs that I've been thinking about for a while. Most of them are technically excellent. They know the threat models, they know how to build a security program, they can architect zero-trust in their sleep. What they can't do — what most of them have never been trained to do — is explain any of it in under sixty seconds to a board member who didn't sleep well and has three more meetings after this one.
+There's a particular way security chiefs fall flat, and I've been thinking about it for a while. Most of them are excellent at the job. They know the threats and how to build a security team, and could design the defences in their sleep. What they can't do, and were never taught to do, is explain any of it in under a minute to a board member who slept badly and has three more meetings after this one.
 
-The last CISO gave a 40-slide deck. The audit committee hated it.
+"The last security chief brought a 40-slide deck. The audit committee hated it."
 
-That's the scenario that opens this tool. I built CISO Articulator to be the drill you run *before* you're in that room.
+That's the first scenario in this tool. I built CISO Articulator as the practice you do *before* you walk into that room. No finger-pointing. Most of us have felt the pull of slide 41.
 
 → **[github.com/mr-dinesh/ciso-articulator](https://github.com/mr-dinesh/ciso-articulator)**
 
@@ -20,51 +20,41 @@ That's the scenario that opens this tool. I built CISO Articulator to be the dri
 
 ## The three modes
 
-The app has three distinct problem spaces.
+**Daily Drill** covers everyday boardroom moments. Twelve of them: the finance chief asking why the budget is so big when nothing bad happened, the CEO asking what some buzzword actually means, the board member who just read about a competitor getting hacked and wants to know if you're next. They're meant to be uncomfortable. You get 60 seconds, about what you'd get in a corridor or a board Q&A.
 
-**Daily Drill** is for the ongoing boardroom situations. Twelve scenarios: the CFO questioning your budget after zero reported breaches, the CEO asking what zero-trust actually means, the board member who just read about a competitor's ransomware attack and wants to know if you're exposed. The scenarios are designed to be uncomfortable. The timer is 60 seconds because that's roughly what you get in a hallway conversation or a board Q&A.
+**Interview Prep** is for the pressure of a job interview for the top security role. How do you tell the board about a major breach on the morning it happens? When do you call the police? What's your biggest failure? Eight situations, chosen to test your instincts, not your rehearsed answers.
 
-**Interview Prep** is for the specific pressure of a CISO job interview, where the evaluation covers what you know and whether you can communicate it under scrutiny. How do you explain a major incident to a board on the morning it happens? When do you involve law enforcement? Tell me about your biggest security failure. Eight scenarios, each designed to surface communication instinct instead of prepared answers.
-
-**CV Interrogation** is the most pointed mode. It takes claims that appear on real CISO CVs — "reduced the attack surface by 40%", "enterprise-wide zero-trust adoption", "built a security culture" — and treats them as the provocation they are. You claimed it. Now say it out loud, without a slide deck, to someone who is specifically not going to let you off easy.
+**CV Interrogation** is the sharpest. It takes the kind of claims that show up on real CVs, like "reduced risk by 40%" or "built a security culture", and treats them as a dare. You claimed it. Now explain it out loud, with no slides, to someone who won't let you off easy.
 
 ---
 
-## The build
+## How it works
 
-The stack is intentionally light. Flask backend, vanilla JS frontend, scenarios in a JSON file. No framework on the client side — the timer is a `setInterval`, the word count updates on every keystroke, the mode switch is a fetch call to `/api/scenarios/<mode>`. The entire UI lives in one HTML template.
+You see a situation, a timer starts, and you type your answer. A word counter keeps you between 60 and 120 words: short enough to force you to choose, long enough to make a real point. Then an AI coach reads your answer and replies in three parts:
 
-The scenarios themselves took the longest. I wanted them to feel real — not "security trivia" prompts but the specific situations where CISO communication actually fails. That meant writing context for each one, not just the question. The scenario card shows two things: the scenario (italic serif — you're meant to read it slowly) and the context line in monospace (the situational pressure that makes the scenario real).
+- **What worked:** something specific that landed
+- **What to fix:** the exact phrase or gap
+- **A better opening:** a stronger first sentence
 
-The coaching is `gemini-2.0-flash` with a structured prompt:
-
-```
-Evaluate on three dimensions.
-What worked: [1-2 sentences. Be specific. Name what landed.]
-What to fix: [1-2 sentences. Name the exact phrase or gap.]
-Rewrite this opening: "[Show a stronger first sentence only.]"
-Under 100 words. No encouragement filler. Be honest.
-```
-
-That last instruction matters more than it looks. Without it, the model defaults to diplomatic softening — the coaching equivalent of the 40-slide deck. The explicit "no flattery" instruction shifts the register. The feedback that comes back names specific phrases, not general weaknesses.
+I told the coach to skip the flattery. Without that, AI is relentlessly nice: "Great answer! Maybe consider…" That's the coaching version of a 40-slide deck. With it, the feedback names actual phrases you should drop.
 
 ---
 
-## The design
+## The look
 
-The screenshot was the brief. I wanted something that felt like a sparring tool, not a learning app. Less e-learning, more fight gym. The cream background, the large monospaced timer, the black submit button. The HARD tag rendered solid black. No illustrations, no progress animations. Minimal enough that the scenario text dominates the page.
+I wanted it to feel like a sparring partner, not an online course. Less e-learning, more boxing gym. Cream background, a big ticking timer, a black button, and the scenario text front and centre.
 
-The word count range (60–120 words) is the interesting constraint. Short enough to force prioritisation, long enough to make a coherent point. When you're in range the target turns green. Most first attempts fall short — people write 30 words and stop because they've said the "right" thing. The coaching usually points to the same issue: they stated a position without a mechanism, or explained the control without connecting it to business outcome.
+Most first attempts come in short. People write 30 words and stop, because they've said the "right" thing. The coach usually points out the same problem: you said what you'd do, but not how, and you never connected it to what the business cares about.
 
 ---
 
 ## What vibecoding this felt like
 
-The scenarios file was the hardest part to write, and the most important. The temptation was to write twelve variants of the same question — "explain X to a non-technical audience" — which would produce twelve almost-identical coaching responses. The interesting scenarios are the ones with political pressure built into the context: the CFO is nodding along while the COO argues against DR testing. The new board chair asking what keeps you up at night, specifically because she's heard that question answered badly before.
+Writing the scenarios was the hardest part, and the part that mattered most. It's easy to write twelve versions of "explain X to a non-technical person", and they'd all get the same feedback. The good ones have office politics baked in. The finance chief is nodding along while the operations chief argues against the disaster drill. The new board chair asks what keeps you up at night, because she's heard it answered badly before.
 
-The thing I notice about this kind of build is how much the design brief narrows the scope in useful ways. I knew what the app looked like before I wrote a line of code. The screenshot was the spec. That means the decisions during the build were almost all about scenarios and prompt engineering instead of architecture, which is where the actual value is.
+I knew what the app should look like before it was built, and that left all the effort for the scenarios and the coaching, which is where the value is.
 
-There are probably 40 more scenarios worth writing. The daily drill could run for a month without repeating. The CV interrogation mode barely scratches the surface — every CISO CV has at least three claims that deserve exactly this kind of pressure.
+There are probably forty more scenarios worth writing. And every security CV, mine included, has at least three claims that deserve exactly this kind of grilling.
 
 ---
 

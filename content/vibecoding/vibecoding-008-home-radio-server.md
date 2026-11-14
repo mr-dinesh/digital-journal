@@ -3,119 +3,78 @@ title: "Vibecoding 008 — I Asked AI to Help Me Build a Home Radio Server"
 date: 2026-03-22
 tags: ["vibecoding", "self-hosted", "media", "docker"]
 aliases: ["/writing/vibecoding-008-building-a-home-media-streaming-and-player/", "/writing/vibecoding-008-home-radio-server/"]
-description: "Tried to build a home Icecast radio server to stream MP3s to my phone. What actually happened: four Docker containers, a Mega.nz dead-end, and a surprisingly working result."
+description: "I wanted to play my old MP3s on my phone like a radio station. It took a few wrong turns, about fifteen tries, and it works."
 ---
 ![image](/images/writing/vibecoding-008-home-radio.png)
 
 
-### I asked an AI to help me build a home radio server. Here's what actually happened.
+### I asked an AI to help me build a home radio station. Here's what happened.
 
-I have a few hundred MP3s sitting in a folder on my laptop — old Kannada film songs,
-some Tamil classics, a few English albums I ripped years ago. I wanted to stream
-them to my phone, maybe share the stream with family. Simple enough idea.
+I have a few hundred MP3s in a folder on my laptop: old Kannada film songs, some Tamil classics, a few English albums I copied off CDs years ago. I wanted to play them on my phone like a radio station, and maybe share it with family. Simple enough.
 
-I'd heard of Icecast. I knew Liquidsoap existed. I had no intention of reading
-their documentation on a Sunday afternoon.
+I knew the programs that do this exist. I had no intention of reading their manuals on a Sunday afternoon.
 
-So I opened Claude and said: build me an Icecast server that streams from Mega.nz.
+So I opened Claude and said: build me a radio station that plays from my Mega.nz cloud storage.
 
 ---
 
 ### The first pushback
 
-The AI didn't just start writing config files. It pointed out something I hadn't
-thought through: Mega.nz uses end-to-end encryption. There's no public URL you
-can hand to a streaming server. You'd need to decrypt locally first, then re-serve.
-That's a pipeline, not a simple mount.
+The AI didn't just start building. It pointed out that Mega encrypts everything, so there's no simple link a radio program can play from. You'd have to download and unlock each song first. Fair point. I hadn't thought of that.
 
-We dropped Mega and moved to Cloudflare R2 instead — S3-compatible, free egress,
-works with rclone. Better fit for the use case.
-
-Then I said I wanted to self-host on my home laptop to keep costs at zero.
-We talked through the real constraints: dynamic IP from my ISP, possible port
-blocking, upload speed as the listener ceiling. Things most tutorials skip.
+We dropped Mega and moved the songs somewhere more suitable. Then I said I wanted to run it on my own laptop at home so it would cost nothing. The AI walked me through the catches: my home internet address changes, my provider might block things, and my upload speed limits how many people can listen. Most guides skip that part.
 
 ---
 
 ### The build
 
-The stack ended up being four Docker containers:
+It ended up as four small programs working together:
 
-- **Icecast2** — the actual stream server
-- **Liquidsoap** — reads playlists, encodes to MP3, pushes to Icecast
-- **Node.js** — a small web server for playlist management
-- **Navidrome** — added later for on-demand playback
+- one that broadcasts the stream
+- one that picks songs, evens out the volume and feeds the broadcaster
+- a small web page to manage playlists
+- a music library app, added later, for picking songs yourself
 
-The AI generated a `docker-compose.yml`, an Icecast config, a Liquidsoap script,
-and a web UI. The design of the UI is dark and minimal — something between a
-broadcast console and a text editor.
+The AI wrote all the settings files and the web page.
 
 ---
 
-### What broke during deployment
+### What broke
 
-A lot, in sequence.
+A lot, one thing after another. The AI had learned from an older version of one of the programs, and some commands had been renamed since. Then the song locations in the playlist didn't match where the program was actually looking for them.
 
-The Liquidsoap config used `on_metadata` which was renamed to `source.on_metadata`
-in v2.2. Then `server.register` had a different call signature than the AI expected.
-Then the music paths inside the Docker container didn't match what was written in
-the playlist file — `/home/tester/Music` versus `/music`.
+Each problem came with a clear error message, and each fix was small. It still took about fifteen rounds before music came out. Fifteen. For a radio. There's a reason people just buy one.
 
-Each error had a clear log message. Each fix was a one-liner. None of it was
-particularly dramatic, but it took about fifteen iterations to get to a working
-stream.
-
-The part that surprised me: the AI remembered the project path across the whole
-conversation. When I said "no audio again," it didn't ask me to start over. It
-asked for the logs and diagnosed from there.
+What impressed me was that the AI kept track of the whole project. When I said "no sound again" for the ninth time, it didn't start over. It asked for the error log and carried on.
 
 ---
 
-### The Navidrome addition
+### Picking your own songs
 
-Icecast is radio — everyone hears the same thing, you can't click individual
-tracks. When I asked for that, the AI explained the distinction clearly and
-suggested Navidrome as a second service running alongside Icecast. Same music
-folder, different port, different purpose.
-
-Adding it was one block in the docker-compose file. It was running in under
-two minutes.
+A radio station plays the same thing to everyone. You can't skip to the song you want. When I asked for that, the AI explained the difference and suggested adding a music library app, Navidrome, alongside the radio. Same folder of songs, different job. It was running in two minutes.
 
 ---
 
-### Tailscale
+### Listening from anywhere
 
-The cleanest part of the whole thing. One install command, one authentication
-step, and my home server had a stable private address accessible from my phone
-on mobile data. No port forwarding, no DuckDNS, no open ports on the router.
+This was the nicest part. Tailscale gives your devices a private network of their own. One install, one login, and my phone could reach the laptop at home from anywhere, even on mobile data, without opening my home network to strangers.
 
-I wish I'd done this years ago for other things.
+I wish I'd done this years ago.
 
 ---
 
-### What vibecoding is
+### What vibecoding means to me
 
-People use the word to mean different things. For me, on this project, it meant:
-I described what I wanted in plain language, reviewed what came back, corrected
-it when it was wrong, and kept going. I didn't write the Liquidsoap config from
-scratch. I also didn't blindly paste code without reading it.
+People use the word to mean different things. Here it meant this: I described what I wanted in plain words, read what came back, corrected it when it was wrong, and kept going. I didn't write the settings myself. I also didn't paste things in without reading them.
 
-The AI was wrong about the Liquidsoap API version. It was right about Mega's
-encryption problem. It caught the path mismatch faster than I would have reading
-logs alone.
+The AI was wrong about the program's version. It was right about Mega's encryption. It found the mixed-up song locations faster than I would have.
 
-The useful mental model: it's a collaborator that knows a lot and makes mistakes.
-Same as most collaborators.
+It's like a colleague who knows a lot and gets things wrong sometimes. Like most colleagues. Like me, too.
 
 ---
 
 ### The code, if you want it
 
-Everything is on GitHub — docker-compose, configs, the web UI, scripts for
-generating playlists and fetching cover art automatically. It runs on any Linux
-machine with Docker. Total monthly cost: zero.
-
-The stream URL is `http://YOUR_TAILSCALE_IP:8000/stream`. Open it in VLC or
-any app that handles HTTP audio streams. Or open the listener page in a browser.
+Everything is on GitHub, including scripts that make playlists and fetch album art automatically. It runs on any Linux machine. It costs nothing a month.
 
 [Github Repo Link](https://github.com/mr-dinesh/home-media-player)

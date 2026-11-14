@@ -3,7 +3,7 @@ title: "Vibecoding 009 — KaggaBot: Automating Daily Verse Posts With GitHub Ac
 date: 2026-03-25
 tags: ["vibecoding", "github-actions", "mastodon", "automation"]
 aliases: ["/writing/vibecoding-day009-bot-to-autopost-kannada-poetry-verses/", "/writing/vibecoding-009-kaggabot-github-actions/"]
-description: "KaggaBot uses GitHub Actions as a free scheduler to post two Mankutimmana Kagga verses to Mastodon every day — no server, no cost, no babysitting."
+description: "KaggaBot posts two Mankutimmana Kagga verses to Mastodon every day, using GitHub's free scheduler. No server, no cost, no babysitting."
 ---
 ![image](/images/writing/vibecoding-009-kaggabot-actions.png)
 
@@ -11,46 +11,38 @@ description: "KaggaBot uses GitHub Actions as a free scheduler to post two Manku
 
 ### What's Mankutimmana Kagga
 
-Mankutimmana Kagga — often called the Kannada Gita — is a collection of 945 philosophical verses by D.V. Gundappa (DVG). Written in the 1940s, it takes on questions about duty, death, and doubt, and does it without preaching. It deserves a wider audience.
+Mankutimmana Kagga, often called the Kannada Gita, is 945 philosophical verses by D.V. Gundappa (DVG). Written in the 1940s, it takes on duty, death and doubt, and does it without preaching. It deserves a wider audience.
 
 ### KaggaBot
 
-It's a small automation that does one simple thing: post two verses from the Kagga every day to Mastodon (an ad-free social media platform), automatically, without anyone pressing a button.
+KaggaBot does one simple thing. It posts two verses from the Kagga every day to Mastodon (an ad-free social network), without anyone pressing a button.
 
-### What's in the code
+### How it works
 
-The core of the bot is a Python file containing all the verses of the Kagga, individually scraped and stored as structured data. 
+All 945 verses live in one file. A small program picks the next one and formats it for posting. GitHub, the site where programmers keep their code, offers a free scheduler that runs it morning and evening.
 
-A script picks from this collection and formats each verse for posting. GitHub Actions handles the scheduling — no server required, no ongoing cost.
-
-Verses in .py file  →  bot script  →  GitHub Actions cron  →  Mastodon post
-
-### How the scheduling works
-
-A GitHub Actions workflow file defines two daily triggers — morning and evening. When the schedule fires, GitHub spins up a clean environment, checks out the code, and runs the bot. That's the entire pipeline. No cloud bill. No server to maintain. No babysitting.
+So there's no server, no bill and no babysitting. In theory.
 
 ### Why Mastodon?
-Mastodon is open, ad-free, and has a clean API — ideal for a bot that exists purely to share literature, not to game an algorithm. The posts are public and readable by anyone, no account needed.
+Mastodon is open and ad-free. It suits a bot that exists to share literature, not to play the algorithm. Anyone can read the posts without an account.
 
 ### What broke
 
-**GitHub Actions cron doesn't mean "exactly at this time."** The workflow is scheduled for 6am and 6pm, but GitHub runs scheduled workflows when capacity is available — which during busy periods can mean a delay of 15–30 minutes. For a poetry bot, that's fine. For anything time-sensitive, it would be a problem worth knowing about upfront.
+GitHub's scheduler means "around this time", not "at this time". A poem twenty minutes late is fine.
 
-**The ephemeral environment forgets everything.** GitHub Actions spins up a clean runner for each job. There's no persistent file system between runs. This matters for state tracking — knowing which verse was posted last. The solution is committing the current verse index back to the repository after each run. If you forget this, the bot picks a verse randomly (or always posts verse #1) on every run. First version did exactly that.
+The program forgets everything between runs, so my first version posted the same verse every single time. It now writes down which verse it's up to after each post. Not a wise start for a bot about wisdom.
 
-**GitHub disables scheduled workflows on inactive repos.** If a repository has no activity for 60 days, GitHub automatically disables scheduled workflows. The bot will simply stop posting with no notification. The fix is either a periodic commit to keep the repo active, or enabling the workflow manually when it gets disabled. Worth knowing before you rely on it as a daily habit.
+GitHub also quietly switches off the schedule if a project goes two months without changes. Writing down the verse number counts as a change, so that solves it.
 
-**The Mastodon API token in GitHub Secrets.** Storing the token as a repository secret works, but if the secret is misconfigured (wrong variable name in the workflow YAML) the bot fails silently — no post, no obvious error in the logs unless you know to look at the environment variable step. Naming the secret `MASTODON_ACCESS_TOKEN` and double-checking the `${{ secrets.MASTODON_ACCESS_TOKEN }}` reference in the YAML saved a lot of confusion.
+And I misnamed a password once, so the bot silently posted nothing. You'd think I'd learn. (Spoiler: see posts 30 and 31.)
 
 ### Why this matters
-At two posts a day, it takes over a year to work through all 945 verses of Mankutimmana Kagga.
+At two a day, it takes more than a year to get through all 945 verses.
 
-That's the right pace for philosophy: slow enough to sit with, regular enough to build a habit. Two verses a day, on autopilot.
+That feels like the right pace for philosophy. Slow enough to sit with, regular enough to become a habit.
 
-The whole project is open source. If you want to adapt it — for a different text, a different language, a different platform — the bones are all there.
+The whole thing is open source. If you want to adapt it for another book, language or platform, the bones are there.
 
 ### Links
 🐘 [Read the posts](https://mastodon.social/@browncoolie)
 ⎇ [View source code](https://github.com/mr-dinesh/KaggaBot_Automated)
-
-

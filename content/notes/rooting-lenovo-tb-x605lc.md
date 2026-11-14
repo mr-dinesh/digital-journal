@@ -5,15 +5,17 @@ description: "Rooting a Lenovo Tab M10 FHD to activate zRAM and fix constant mem
 tags: ["android", "root", "magisk", "adb", "linux", "notes"]
 ---
 
-My Lenovo Tab M10 FHD (TB-X605LC, 2019) was sitting at `status low` on memory before any apps were open. I use it for reading on Moon+Reader. An afternoon with a Debian terminal fixed that.
+My Lenovo Tab M10 FHD (TB-X605LC, from 2019) was gasping for memory before I'd even opened an app. I only use it for reading books. It shouldn't be that hard. An afternoon of tinkering from my Linux computer fixed it.
+
+*The story is up top. The exact commands, for anyone with the same tablet, are in the annexure at the end.*
 
 {{< figure src="/images/notes/android.jpg" alt="Lenovo TB-X605LC showing Magisk installed and memory status normal" >}}
 
 ## The Problem
 
-2GB RAM in 2026. Android 9. Google Play Services alone wants 1.2GB at baseline. The lag wasn't slow CPU — it was constant process churn as the OS killed and restarted background apps under memory pressure.
+2GB of memory in 2026. Android 9. Google's background services alone want more than half of that. The tablet wasn't slow because of its processor. It was slow because Android kept shutting apps down to make room, then starting them up again, over and over. Like a tiny flat with too many relatives.
 
-The fix was already baked into the kernel: zRAM — a compressed swap disk that lives entirely in RAM. The driver was compiled in, the block device was present, nothing was switched on. Root was the only thing between that and a usable 1GB of compressed swap.
+The fix was already inside the tablet. It has a feature called zRAM that squeezes memory to fit more in, like vacuum-packing your winter clothes. It was built in and ready, just never switched on. The only way to switch it on was to "root" the tablet, which means giving myself full control over it.
 
 ## Quick Wins Without Root
 
@@ -49,7 +51,7 @@ After:
 Total RAM: 1,880,248K  (status normal)
 ```
 
-`status normal` means Android is no longer in crisis mode. It's the same hardware — the OS is just no longer thrashing under memory pressure every time a background process stirs.
+Same tablet, same memory, but Android is no longer in a permanent panic. The relatives have been vacuum-packed.
 
 Boot time is still ~2 minutes. That's hardware init — the touchscreen firmware sequencing alone accounts for most of it. Not worth chasing.
 
@@ -57,7 +59,7 @@ Boot time is still ~2 minutes. That's hardware init — the touchscreen firmware
 
 ## WiFi Recovery via EDL Reflash
 
-One day later the WiFi toggle greyed out entirely — unresponsive on the screen and via ADB. Known issue on the TB-X605LC with Android 9: the WiFi driver stack corrupts silently, often after an OTA or hard reset cycle. Bluetooth still worked, which confirmed the hardware (Qualcomm WCN3620 combo chip) was fine.
+One day later, of course, the WiFi switch greyed out entirely and wouldn't respond. Pride, fall, and so on. Known issue on the TB-X605LC with Android 9: the WiFi driver stack corrupts silently, often after an OTA or hard reset cycle. Bluetooth still worked, which confirmed the hardware (Qualcomm WCN3620 combo chip) was fine.
 
 Software fixes exhausted in order: ADB wifi toggle, airplane mode cycle, wpa_supplicant restart, wiping `/data/misc/wifi/*`, network settings reset. None of them brought the toggle back.
 

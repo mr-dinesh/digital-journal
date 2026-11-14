@@ -3,36 +3,32 @@ title: "Vibecoding 002 — I Rebuilt Winamp's Visualizer in a Browser Tab"
 date: 2026-03-15
 tags: ["vibecoding", "audio", "webgl", "browser"]
 aliases: ["/writing/vibecoding_day002/", "/writing/vibecoding-002-browser-audio-visualizer/"]
-description: "Used Claude to build VIZMIX — a Winamp-inspired 3D audio visualizer in the browser with five visualization modes, live mic input, and trippy WebGL effects."
+description: "Used Claude to build VIZMIX — a Winamp-inspired 3D audio visualizer in the browser with five visualization modes, live mic input, and trippy effects."
 ---
-### VIZMIX — a Winamp-inspired 3D audio visualizer for the browser
+### VIZMIX: Winamp's dancing lights, in a browser tab
 
 *Project #2 of the 100 Vibe Coding Projects challenge*
 
-The prompt was simple: build something that visualises music the way Winamp used to — but in a browser tab, using X, Y and Z axes instead of a flat frequency bar. Claude took that constraint seriously.
+If you used a computer around 2000, you remember Winamp and the hypnotic patterns that danced along to your MP3s. I wanted that back, but in a browser tab and in 3D. Claude took the brief more seriously than I did.
 
-The result is **VIZMIX**: five 3D visualisation modes (classic frequency bars, a dual waveform, a waterfall cascade, a particle sphere that deforms to the beat, and an infinite zooming tunnel), six colour palettes, and a handful of live effects — trippy hue shifts, bloom brightness, mirror symmetry, and auto-orbit. Drop in any audio file or switch to live mic input. Control sensitivity, speed, and camera angle in real time.
+The result is **VIZMIX**: five ways to watch music (bouncing bars, a wavy line, a waterfall, a ball that throbs with the bass, and an endless tunnel), six colour schemes, and a few knobs for extra trippiness. Drop in a song or let it listen through your microphone. Then watch it and feel about fifteen again.
 
 [Source code on GitHub](https://github.com/mr-dinesh/Vibecoding_002_VIZMIX--Winamp-inspired-3D-audio-visualize/tree/main)
 
 ### What broke
 
-SPHERE and TUNNEL — the two most ambitious modes — don't render correctly on all hardware. SPHERE loses its bass-deformation response on lower-end GPUs; TUNNEL stutters at high frame rates due to a depth buffer issue. Both have the same root cause: the WebGL implementation assumes consistent frame timing that mobile browsers and integrated graphics don't always deliver. The fix requires delta-time calculations. Version 2 problem.
-
-BARS and WAVE work reliably. FALL is somewhere in between. If you're demoing this, stick to BARS.
+The two fanciest modes, the ball and the tunnel, sulk on slower computers and phones. They assume a fast machine, and on a modest laptop they stutter. Fixing that is a job for version 2. If you're showing it off to someone, stick with the bars. They never let you down.
 
 ### What I learned
 
-Claude generates functional WebGL code, but it codes to a happy path — a well-spec'd desktop browser on good hardware. Edge cases (mobile Safari, integrated graphics, high-DPI displays) aren't in scope unless you put them in scope explicitly. The lesson: be specific about the target environment in the initial prompt, not after something breaks.
+The AI writes for the best case: a good computer with a modern browser. If you want it to work on your aunt's old phone, you have to say so at the start, not after it breaks.
 
-Also: constraints drive creativity. "Use X, Y, Z axes" in the original prompt is what forced the 3D approach instead of the standard flat frequency bars you see everywhere. The best part of the output came directly from the most specific part of the prompt.
+Also, a specific request makes for a better result. I asked for "up, across and into the screen" instead of flat bars, and that one line is why it looks interesting. The best part of the output came from the most specific part of my ask.
 
 ### The security angle
 
-Building this was a reminder that the browser's permission model is doing real security work, even on something as harmless as a music visualiser. The Web Audio API and WebGL both require a user gesture to initialise — no page can start capturing audio or rendering 3D graphics without the user interacting first. Same reason autoplay video is blocked by default.
+A web page can't start listening to your microphone until you click something. That felt like a nuisance while I was building this. It's actually the same rule that stops a dodgy site from quietly switching on your mic. A small bit of friction that earns its keep.
 
-It's easy to dismiss these browser restrictions as friction. They're not. They're the same security boundary that stops a malicious page from silently activating your microphone. Worth appreciating.
-
-### Interesting asides
-- [Pixabay](https://pixabay.com/music/) has a surprisingly good library of royalty-free music for testing.
-- [Audio Coffee Background Visualization](https://pixabay.com/music/upbeat-melodic-background-visualization-120919/) — good test track for the waterfall mode.
+### Asides
+- [Pixabay](https://pixabay.com/music/) has a good library of free music for testing.
+- [Audio Coffee Background Visualization](https://pixabay.com/music/upbeat-melodic-background-visualization-120919/) looks great in the waterfall mode.

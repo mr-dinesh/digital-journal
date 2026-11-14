@@ -3,57 +3,42 @@ title: "Vibecoding 012 — Reading The Wealth of Nations with a Paragraph-Level 
 date: 2026-04-09
 tags: ["vibecoding", "python", "flask", "gemini", "llm", "books"]
 aliases: ["/writing/vibecoding-012-wealth-of-nations-reader/"]
-description: "A personal reader app for Adam Smith's Wealth of Nations — click any paragraph, ask Gemini questions about it in the full chapter context. Built in one session with Claude Code."
+description: "A reading app for Adam Smith's Wealth of Nations: click any paragraph and ask an AI about it, with the whole chapter in view. Built in one sitting with Claude Code."
 ---
 ![Wealth of Nations Reader](/images/writing/vibecoding-012-wealth-of-nations-reader.jpg)
 
-### Building a personal AI reader for The Wealth of Nations
+### My own AI reading companion for The Wealth of Nations
 
 *Project #12 of the 100 Vibe Coding Projects challenge*
 
 ---
 
-I've been meaning to read Adam Smith's *The Wealth of Nations* for years. It sits in the cultural background of every economics conversation — the invisible hand, the division of labour, the theory of wages — but the full 900-page text is dense and I kept bouncing off it.
+I've been meaning to read Adam Smith's *The Wealth of Nations* for years. It hums in the background of every conversation about economics: the invisible hand, the division of labour, wages. But it's 900 dense pages, and I kept bouncing off it. Repeatedly.
 
-Then I saw [Andrej Karpathy's tweet](https://x.com/karpathy/status/1886192184808149383) about building a focused LLM reading tool. The idea clicked: what if I could read the book and ask questions *in context* — not "what does Adam Smith say about wages" as a generic ChatGPT query, but "explain this specific paragraph, in the context of this chapter I'm currently reading"?
+Then I saw [Andrej Karpathy's tweet](https://x.com/karpathy/status/1886192184808149383) about building an AI tool just for reading. That clicked. What if I could ask questions as I read? Not "what does Adam Smith think about wages?", which any chatbot can waffle about, but "explain *this* paragraph, given the chapter I'm in".
 
-That's the whole product. A reader where every paragraph is a prompt waiting to happen.
+That's the whole idea. A reader where every paragraph is a question waiting to be asked.
 
 ---
 
-### The stack
-
-- **Python 3 + Flask** — backend API and page rendering
-- **Google Gemini 2.0 Flash** — fast, large-context LLM for Q&A and summarisation
-- **Project Gutenberg** — public domain plain text of the book
-- **Vanilla HTML/CSS/JS** — three-panel reader UI, no framework
-- **Render.com** — free hosting
-- **Cloudflare Tunnel** — for future custom domain setup
-
 ### How it works
 
-Four routes power the backend: two for fetching chapter data (`/api/chapters` for the list, `/api/chapter/<id>` for the text), one for paragraph Q&A, and one for full chapter summaries.
+Click a paragraph and a panel slides in where you can ask about it. The AI gets the whole chapter, the paragraph you picked, and your question. So it can see the argument around a sentence, not just the sentence on its own. There's also a button that summarises a whole chapter.
 
-The context window for each question is deliberately generous: the full chapter text, the specific paragraph selected, and the user's question. Gemini can see *why* a passage says what it says — the full argument around it, not just the sentence in isolation.
+The book itself comes free from Project Gutenberg, split into its 33 chapters.
 
-A small parser splits the Project Gutenberg text into 33 chapters and their paragraphs at setup time. After that, everything is read from a single data file loaded into memory when the app starts.
+### How it looks
 
-### The UI
+Three columns: the chapters down the left, the text in the middle on cream paper, and the question panel on the right. I wanted it to feel like reading a nicely printed book, not filling in a form. Old-style fonts, warm colours, and a little amber line beside the paragraph you're asking about.
 
-Three panels: a dark sidebar with chapters grouped by Book, a parchment-toned reading area, and a Q&A panel that slides in from the right when you click a paragraph.
+### What happened when I actually read it
 
-The design leans into the editorial aesthetic — Playfair Display headings, EB Garamond body text, cream backgrounds, amber accents. It should feel like reading a well-designed book, not a SaaS dashboard.
+Adam Smith is subtler than his reputation. The famous "invisible hand" shows up exactly *once*, almost in passing. The good stuff is in his ideas about wages in Book I, and in Book V, which reads surprisingly modern on what governments should spend money on and how to tax.
 
-Selected paragraphs get an amber left-border highlight. The Q&A panel shows the paragraph quoted at the top. Ctrl+Enter submits a question.
-
-### What actually happened while reading
-
-Adam Smith is more nuanced than his reputation. The "invisible hand" appears *once* in Book IV, almost in passing. The real substance is in Book I's theory of wages and Book V's surprisingly modern analysis of public expenditure and taxation.
-
-Having Gemini explain the historical context — mercantilism, physiocracy, the Navigation Acts — made chapters readable that would have otherwise needed hours of Wikipedia cross-referencing. I've read further into this book in the past week than in the previous five years of good intentions.
+Having the AI explain the background, like what people believed about trade back then and which laws he was arguing against, made chapters readable that would otherwise have sent me down hours of Wikipedia. I got further into this book in one week than in five years of good intentions. Which says more about my good intentions than about the book.
 
 ### The build
 
-The whole thing was built with Claude Code in a single session — from the book parser through the Flask backend, the three-panel UI, auth, GitHub push, and Render deployment. The only manual step was filling in the API key.
+Claude Code built the whole thing in one sitting, from splitting up the book to putting it online. My only job was pasting in the AI key. I'm not sure that counts as a job.
 
 **Source:** [github.com/mr-dinesh/Wealth_of_Nations_Reader_App](https://github.com/mr-dinesh/Wealth_of_Nations_Reader_App)

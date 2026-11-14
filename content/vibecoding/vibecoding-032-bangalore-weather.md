@@ -17,47 +17,43 @@ Open sesame: [mrdee.in/weather](https://mrdee.in/weather/)
 
 ## Where the numbers come from
 
-Karthik S runs [weather.karthiks.co](https://weather.karthiks.co/). Every morning his R script pulls hourly weather data for Bangalore back to 1981. It draws one chart for the year so far and asks Claude Haiku for three lines of commentary. It is a good chart. But it is one chart, and I kept wanting to ask it other questions. How has this monsoon gone? Was last Tuesday unusual? Is this October like 2005?
+Karthik S runs [weather.karthiks.co](https://weather.karthiks.co/). Every morning it collects Bangalore's weather going back to 1981 and draws one good chart of the year so far. It's a lovely chart. But it's one chart, and I kept wanting to ask it other things. How has this monsoon gone? Was last Tuesday odd? Is this October like 2005? The chart, reasonably, had no opinion.
 
-His [repo](https://github.com/skthewimp/bangalore-weather) is MIT-licensed, and the daily run also publishes a small CSV. It has one row per day with the high, the low and the rain. That file is enough to answer all of those questions in the browser.
+Karthik also shares the raw numbers, free to use: one line per day, with the high, the low and the rain. That turned out to be all I needed to ask my own questions.
 
 ## What you can change
 
-**The window.** The last 7, 14, 30, 45 or 90 days. The year to date. The southwest monsoon (June to September) or the northeast one (October to December). Or any range up to three years.
+**The window.** The last week, month or three months. The year so far. Either monsoon. Or any stretch you like, up to three years.
 
-**A single day.** Pick a date and you get its high, low and rain. You also get its rank among the same date in every year. On 9 November the high was 27.9°. That made it the 11th warmest 9 November of 46. A row of dots shows every year's value, with this year's marked.
+**A single day.** Pick a date and see how it stacks up against the same date in every other year. 9 November this year hit 27.9°, the 11th warmest 9 November out of 46. A row of dots shows all the years at once, with this one picked out.
 
-**The panels.** Temperature, daily rain, cumulative rain, the gap from normal, and a set of counts and streaks. Hide any of them and put the rest in any order.
+**The charts.** Temperature, rain, rain so far, how far from normal, and a few counts and streaks. Hide the ones you don't care about and shuffle the rest.
 
-**Years to compare.** Add up to three past years. They show up as lines on the temperature and cumulative rain charts.
+**Years to compare.** Lay up to three past years over this one.
 
-Everything you choose goes into the address bar. A link brings back the same view.
+Whatever you pick is saved in the link, so you can send someone exactly the view you're looking at.
 
 ## What the charts mean
 
-I kept Karthik's definitions so the page agrees with his chart. "Normal" is the median high or low for that calendar date across all the years. "Record" is the highest high or lowest low for that date in any other year. A bar that pokes past the record band turns red.
+"Normal" is the typical high or low for that date, taken across all 46 years. "Record" is the hottest or coldest that date has ever been. When a day beats the record, its bar turns red.
 
-The last 45 days to 9 November make the point. Highs ran 1.3° above normal. Thirty-eight of the 45 days beat the normal high. Six set a record for their date.
+The last 45 days up to 9 November say it plainly. Days ran warmer than normal 38 times out of 45, and six of them set records. So the grumbling isn't all nostalgia.
 
 ## Two looks
 
-I mocked up two designs from the same data. One looks like a printed almanac: cream paper, serif type, ink-brown bars. The other looks like a weather station readout: dark, monospaced, amber bars. I asked which one to build, and the answer was both. So there's a switch in the corner. It starts on the one that matches your phone's light or dark setting and remembers your choice.
+I sketched two designs. One is a printed almanac: cream paper, old-fashioned type, brown ink. The other is a weather-station screen: dark, glowing amber. I asked which one to build and was told "both". That's a fair answer, and it's also how I ended up building two websites. There's a switch in the corner, and it starts on whichever matches your phone's light or dark setting.
 
-The comparison years needed three line colours that people with colour blindness can tell apart in both looks. I checked candidates with a colour-contrast script instead of trusting my eye. My first pick for the dark look failed. Pink and teal look different to most people. Under red-green colour blindness they were almost the same colour. Blue, magenta and olive passed in both looks.
+The comparison lines needed three colours that people with colour blindness can tell apart. My first pick, pink and teal, looked great to me. To someone with the most common kind of colour blindness they were the same colour. I'm glad I checked with a tool instead of trusting my eyes. Blue, magenta and olive work for everyone.
 
-## Things that went wrong
+## The bumps
 
-**The browser wasn't allowed to read the file.** Karthik's server doesn't send a CORS header. That header is how a server tells browsers that pages on other sites may read its files. Without it, a page on mrdee.in can't fetch the CSV, even though anyone can download it. The fix is a tiny Cloudflare function on my site. It fetches the file on the server, where that rule doesn't apply, and hands it to the page. It keeps a copy for three hours, so Karthik's server sees only a few requests a day however many people visit. If his server is down, the page gets the last good copy.
+The main snag was that Karthik's site doesn't let other websites read its files directly. Anyone can download them, but a web page can't fetch them on its own. So my site fetches the file itself and passes it along. It also keeps a copy for a few hours, so his server isn't hammered, and still has something to show if his server is down.
 
-**The copy on GitHub had gone stale.** GitHub does send the CORS header, so its copy of the CSV looked like an easy way out. But that copy stopped updating on 14 October. The live site was current to yesterday. I used the live site.
-
-**29 February was ranked against 57 years.** I'd grouped 29 February with 28 February so leap years wouldn't leave gaps in the normals. That was fine for the normals. But the day card then ranked a leap day against every 28 February too. It now compares a leap day only with the other ten.
-
-**"0.1 mm" next to "dry".** 9 November had 0.05 mm of rain. One decimal place rounds that to 0.1, which counts as a rainy day. Then the rank line called the day dry. Anything under 0.1 mm now shows as "trace".
+The rest were small and a bit silly. My page called one day both "rainy" and "dry", because of a twentieth of a millimetre of drizzle. Leap days were being compared with the wrong days. Both are fixed, and leap-day babies everywhere can rest easy.
 
 ## What I took away
 
-The data was the easy part. Karthik had already done the hard work of fetching, cleaning and publishing 45 years of it. My part was the questions he hadn't built a chart for, and a short fix for a header his server doesn't send.
+Karthik did the hard part: collecting and cleaning 45 years of weather. I mostly asked questions and built a few charts to answer them. As side projects go, that's a good deal.
 
 *Data: Oikolab, via [Karthik S](https://github.com/skthewimp/bangalore-weather) (MIT) · Live: [mrdee.in/weather](https://mrdee.in/weather/)*
 

@@ -1,16 +1,16 @@
 ---
 title: "Vibecoding 013 — Two Years of WhatsApp Links, Sorted and Searchable"
 date: 2026-04-10
-description: "I built a Flask web app that extracts, categorises, and archives every link ever shared in a WhatsApp group — 4,094 unique URLs across two years of conversation, now sorted, categorised, searchable, and downloadable as Excel."
+description: "I built a tool that pulls every link out of a WhatsApp group chat — 4,094 of them over two years — sorts them into categories, and lets you search them or download a spreadsheet."
 tags: ["vibecoding", "python", "flask", "whatsapp", "data", "tools"]
 aliases: ["/writing/vibecoding-013-link-archive/"]
 ---
 
 ![Link Archive](/images/writing/vibecoding-013-link-archive.png)
 
-The Clear Writing Community WhatsApp group has been running for over four years. Amit Varma started it, and it does what it says — a few hundred people sharing things worth reading. Good articles, podcast episodes, essays, the occasional book. I've been in it since a little more than two years.
+The Clear Writing Community WhatsApp group has been going for more than four years. Amit Varma started it, and it does what the name says: a few hundred people sharing things worth reading. Articles, podcast episodes, essays, the odd book. I've been in it for a little over two years.
 
-The problem is WhatsApp. Every link is buried in chat. The good ones get scrolled past, the useful ones are impossible to find again, and there's no way to answer the most obvious question: what does this group actually share?
+The trouble is WhatsApp. Every link gets buried in the chat. The good ones scroll away, and the useful ones are impossible to find again. And there's no way to answer the obvious question: what does this group actually share?
 
 This week I built something to find out.
 
@@ -20,33 +20,25 @@ This week I built something to find out.
 
 ## The build
 
-The first conversation with Claude was vague: *how do I create an Excel sheet of all links from a WhatsApp group chat?*
+My first question to Claude was vague: *how do I make an Excel sheet of all the links in a WhatsApp group chat?*
 
-The answer started with Google Drive. The export was in a folder there, so the obvious first plan was OAuth, the Drive API, download the file programmatically. I started going down that road — credentials.json, scopes, token refresh — and then mentioned the zip file was already on my Desktop.
+The chat export was in my Google Drive, so the AI started planning how to get permission to read my Drive, with keys and logins and settings. I went along with it for a while. Then I mentioned that the file was also sitting on my desktop.
 
-That was the moment I like best about vibecoding. The entire OAuth layer evaporated in one exchange. We pivoted to reading the zip directly, the script got simpler, and the thing that had felt like infrastructure became a five-line function. The Google Cloud Console setup that would have taken thirty minutes never happened. The exports go in as a zip, the text comes out.
-
----
-
-## Parsing WhatsApp exports
-
-WhatsApp exports are messier than they look. The format varies by operating system (Android vs iOS), locale (date order), and time convention (12h vs 24h). A message that starts a new line without a timestamp is a continuation of the previous message, not a new one.
-
-The naive approach — split by line, look for timestamps — falls apart immediately on multi-line messages. The right approach is to find message *boundaries* first: the parser looks for the pattern of a timestamp, a dash, and a sender name, then treats everything up to the next one as the message body. URLs are extracted from there, stripped of trailing punctuation, and deduplicated across the entire chat.
-
-Date parsing required ten different format variations to handle all the combinations WhatsApp produces across Android, iOS, 12h and 24h clocks, and regional date ordering. The group is based in India, with members from across the globe, so day/month/year with a 12-hour clock is what actually appeared — but you don't know that until you try and see what succeeds.
+That's my favourite vibecoding moment. All that setup disappeared in one message. The program now just opens the file on my desktop. Half an hour of fiddling with Google's settings never happened, because I finally said something obvious I should have said at the start.
 
 ---
 
-## Categorising 4,094 links
+## Reading WhatsApp's export
 
-Once the extraction was working, the obvious next step was categories. The data was telling a clear story by domain — `open.substack.com` dominated, followed by `youtu.be`, `x.com`, `youtube.com`. The question was how many distinct buckets made sense.
+WhatsApp exports are messier than they look. Dates are written differently on Android and iPhone, in different countries, and with 12- or 24-hour clocks. And a long message spread over several lines has to be kept together, not chopped up. Once the program could tell where one message ends and the next begins, pulling out the links was easy. Duplicates are removed, so each link appears once.
 
-Twenty-two, as it turned out.
+---
 
-The categorisation logic is a priority-ordered list — YouTube first, then Substack, then Indian news domains, then international news, and so on down through twenty-two buckets — with everything unrecognised falling into a catch-all at the end. First match wins, and the order matters.
+## Sorting 4,094 links
 
-Here's what two years of the Clear Writing Community actually shares:
+The links fell into 22 groups by website: YouTube, Substack, Indian news, international news and so on, with a catch-all at the end for the rest.
+
+Here's what two years of the Clear Writing Community shares:
 
 | Category | Links |
 |---|---|
@@ -63,39 +55,29 @@ Here's what two years of the Clear Writing Community actually shares:
 | Medium | 45 |
 | Cricket / Sports | 19 |
 
-The Substack number surprised me. Nearly 1,500 newsletter links from a group of a few hundred people, over four years. It's a writing group, so it tracks — half the members probably have Substacks — but the sheer volume clarifies something about how independent writing has moved in the last few years. The IndieWeb is a lot of Substacks now.
+The Substack number surprised me. Nearly 1,500 newsletter links from a few hundred people. It's a writing group, so half the members probably have a Substack, but it says something about where independent writing lives now.
 
-The "Miscellaneous" category is the honest one. 983 links that matched no known platform — individual writers' personal sites, domain names I didn't recognise, things that have no obvious home. In another project I'd go through those by hand. For now, the category name is accurate enough.
+"Miscellaneous" is the honest category: 983 links that don't belong to any big platform. People's personal sites, websites I'd never heard of. One day I'll go through them by hand. One day.
 
 ---
 
-## Adding the UI
+## Giving it a proper face
 
-The CLI script worked — run it, get an Excel file — but there was no polish. A tool this useful deserved a proper interface.
+The first version worked: run it, get a spreadsheet. But something this useful deserved a nicer face.
 
-The design direction committed early: dark, editorial, literary. This is a writing community. The UI should feel like it belongs in that world. No dashboards, no pastel gradients, no generic data-tool aesthetic.
-
-The font pairing: **Cormorant Garamond** italic for the display heading (*Link Archive*, in italic, with the word "Archive" in green), **Syne** for UI labels and buttons, **JetBrains Mono** for URLs, dates, and counts. Three typefaces that don't fight each other but also clearly aren't defaults.
-
-The upload page is a single centered drop zone on a near-black grid background. Animated corner brackets appear on hover. The heading is large, italic, unhurried. The interface communicates: this is a tool that takes its subject seriously.
-
-The results page has a sticky nav showing the total count and a Download Excel button that's always accessible, a horizontal scrolling category strip where each category card carries its brand colour (YouTube red, WhatsApp green, Substack orange), a live search that filters across URL, sender, and message simultaneously, and 75-row-per-page pagination with page jumping.
-
-The whole thing runs on vanilla HTML, CSS, and JavaScript — no React, no build step, no bundler. The data is embedded as JSON in the template and the table is rendered client-side. With 4,094 links that's about 1MB of JSON, which a modern browser handles without blinking.
+This is a writing community, so I wanted it to feel literary: dark background, elegant italic heading, no pastel dashboard look. You drop the WhatsApp file onto the page and get a results page with a count of links, a row of colourful category cards, a search box that searches everything at once, and a button to download the spreadsheet.
 
 ---
 
 ## What vibecoding this felt like
 
-The iterations on this project were all about refinement, not direction.
+The direction was clear from the first message. Everything after that was polishing. The Google Drive detour was a real plan that got dropped when a simpler one turned up. The name of the catch-all category went through three versions, one message each. The design was a paragraph from me and one go from the AI.
 
-The direction was clear from the first exchange: take a WhatsApp export, get me a list of links. Everything after that was a conversation about how to do that better. The Google Drive detour was a real plan that got abandoned when a simpler one appeared. The category naming went through three rounds — "Blog / Personal Site," "Miscellany," "Blog / Personal / Miscellaneous" — each iteration from a single message. The UI design direction was specified in a paragraph and executed in one pass.
+What's different from coding the old way is that the AI keeps the whole conversation in mind. When I renamed a category, everything that used the old name changed too. When the Drive plan was dropped, all of it went. No leftover bits lying around.
 
-What makes this different from writing code with a Stack Overflow tab open is the coherence. Each iteration is aware of all the previous ones. When the category name changed, everything that referenced it changed. When the zip turned out to be local, the OAuth scaffolding was removed cleanly. There's no orphaned code from abandoned approaches.
+Honestly, this is a simple tool: one small program, no accounts, no database. Other projects in this series are more ambitious. What this one shows is how short the gap has become between "I wish I could see all the links from my WhatsApp group" and "here are 4,094 of them, sorted, ready to download". It took an afternoon.
 
-The honest assessment of this project: it's a well-executed utility script with a good web UI. It's not a complex system — one file, one Flask app, no database, no auth. For a portfolio, the other projects in this series have more architectural range. What this one shows is that the gap between "I want to surface all the links from my WhatsApp group" and "here is a working web app that does that with 4,094 categorised links available for download" can close in a single afternoon.
-
-That gap used to be bigger.
+That gap used to be much bigger.
 
 ---
 

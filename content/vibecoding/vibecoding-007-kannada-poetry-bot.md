@@ -8,40 +8,34 @@ description: "Built a Mastodon bot to post DVG's Mankutimmana Kagga — 945 vers
 ![image](/images/writing/vibecoding-007-kaggabot-mastodon.png)
 
 
-### Building a bot to post Mankutimmana Kagga verses to Mastodon
+### A bot that posts Mankutimmana Kagga to Mastodon
 
-**D.V. Gundappa's** *Mankutimmana Kagga* — 945 verses of Kannada philosophy, written in the 1940s — deserves a wider audience. So I built a Mastodon bot to post one verse at a time, twice a day, complete with transliteration and English explanation. Here's how it came together.
+**D.V. Gundappa's** *Mankutimmana Kagga* is 945 short verses of Kannada philosophy, written in the 1940s. More people should read it. So I built a bot that posts one verse at a time, twice a day, on Mastodon, with the Kannada, a version in English letters, and an English explanation.
 
-### The prompt
+### What I asked for
 
-The project started with a simple ask to Claude: *"Create a Mastodon bot to post Kannada Mankutimmana Kagga verses with a short explanation, configurable on how often to post."* From that single sentence, Claude scaffolded a complete Python project — `kagga_bot.py`, `config.py`, `kagga_verses.py`, and a scraper to pull all 945 verses from a public repository.
+I started with one sentence to Claude: *"Create a Mastodon bot to post Kannada Mankutimmana Kagga verses with a short explanation, configurable on how often to post."* From that it built the whole thing, including a tool to collect all 945 verses from a public source.
 
-### Features
+### What it does
 
-- **All 945 verses** with Kannada text, Roman transliteration, and English explanation
-- **Configurable schedule** — minutes, hours, or daily at a set time
-- **Sequential or random** verse ordering, with persistent state across restarts
-- **Smart 500-char handling** — tries full post, falls back to short tags, then posts as a thread if needed
-- **Theme filtering** — post verses by theme (Wisdom, Death, Love, etc.)
-- **Dry-run mode** for testing without posting
+- All 945 verses, in Kannada, in English letters, and explained in English
+- Posts as often as you like
+- Goes in order or picks at random, and remembers where it got to
+- If a verse is too long for one post, it shortens it or splits it into a thread
+- Can stick to one theme: wisdom, death, love and so on
+- A practice mode that doesn't actually post
 
 ### What broke
 
-**Literal newlines in the verse data.** The scraper pulled all 945 verses from a public repository and generated `kagga_verses.py` automatically. What it didn't handle was multi-line verse text — the strings had literal newline characters embedded inside them, which Python reads as a syntax error. The file wouldn't even load. Fix: a `sed` pass to replace literal newlines inside strings with `\n` escape sequences before import.
+Mostly small things, each annoying in its own way. Verses that run over several lines confused the program at first. Kannada letters take more room than English ones, so verses that looked short were too long for Mastodon. And the Kannada hashtag `#ಕಗ್ಗ` got mangled, because Mastodon didn't understand the little mark that joins Kannada letters. The posts now carry `#Kagga` as well. Less poetic, but at least it works.
 
-**The 500-character limit is stricter than it looks.** Mastodon's limit is 500 characters, but Kannada Unicode characters consume multiple bytes each. A verse that *looks* short can blow past the limit. The first trimming logic counted characters naively. The fix required counting bytes, not characters, and building a cascade: try the full post → fall back to a shortened version with just the Kannada text and a note → post as a thread if it still won't fit.
-
-**The Kannada hashtag silently broke.** `#ಕಗ್ಗ` uses a virama (the joining character that combines consonants in Kannada script). Mastodon's hashtag parser stripped it, turning the hashtag into something unrecognisable. The workaround was switching to a transliterated hashtag `#Kagga` alongside the Kannada version — less authentic, but actually clickable.
-
-**PythonAnywhere's free tier blocked the Mastodon instance.** The original plan was to host the bot on PythonAnywhere and post to `ioc.exchange` (the infosec Mastodon instance). PythonAnywhere's free tier uses a proxy that blocks outbound connections to many smaller Mastodon instances. The fix was switching to `mastodon.social`, which is large enough to be on PythonAnywhere's allowlist.
+The free hosting service I first picked also refused to talk to the smaller Mastodon server I'd chosen. So the bot moved to mastodon.social, the big one.
 
 ### What I learned
 
-Encountering problems are a part of the process. 
-Debugging them is part of the learning process.
+Things going wrong is part of the process. Fixing them is where I actually learn something. At least that's what I tell myself at midnight.
 
-The bot is live and posting.
-Check it out on [Mastodon](https://mastodon.social/@browncoolie)
+The bot is live and posting. See it on [Mastodon](https://mastodon.social/@browncoolie).
 
 ### Bot source code on GitHub
 [Repo link here](https://github.com/mr-dinesh/Kagga-Bot)

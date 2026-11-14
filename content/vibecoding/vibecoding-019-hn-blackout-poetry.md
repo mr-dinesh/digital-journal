@@ -1,24 +1,24 @@
 ---
 title: "Vibecoding 019 — HN Blackout Poetry: Found Poems from Tech Headlines"
 date: 2026-04-18
-description: "Blackout poetry from the Hacker News front page — an LLM picks the surviving words, the rest gets erased."
+description: "Blackout poetry from the Hacker News front page: an AI picks the words that survive, and the rest get inked out."
 tags: ["vibecoding", "llm", "poetry", "javascript", "hacker-news"]
 aliases: ["/writing/vibecoding-019-hn-blackout-poetry/"]
 ---
 
-Austin Kleon takes a newspaper page and a black marker, and turns the news into poetry by erasing most of it. What's left — the surviving words — becomes a found poem. He's been doing this for years. It's a surprisingly moving art form.
+Austin Kleon takes a newspaper page and a black marker and turns the news into poetry by crossing out most of it. The words left standing become a poem. He's been doing it for years, and it's surprisingly moving.
 
-I wanted to do the same thing with Hacker News.
+I wanted to try it on Hacker News, the website where programmers share and argue about tech news.
 
 ## The idea
 
-HN headlines have a particular texture. They're dense with jargon, proper nouns, and compressed meaning. "Smol machines." "PanicLock." "Casus Belli." "Hyperscalers." These aren't ordinary words — they carry whole worlds of context. When you strip away the surrounding noise, you sometimes find something strange and resonant.
+Hacker News headlines have their own flavour. They're stuffed with jargon, product names and squashed-up meaning: "Smol machines." "PanicLock." "Casus Belli." "Hyperscalers." Pull them out of context and they sometimes turn strange and lovely.
 
-The tool fetches the top 20 stories from the HN API, sends the headlines to an LLM with a blackout-poet prompt, and asks it to pick 10–15 words that form a poem. Everything else gets blacked out, animated with a CSS marker-stroke effect, word by word. The survivors appear on the right as a found poem with a title.
+The page grabs today's top 20 headlines and asks an AI to play blackout poet: pick 10 to 15 words that make a poem. Everything else gets struck through, word by word, with an animated marker. The surviving words appear on the right as a poem with a title.
 
 ## The output
 
-The first real run produced this, titled **"Fevered Machines"**:
+The first real run gave me this, titled **"Fevered Machines"**:
 
 > lunar  
 > hay  
@@ -34,70 +34,41 @@ The first real run produced this, titled **"Fevered Machines"**:
 > Casus  
 > Belli
 
-That's from an actual HN front page. "Hay fever" and "gunpowder" came from a history article. "Smol machines" from an AI piece. "PanicLock" from a security story. "Casus Belli" from geopolitics. Stripped of context and placed next to each other, they become something else entirely.
+That's from a real front page. "Hay fever" and "gunpowder" came from a history article, "Smol machines" from an AI story, "PanicLock" from a security story, "Casus Belli" from world politics. Side by side, they become something else entirely. I've written worse poems myself, with more effort.
 
 ## How it works
 
-It started as a single HTML file — same pattern as [yaraweave](/vibecoding/vibecoding-017-yaraweave) and [argus](/vibecoding/vibecoding-016-argus). No backend, no build step. Open in a browser.
-
-The LLM prompt asks the model to act as a blackout poet in the style of Austin Kleon. It must return exactly the words as they appear in the headlines (preserving capitalisation), output valid JSON, prefer unexpected juxtapositions, and avoid mundane connectives. The JSON comes back as `{ "title": "...", "poem": ["word1", "word2", ...] }`.
-
-Then there's a tokenizer that splits every headline into word tokens. A matcher finds each poem word in the token list: exact match first, then case-insensitive, then strip-punctuation fallback. Non-matching tokens get blacked out with a staggered CSS animation (a `marker-stroke` keyframe that sweeps from transparent to black). The poem words slide in on the right panel one by one, timed to appear partway through the blackout animation.
-
-The original version ran against the HN Firebase API (public, no key needed) and either Groq (`llama-3.3-70b-versatile`) or Gemini Flash 2.0. Both have free tiers. Keys were stored in `localStorage`. (See Update 3: it now uses Workers AI and needs no key.)
+The AI is told to act like Austin Kleon, use the headline words exactly as written, and prefer surprising combinations over boring little joining words. The page then finds each chosen word in the headlines and inks out everything else, a stroke at a time, while the poem slides in on the right.
 
 ## The design
 
-I wanted it to feel like a real newspaper page meeting a dark digital canvas. The left panel — the "newspaper" — uses a cream/newsprint background, IM Fell English (an old-style serif), faint horizontal rules, and thick black marker strokes for the redacted words. The right panel is dark with a faint gold grid, Playfair Display italic for the poem, and words that slide in from the left with a fade.
+I wanted it to feel like an old newspaper meeting a dark screen. On the left, cream newsprint, an old-fashioned typeface, faint ruled lines and thick black marker strokes. On the right, a dark panel with the poem in elegant italics.
 
-The masthead reads: *Words found. Meaning made. The rest, erased.*
+The masthead says: *Words found. Meaning made. The rest, erased.*
 
 {{< figure src="/images/vibecoding/hn-blackout.jpg" alt="HN Blackout showing the newspaper panel with blacked-out headlines and the found poem 'Fevered Machines' on the right" >}}
 
 ## What surprised me
 
-The LLM is genuinely good at this. I expected it to pick safe, obvious words. Instead it goes for the strange ones: the proper nouns, the tech jargon that sounds almost mythological when isolated. "PanicLock" next to "Slop" next to "Hyperscalers" reads like a dispatch from a dystopia we're already living in.
+The AI is genuinely good at this. I expected it to play safe. Instead it goes for the odd ones: the product names and jargon that sound almost mythical on their own. "PanicLock" next to "Slop" next to "Hyperscalers" reads like a report from a dystopia we already live in.
 
-Each run is different. The headlines change daily, and even with the same headlines, temperature 0.9 produces different selections. Some runs are better than others. The bad ones are forgettable. The good ones feel like they found something real.
+Every run is different, even on the same headlines. Some poems are forgettable. The good ones feel like they found something real.
 
 ## Update — April 2026
 
-Two additions landed in a later session.
+**More pages.** Besides the top stories, you can now pick the best, newest, "Ask HN" or "Show HN" pages. Each has a mood. Ask HN gets philosophical. Show HN is full of product names that sound like spells. New is chaos.
 
-**Five HN pages.** The original only pulled Top Stories. The page selector now covers Top, Best, New, Ask HN, and Show HN. Each has its own character — Ask HN leans philosophical, Show HN is full of product names that read like incantations, New is chaotic and raw. The attribution line in the poem panel updates to match.
-
-**Five themes.** The original newsprint-and-dark look is still the default, but there are now four alternatives:
-
-- **Ink** — stark black and white, typewriter font. No compromise.
-- **Amber** — retro terminal, monochrome orange-on-black. Feels like 1983.
-- **Dusk** — moody purple and indigo. The late-night read.
-- **Times** — clean NYT broadsheet: white paper, Playfair Display, NYT blue accents. The one that looks like it belongs in a museum.
-
-Theme choice persists in `localStorage`. The coloured dots in the settings bar switch between them instantly — CSS custom properties handle all the repainting, no JavaScript needed for the actual theme application.
+**Five looks.** The newspaper look is still the default. There's also a stark black-and-white typewriter look, an orange retro computer screen straight out of 1983, a moody purple one for late nights, and a crisp broadsheet that looks like it belongs in a museum.
 
 ## Update 2 — April 2026
 
-Added client-side throttling to prevent API abuse.
-
-**30-second cooldown.** After each generation the button switches to a live countdown (`Wait 28s…`) and blocks further clicks. The cooldown survives a page refresh. It's stored in `localStorage` against a timestamp, so reopening the tab mid-cooldown picks up where it left off.
-
-**Daily limit of 10 poems per provider.** Groq and Gemini are tracked separately, each with their own counter keyed to the current date. The counter resets automatically at midnight. A usage badge in the settings bar shows the current count (`3 / 10 today`), turns amber above 70%, and red at the limit. The status bar tells you how many poems remain after each successful generation.
-
-All of this is client-side: `localStorage` only, no backend. It won't stop a determined person from opening DevTools and clearing storage, but it stops accidental rapid-fire clicking and keeps casual use within free-tier API limits.
+I added a short wait between poems and a limit of ten a day, so nobody (mainly me) burns through the free AI allowance by clicking too fast.
 
 ## Update 3 — November 2026
 
-The page no longer asks for an API key. The bring-your-own-key setup meant most visitors saw a key field, didn't have a Groq or Gemini key, and left. Gemini 2.0 Flash is also being retired, so one of the two providers was about to stop working anyway.
+The page used to ask visitors for their own AI key. Most people don't have one, saw the box, and left. One of the two AI services was also about to shut down.
 
-The LLM call now runs on Cloudflare Workers AI through a small Pages Function at `/api/poem`. The browser still fetches the headlines from the HN API, then posts them to that endpoint. The function builds the blackout-poet prompt on the server and returns the same `{ title, poem }` JSON as before. The tokenizer, matcher, animation and themes are unchanged.
-
-A few details:
-
-- **The prompt lives on the server.** The endpoint accepts only a list of headlines (up to 30, each capped at 300 characters), not a prompt. That keeps it from becoming a free general-purpose LLM proxy on my account.
-- **Two models, tried in order.** `llama-3.3-70b-instruct-fp8-fast` first, then `mistral-small-3.1-24b-instruct` if that fails. Workers AI retires models on a schedule, and this is the same fallback pattern I added to [juicesec](https://juicesec.mrdinesh.workers.dev/) after a retirement took its tutor down.
-- **Same origin.** The function is deployed with the page on Cloudflare Pages, so there's no CORS setup and no separate Worker to manage.
-
-The provider dropdown and key field are gone. The 30-second cooldown and 10-a-day limit stay, now as a single counter. They're still client-side only, so the real protection is the fixed prompt and the input caps.
+So now the page uses a free AI service from Cloudflare, the company that hosts it. No key, no box. Press the button and you get a poem. Behind the scenes the page only sends headlines, never free-form requests, so nobody can borrow it as a free chatbot on my account. And if the first AI model is unavailable, it quietly tries a second.
 
 ## Source
 

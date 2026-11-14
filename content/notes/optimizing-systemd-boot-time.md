@@ -5,7 +5,9 @@ description: "A slow 2m 33s boot, two rounds of profiling, and what actually mov
 tags: ["linux", "systemd", "debian", "performance", "notes"]
 ---
 
-The machine was taking over two and a half minutes to reach a usable desktop. Not catastrophic, but long enough to notice every single time. I decided to actually look at it instead of just waiting.
+My Linux machine was taking over two and a half minutes to start up. Long enough to make a cup of tea, and I don't even like tea that much. I finally decided to find out why instead of just waiting.
+
+*This is a hands-on note with the actual commands and numbers, for anyone with the same problem. The short version for everyone else is at the bottom: most of the delay was programs starting up "just in case" that I almost never use.*
 
 ---
 
