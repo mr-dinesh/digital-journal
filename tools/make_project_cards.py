@@ -50,6 +50,9 @@ PROJECTS = [
     ("hn-blackout", "HN Blackout",
      "Blackout poetry from the Hacker News front page. Words found. Meaning made. The rest, erased.",
      "#0a0a0a", "#d8cfc0"),
+    ("wisdombot", "TheStoicWisdomBot",
+     "Tell it what's bothering you. One real line from Marcus, Seneca or Epictetus, and one thing to do.",
+     "#17212b", "#c9a24a"),
 ]
 
 
