@@ -41,7 +41,7 @@ Search for "Marcus Aurelius quotes" and you'll find plenty he never said. Some a
 So the bot never lets the model write a quote. It works like this:
 
 1. I collected public-domain translations: George Long's Meditations and Epictetus, and Richard Gummere's translation of Seneca's letters.
-2. A script cut them into short pieces of one or two sentences, between 8 and 40 words. It cuts only where a sentence ends, so every piece is the translator's exact words.
+2. A script cut them into short pieces of one or two sentences, between 12 and 40 words. It cuts only where a sentence ends, so every piece is the translator's exact words.
 3. When I send a problem, the bot finds the 20 pieces that are closest in meaning to what I wrote.
 4. The model reads those 20 and picks the number of the one that fits best. It also writes the "Do:" line.
 5. The bot prints the stored text for that number, with its book and section.
@@ -52,7 +52,7 @@ The model chooses. It never types the quote. If it returns a number that wasn't 
 
 Seneca doesn't write in one-liners. A letter runs for pages, and a sentence pulled out of the middle can mean the opposite of what he meant.
 
-So any piece that leans on the sentence before it never gets quoted on its own. If it starts with "For", "But", "Therefore" or "This", it's out. Questions are out too, because a question without its answer is just a question. That left about 8,000 lines that can stand alone.
+So any piece that leans on the sentence before it never gets quoted on its own. If it starts with "For", "But", "Therefore" or "This", it's out. Questions are out too, because a question without its answer is just a question. That left about 7,000 lines that can stand alone.
 
 Seneca still makes up three-quarters of them. He wrote a lot. To give Marcus and Epictetus a fair hearing, no author gets more than seven of the twenty candidates.
 
@@ -66,7 +66,7 @@ Those passages are removed before the bot ever sees them. They're listed by name
 
 The bot answers one Telegram account, mine. Anyone else who finds it gets silence. It doesn't keep what I tell it. It remembers my last question for an hour, so `/more` works, and then forgets it.
 
-It runs on a Cloudflare Worker, on the free tier. Workers AI does the matching and the choosing, and Vectorize stores the 8,000 lines. There's no server for me to look after.
+It runs on a Cloudflare Worker, on the free tier. Workers AI does the matching and the choosing, and Vectorize stores the 7,000 lines. There's no server for me to look after.
 
 ## What I took away
 
