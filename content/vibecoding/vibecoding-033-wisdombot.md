@@ -68,10 +68,6 @@ The bot answers one Telegram account, mine. Anyone else who finds it gets silenc
 
 It runs on a Cloudflare Worker, on the free tier. Workers AI does the matching and the choosing, and Vectorize stores the 8,000 lines. There's no server for me to look after.
 
-## One small lesson
-
-The first time I texted it, nothing came back. Everything looked fine. The quotes were loaded, the webhook was set. The problem was one missing letter. I had saved my Telegram ID as `ALLOWED_USER_ID`, and the bot was looking for `ALLOWED_USER_IDS`. So it treated me as a stranger and did exactly what it's built to do with strangers. It ignored me.
-
 ## What I took away
 
 The best part of this bot is something you never see. The model's job is small: read twenty real sentences, pick one, suggest a next step. It can't decorate a quote or invent one. That limit is why I trust what comes back.
